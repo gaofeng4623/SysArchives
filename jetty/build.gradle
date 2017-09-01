@@ -1,0 +1,18 @@
+
+project(':jetty') {
+    dependencies {
+        //jetty
+        compile("org.eclipse.jetty.aggregate:jetty-all:$jettyVersion")
+        //jetty Webapp
+        compile("org.eclipse.jetty:jetty-webapp:$jettyVersion")
+        //jsp support
+        compile("org.glassfish.web:javax.servlet.jsp:2.2.3")
+        //EL Support
+        compile("org.glassfish.web:javax.el:2.2.3")
+        //JSTL Support
+        compile("org.glassfish.web:javax.servlet.jsp.jstl:1.2.1") {
+            exclude group: 'javax.servlet.jsp.jstl', module: 'jstl-api'
+        }
+    }
+
+}
