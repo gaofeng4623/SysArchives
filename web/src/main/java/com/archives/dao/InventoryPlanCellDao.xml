@@ -1,0 +1,351 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.archives.dao.InventoryPlanCellDao" >
+  <resultMap id="BaseResultMap" type="com.archives.pojo.InventoryPlanCell" >
+    <id column="guid" property="guid" jdbcType="INTEGER" />
+    <result column="locationGuid" property="locationGuid" jdbcType="INTEGER" />
+    <result column="inventoryPlanId" property="inventoryPlanId" jdbcType="INTEGER" />
+    <result column="isInventory" property="isInventory" jdbcType="VARCHAR" />
+    <result column="inventoryLoactionGuid" property="inventoryLoactionGuid" jdbcType="INTEGER" />
+    <result column="pdate" property="pdate" jdbcType="TIMESTAMP" />
+    <result column="inventoryLocationPath" property="inventoryLocationPath" jdbcType="VARCHAR" />
+    <result column="sysCount" property="sysCount" jdbcType="INTEGER" />
+    <result column="inventoryCount" property="inventoryCount" jdbcType="INTEGER" />
+    <result column="normalCount" property="normalCount" jdbcType="INTEGER" />
+    <result column="missCount" property="missCount" jdbcType="INTEGER" />
+    <result column="errorCount" property="errorCount" jdbcType="INTEGER" />
+    <result column="rewriteCount" property="rewriteCount" jdbcType="INTEGER" />
+    <result column="employeeName" property="employeeName" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    guid, locationGuid, inventoryPlanId, isInventory
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from gt_court_inventory_plan_cell
+    where guid = #{guid,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from gt_court_inventory_plan_cell
+    where guid = #{guid,jdbcType=INTEGER}
+  </delete>
+  
+  <delete id="deletePlanCellByInvenId" parameterType="java.lang.Integer" >
+    delete from gt_court_inventory_plan_cell
+    where inventoryPlanId in
+    <if test="idList != null" >
+		<foreach collection="idList" item="item" index="index" open="(" separator="," close=")">
+        #{item}
+  		</foreach>
+     </if>
+  </delete>
+  
+  <insert id="insert" parameterType="com.archives.pojo.InventoryPlanCell" >
+    insert into gt_court_inventory_plan_cell (guid, locationGuid, 
+      inventoryPlanId, isInventory)
+    values (#{guid,jdbcType=INTEGER}, #{locationGuid,jdbcType=INTEGER}, 
+      #{inventoryPlanId,jdbcType=INTEGER}, #{isInventory,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.archives.pojo.InventoryPlanCell" >
+    insert into gt_court_inventory_plan_cell
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="guid != null" >
+        guid,
+      </if>
+      <if test="locationGuid != null" >
+        locationGuid,
+      </if>
+      <if test="inventoryPlanId != null" >
+        inventoryPlanId,
+      </if>
+      <if test="isInventory != null" >
+        isInventory,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="guid != null" >
+        #{guid,jdbcType=INTEGER},
+      </if>
+      <if test="locationGuid != null" >
+        #{locationGuid,jdbcType=INTEGER},
+      </if>
+      <if test="inventoryPlanId != null" >
+        #{inventoryPlanId,jdbcType=INTEGER},
+      </if>
+      <if test="isInventory != null" >
+        #{isInventory,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.archives.pojo.InventoryPlanCell" >
+    update gt_court_inventory_plan_cell
+    <set >
+      <if test="locationGuid != null" >
+        locationGuid = #{locationGuid,jdbcType=INTEGER},
+      </if>
+      <if test="inventoryPlanId != null" >
+        inventoryPlanId = #{inventoryPlanId,jdbcType=INTEGER},
+      </if>
+      <if test="isInventory != null" >
+        isInventory = #{isInventory,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where guid = #{guid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.archives.pojo.InventoryPlanCell" >
+    update gt_court_inventory_plan_cell
+    set locationGuid = #{locationGuid,jdbcType=INTEGER},
+      inventoryPlanId = #{inventoryPlanId,jdbcType=INTEGER},
+      isInventory = #{isInventory,jdbcType=VARCHAR}
+    where guid = #{guid,jdbcType=INTEGER}
+  </update>
+  
+   <insert id="batchInsertPlanCell" parameterType="com.archives.pojo.InventoryPlanCell" >
+    insert into gt_court_inventory_plan_cell (locationGuid, 
+      inventoryPlanId)
+    values
+    <if test="list != null" >
+		<foreach collection="list" item="item" index="index" separator=",">
+        (#{item.locationGuid, jdbcType=INTEGER}, #{item.inventoryPlanId, jdbcType=INTEGER})
+  		</foreach>
+     </if>
+  </insert>
+  <select id="selectByLocationGuids" resultType="java.lang.Integer" parameterType="java.util.Map" >
+    select count(1) from gt_court_inventory_plan_cell cell, gt_court_inventory_plan p
+    where cell.locationGuid in
+    <if test="list != null" >
+		<foreach collection="list" item="item" index="index" open="(" separator="," close=")">
+        #{item}
+  		</foreach>
+    </if>
+    <if test="planId != null" >
+        and cell.inventoryPlanId &lt;&gt; #{planId, jdbcType=INTEGER}
+    </if>
+    and p.isCircle &lt;&gt; 1
+    and cell.isInventory &lt;&gt; 1
+    and cell.inventoryPlanId = p.guid
+  </select>
+  <select id="loadInstantInventoryCell" resultMap="BaseResultMap" parameterType="java.util.Map" >
+  select     e.inventoryLoactionGuid,
+  			 e.inventoryLoactionGuid as locationGuid,
+	           e.pdate,e.inventoryPlanId,
+              (select locationPath from gt_court_location where guid=e.inventoryLoactionGuid) as inventoryLocationPath,
+	          (select count(distinct itemId) from gt_court_arc_itemstatus where location=e.inventoryLoactionGuid)  as sysCount,
+			  (select count(1) from gt_court_inventory_plan_result where inventoryLoactionGuid=e.inventoryLoactionGuid and inventoryDate=e.pdate and status!='-1' ) as inventoryCount,
+			  (select count(1) from gt_court_inventory_plan_result where inventoryLoactionGuid=e.inventoryLoactionGuid and inventoryDate=e.pdate and status='1' ) as normalCount,
+			  (select count(1) from gt_court_inventory_plan_result where inventoryLoactionGuid=e.inventoryLoactionGuid and inventoryDate=e.pdate and status='-1' ) as missCount,
+			  (select count(1) from gt_court_inventory_plan_result where inventoryLoactionGuid=e.inventoryLoactionGuid and inventoryDate=e.pdate and status='0' ) as errorCount,
+			  (select count(1) from gt_court_inventory_plan_result where inventoryLoactionGuid=e.inventoryLoactionGuid and inventoryDate=e.pdate and status='2' ) as rewriteCount,
+			  e.employeeName 
+	   from (select distinct d.inventoryLoactionGuid,
+	                         max(d.inventorydate) as pdate,
+							 t.employeeName,d.inventoryPlanId
+					    from gt_court_inventory_plan_result d,
+						     gt_sys_employee t,
+						     gt_court_inventory_plan p,
+						     gt_court_location l
+				       where p.creater=t.employeeId
+				         and d.inventoryLoactionGuid = l.guid 
+				         and p.guid = d.inventoryPlanId
+				       <if test="m.stime != null and m.stime != ''" >
+					     and d.inventoryDate &gt;= CONCAT(#{m.stime},' 00:00:00')
+					   </if>
+					   <if test="m.etime != null and m.etime != ''" >
+						 and d.inventoryDate &lt;= CONCAT(#{m.etime},' 23:59:59')
+					   </if>
+					   <if test="m.inventoryPlanId != null and m.inventoryPlanId != ''" >
+						 and d.inventoryPlanId = #{m.inventoryPlanId}
+					   </if>
+					   <if test="m.inventoryMan != null and m.inventoryMan != ''" >
+						 and t.employeeName like  CONCAT('%',#{m.inventoryMan},'%')
+					   </if>
+					   <if test="m.status != null and m.status != ''" >
+						 and d.status = #{m.status}
+					   </if>
+						 group by d.inventoryLoactionGuid order by d.status,l.parentId
+		    ) e  limit #{m.start}, #{m.rows} 
+  </select>
+  <select id="loadInstantInventoryCellCount" resultType="java.lang.Integer" parameterType="java.util.Map" >
+   select   count(1)
+	   from (select distinct d.inventoryLoactionGuid,
+	                         max(d.inventorydate) as pdate,
+							 t.employeeName,d.inventoryPlanId
+					    from gt_court_inventory_plan_result d,
+						     gt_sys_employee t,
+						     gt_court_inventory_plan p,
+						     gt_court_location l
+				       where p.creater=t.employeeId
+				         and d.inventoryLoactionGuid = l.guid 
+				         and p.guid = d.inventoryPlanId
+ <!--    select count(1) from (
+    	select     e.inventoryLoactionGuid,
+    			e.inventoryLoactionGuid as locationGuid,
+	           e.pdate,
+              (select locationPath from gt_court_location where guid=e.inventoryLoactionGuid) as inventoryLocationPath,
+	          (select count(distinct itemId) from gt_court_arc_itemstatus where location=e.inventoryLoactionGuid)  as sysCount,
+			  (select count(1) from gt_court_inventory_plan_result where inventoryLoactionGuid=e.inventoryLoactionGuid and inventoryDate=e.pdate and status!='-1' ) as inventoryCount,
+			  (select count(1) from gt_court_inventory_plan_result where inventoryLoactionGuid=e.inventoryLoactionGuid and inventoryDate=e.pdate and status='1' ) as normalCount,
+			  (select count(1) from gt_court_inventory_plan_result where inventoryLoactionGuid=e.inventoryLoactionGuid and inventoryDate=e.pdate and status='-1' ) as missCount,
+			  (select count(1) from gt_court_inventory_plan_result where inventoryLoactionGuid=e.inventoryLoactionGuid and inventoryDate=e.pdate and status='0' ) as errorCount,
+			  (select count(1) from gt_court_inventory_plan_result where inventoryLoactionGuid=e.inventoryLoactionGuid and inventoryDate=e.pdate and status='2' ) as rewriteCount,
+			  e.employeeName 
+	   from (select distinct d.inventoryLoactionGuid,
+	                         max(d.inventorydate) as pdate,
+							 t.employeeName 
+					    from gt_court_inventory_plan_result d,
+						     gt_sys_employee t,
+						     gt_court_inventory_plan p
+				       where p.creater=t.employeeId 
+				         and p.guid = d.inventoryPlanId -->
+				   <!--     <if test="m.stime != null and m.stime != ''" >
+					     and d.inventoryDate >= CONCAT(#{m.stime},' 00:00:00')
+					   </if>
+					   <if test="m.etime != null and m.etime != ''" >
+						 and d.inventoryDate &lt;= CONCAT(#{m.etime},' 23:59:59')
+					   </if>
+					   <if test="m.inventoryMan != null and m.inventoryMan != ''" >
+						 and t.employeeName like  CONCAT('%',#{m.inventoryMan},'%')
+					   </if>
+					   <if test="m.status != null and m.status != ''" >
+						 and d.status = #{m.status}
+					   </if>
+						 group by d.inventoryLoactionGuid order by pdate desc 
+		    ) e order by e.pdate desc 
+    ) court_ -->
+                      <if test="m.stime != null and m.stime != ''" >
+					     and d.inventoryDate &gt;= CONCAT(#{m.stime},' 00:00:00')
+					   </if>
+					   <if test="m.etime != null and m.etime != ''" >
+						 and d.inventoryDate &lt;= CONCAT(#{m.etime},' 23:59:59')
+					   </if>
+					   <if test="m.inventoryPlanId != null and m.inventoryPlanId != ''" >
+						 and d.inventoryPlanId = #{m.inventoryPlanId}
+					   </if>
+					   <if test="m.inventoryMan != null and m.inventoryMan != ''" >
+						 and t.employeeName like  CONCAT('%',#{m.inventoryMan},'%')
+					   </if>
+					   <if test="m.status != null and m.status != ''" >
+						 and d.status = #{m.status}
+					   </if>
+						 group by d.inventoryLoactionGuid order by d.status,l.parentId
+		    ) e 
+  </select>
+  
+  <update id="refreshPlanCellStatus" parameterType="java.lang.Integer">
+  	update gt_court_inventory_plan_cell set isInventory = '0' where inventoryPlanId = #{planId,jdbcType=INTEGER}
+  </update>
+  
+   <update id="deleteResultByPlanId" parameterType="java.lang.Integer">
+  	delete from gt_court_inventory_plan_result where inventoryPlanId = #{planId,jdbcType=INTEGER}
+  </update>
+   <select id="boxLoadInstantInventoryCell" resultMap="BaseResultMap" parameterType="java.util.Map" >
+  select     e.inventoryLoactionGuid,
+  			 e.inventoryLoactionGuid as locationGuid,
+	           e.pdate,e.inventoryPlanId,
+              (select locationPath from gt_court_location where guid=e.inventoryLoactionGuid) as inventoryLocationPath,
+	          (select count(distinct itemId) from gt_court_arc_itemstatus where location=e.inventoryLoactionGuid)  as sysCount,
+			  (select count(1) from gt_court_inventory_plan_result where inventoryLoactionGuid=e.inventoryLoactionGuid and inventoryDate=e.pdate and status!='-1' ) as inventoryCount,
+			  (select count(1) from gt_court_inventory_plan_result where inventoryLoactionGuid=e.inventoryLoactionGuid and inventoryDate=e.pdate and status='1' ) as normalCount,
+			  (select count(1) from gt_court_inventory_plan_result where inventoryLoactionGuid=e.inventoryLoactionGuid and inventoryDate=e.pdate and status='-1' ) as missCount,
+			  (select count(1) from gt_court_inventory_plan_result where inventoryLoactionGuid=e.inventoryLoactionGuid and inventoryDate=e.pdate and status='0' and e.boxrfid=rfid) as errorCount,
+			  (select count(1) from gt_court_inventory_plan_result where inventoryLoactionGuid=e.inventoryLoactionGuid and inventoryDate=e.pdate and status='2' ) as rewriteCount,
+			  e.employeeName 
+	   from (select distinct d.inventoryLoactionGuid,
+	                         max(d.inventorydate) as pdate,
+	                         box.rfid as boxrfid,
+							 t.employeeName,d.inventoryPlanId
+					    from gt_court_inventory_plan_result d,
+						     gt_sys_employee t,
+						     gt_court_inventory_plan p,
+						     gt_court_location l,gt_court_arc_boxstatus box
+				       where p.creater=t.employeeId
+				         and d.inventoryLoactionGuid = l.guid 
+				         and d.rfid=box.rfid
+				         and p.guid = d.inventoryPlanId
+				       <if test="m.stime != null and m.stime != ''" >
+					     and d.inventoryDate &gt;= CONCAT(#{m.stime},' 00:00:00')
+					   </if>
+					   <if test="m.etime != null and m.etime != ''" >
+						 and d.inventoryDate &lt;= CONCAT(#{m.etime},' 23:59:59')
+					   </if>
+					   <if test="m.inventoryPlanId != null and m.inventoryPlanId != ''" >
+						 and d.inventoryPlanId = #{m.inventoryPlanId}
+					   </if>
+					   <if test="m.inventoryMan != null and m.inventoryMan != ''" >
+						 and t.employeeName like  CONCAT('%',#{m.inventoryMan},'%')
+					   </if>
+					   <if test="m.status != null and m.status != ''" >
+						 and d.status = #{m.status}
+					   </if>
+						 group by d.inventoryLoactionGuid order by d.status,l.parentId
+		    ) e  limit #{m.start}, #{m.rows} 
+  </select>
+  <select id="boxLoadInstantInventoryCellCount" resultType="java.lang.Integer" parameterType="java.util.Map" >
+   select   count(1)
+	   from (select distinct d.inventoryLoactionGuid,
+	                         max(d.inventorydate) as pdate,
+	                         box.rfid as boxrfid,
+							 t.employeeName,d.inventoryPlanId
+					    from gt_court_inventory_plan_result d,
+						     gt_sys_employee t,
+						     gt_court_inventory_plan p,
+						     gt_court_location l,gt_court_arc_boxstatus box
+				       where p.creater=t.employeeId
+				         and d.inventoryLoactionGuid = l.guid 
+				         and d.rfid=box.rfid
+				         and p.guid = d.inventoryPlanId
+ <!--    select count(1) from (
+    	select     e.inventoryLoactionGuid,
+    			e.inventoryLoactionGuid as locationGuid,
+	           e.pdate,
+              (select locationPath from gt_court_location where guid=e.inventoryLoactionGuid) as inventoryLocationPath,
+	          (select count(distinct itemId) from gt_court_arc_itemstatus where location=e.inventoryLoactionGuid)  as sysCount,
+			  (select count(1) from gt_court_inventory_plan_result where inventoryLoactionGuid=e.inventoryLoactionGuid and inventoryDate=e.pdate and status!='-1' ) as inventoryCount,
+			  (select count(1) from gt_court_inventory_plan_result where inventoryLoactionGuid=e.inventoryLoactionGuid and inventoryDate=e.pdate and status='1' ) as normalCount,
+			  (select count(1) from gt_court_inventory_plan_result where inventoryLoactionGuid=e.inventoryLoactionGuid and inventoryDate=e.pdate and status='-1' ) as missCount,
+			  (select count(1) from gt_court_inventory_plan_result where inventoryLoactionGuid=e.inventoryLoactionGuid and inventoryDate=e.pdate and status='0' ) as errorCount,
+			  (select count(1) from gt_court_inventory_plan_result where inventoryLoactionGuid=e.inventoryLoactionGuid and inventoryDate=e.pdate and status='2' ) as rewriteCount,
+			  e.employeeName 
+	   from (select distinct d.inventoryLoactionGuid,
+	                         max(d.inventorydate) as pdate,
+							 t.employeeName 
+					    from gt_court_inventory_plan_result d,
+						     gt_sys_employee t,
+						     gt_court_inventory_plan p
+				       where p.creater=t.employeeId 
+				         and p.guid = d.inventoryPlanId -->
+				   <!--     <if test="m.stime != null and m.stime != ''" >
+					     and d.inventoryDate >= CONCAT(#{m.stime},' 00:00:00')
+					   </if>
+					   <if test="m.etime != null and m.etime != ''" >
+						 and d.inventoryDate &lt;= CONCAT(#{m.etime},' 23:59:59')
+					   </if>
+					   <if test="m.inventoryMan != null and m.inventoryMan != ''" >
+						 and t.employeeName like  CONCAT('%',#{m.inventoryMan},'%')
+					   </if>
+					   <if test="m.status != null and m.status != ''" >
+						 and d.status = #{m.status}
+					   </if>
+						 group by d.inventoryLoactionGuid order by pdate desc 
+		    ) e order by e.pdate desc 
+    ) court_ -->
+                      <if test="m.stime != null and m.stime != ''" >
+					     and d.inventoryDate &gt;= CONCAT(#{m.stime},' 00:00:00')
+					   </if>
+					   <if test="m.etime != null and m.etime != ''" >
+						 and d.inventoryDate &lt;= CONCAT(#{m.etime},' 23:59:59')
+					   </if>
+					   <if test="m.inventoryPlanId != null and m.inventoryPlanId != ''" >
+						 and d.inventoryPlanId = #{m.inventoryPlanId}
+					   </if>
+					   <if test="m.inventoryMan != null and m.inventoryMan != ''" >
+						 and t.employeeName like  CONCAT('%',#{m.inventoryMan},'%')
+					   </if>
+					   <if test="m.status != null and m.status != ''" >
+						 and d.status = #{m.status}
+					   </if>
+						 group by d.inventoryLoactionGuid order by d.status,l.parentId
+		    ) e 
+  </select>
+</mapper>

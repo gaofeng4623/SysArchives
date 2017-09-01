@@ -1,0 +1,685 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.archives.dao.InventoryResultDao" >
+  <resultMap id="BaseResultMap" type="com.archives.pojo.InventoryResult" >
+    <id column="guid" property="guid" jdbcType="INTEGER" />
+    <result column="rfid" property="rfid" jdbcType="VARCHAR" />
+    <result column="inventoryPlanId" property="inventoryPlanId" jdbcType="INTEGER" />
+    <result column="inventoryLoactionGuid" property="inventoryLoactionGuid" jdbcType="INTEGER" />
+    <result column="inventoryLocationPath" property="inventoryLocationPath" jdbcType="VARCHAR" />
+    <result column="sysLocationGuid" property="sysLocationGuid" jdbcType="INTEGER" />
+    <result column="sysLocationPath" property="sysLocationPath" jdbcType="VARCHAR" />
+    <result column="inventoryDate" property="inventoryDate" jdbcType="TIMESTAMP" />
+    <result column="status" property="status" jdbcType="VARCHAR" />
+    <result column="statusName" property="statusName" jdbcType="VARCHAR" />
+    <result column="archiveId" property="archiveId" jdbcType="INTEGER" />
+    <result column="itemId" property="itemId" jdbcType="INTEGER" />
+    <result column="caseName" property="caseName" jdbcType="VARCHAR" />
+    <result column="caseCategory" property="caseCategory" jdbcType="VARCHAR" />
+    <result column="creater" property="creater" jdbcType="VARCHAR" />
+    <result column="caseNo" property="caseNo" jdbcType="VARCHAR" /> <!-- 案号 -->
+    <result column="archivesNo" property="archivesNo" jdbcType="VARCHAR" /> <!-- 档案号 -->
+    <result column="boxId" property="boxId" jdbcType="INTEGER" /> <!-- 盒子主键 -->
+    <result column="boxNumber" property="boxNumber" jdbcType="VARCHAR" /> <!-- 盒号 -->
+    <result column="year" property="year" jdbcType="VARCHAR" /> <!-- 年度 -->
+    <result column="number" property="number" jdbcType="VARCHAR" /> <!-- 档案编号 -->
+    <result column="caseWord" property="caseWord" jdbcType="VARCHAR" /> <!-- 案字 -->
+    <result column="safekeeping" property="safekeeping" jdbcType="VARCHAR" /> <!-- 保管期限 -->
+    <result column="mechanism" property="mechanism" jdbcType="VARCHAR" /> <!-- 机构 -->
+    
+  </resultMap>
+  
+  <resultMap id="SpeakResultMap" type="com.archives.pojo.SpeakResult" >
+    <id column="inventoryPlanId" property="inventoryPlanId" jdbcType="INTEGER" />
+    <result column="locationPath" property="locationPath" jdbcType="VARCHAR" /> <!-- 盘点路径 -->
+    <result column="locationGuid" property="locationGuid" jdbcType="VARCHAR" /> <!-- 位置 -->
+    <result column="status" property="status" jdbcType="VARCHAR" /> <!-- 状态 -->
+    <result column="count" property="count" jdbcType="VARCHAR" /> <!-- 统计数量 -->
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    guid, rfid, inventoryPlanId, inventoryLoactionGuid, sysLocationGuid, inventoryDate, 
+    status
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from gt_court_inventory_plan_result
+    where guid = #{guid,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from gt_court_inventory_plan_result
+    where guid = #{guid,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.archives.pojo.InventoryResult" >
+    insert into gt_court_inventory_plan_result (guid, rfid, inventoryPlanId, 
+      inventoryLoactionGuid, sysLocationGuid, 
+      inventoryDate, status)
+    values (#{guid,jdbcType=INTEGER}, #{rfid,jdbcType=VARCHAR}, #{inventoryPlanId,jdbcType=INTEGER}, 
+      #{inventoryLoactionGuid,jdbcType=INTEGER}, #{sysLocationGuid,jdbcType=INTEGER}, 
+      #{inventoryDate,jdbcType=TIMESTAMP}, #{status,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.archives.pojo.InventoryResult" >
+    insert into gt_court_inventory_plan_result
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="guid != null" >
+        guid,
+      </if>
+      <if test="rfid != null" >
+        rfid,
+      </if>
+      <if test="inventoryPlanId != null" >
+        inventoryPlanId,
+      </if>
+      <if test="inventoryLoactionGuid != null" >
+        inventoryLoactionGuid,
+      </if>
+      <if test="sysLocationGuid != null" >
+        sysLocationGuid,
+      </if>
+      <if test="inventoryDate != null" >
+        inventoryDate,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="guid != null" >
+        #{guid,jdbcType=INTEGER},
+      </if>
+      <if test="rfid != null" >
+        #{rfid,jdbcType=VARCHAR},
+      </if>
+      <if test="inventoryPlanId != null" >
+        #{inventoryPlanId,jdbcType=INTEGER},
+      </if>
+      <if test="inventoryLoactionGuid != null" >
+        #{inventoryLoactionGuid,jdbcType=INTEGER},
+      </if>
+      <if test="sysLocationGuid != null" >
+        #{sysLocationGuid,jdbcType=INTEGER},
+      </if>
+      <if test="inventoryDate != null" >
+        #{inventoryDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.archives.pojo.InventoryResult" >
+    update gt_court_inventory_plan_result
+    <set >
+      <if test="rfid != null" >
+        rfid = #{rfid,jdbcType=VARCHAR},
+      </if>
+      <if test="inventoryPlanId != null" >
+        inventoryPlanId = #{inventoryPlanId,jdbcType=INTEGER},
+      </if>
+      <if test="inventoryLoactionGuid != null" >
+        inventoryLoactionGuid = #{inventoryLoactionGuid,jdbcType=INTEGER},
+      </if>
+      <if test="sysLocationGuid != null" >
+        sysLocationGuid = #{sysLocationGuid,jdbcType=INTEGER},
+      </if>
+      <if test="inventoryDate != null" >
+        inventoryDate = #{inventoryDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where guid = #{guid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.archives.pojo.InventoryResult" >
+    update gt_court_inventory_plan_result
+    set rfid = #{rfid,jdbcType=VARCHAR},
+      inventoryPlanId = #{inventoryPlanId,jdbcType=INTEGER},
+      inventoryLoactionGuid = #{inventoryLoactionGuid,jdbcType=INTEGER},
+      sysLocationGuid = #{sysLocationGuid,jdbcType=INTEGER},
+      inventoryDate = #{inventoryDate,jdbcType=TIMESTAMP},
+      status = #{status,jdbcType=VARCHAR}
+    where guid = #{guid,jdbcType=INTEGER}
+  </update>
+  <select id="findInventoryCount" resultType="java.lang.Integer" parameterType="java.lang.Integer" >
+   		 select count(1) 
+			 from (
+						select d.inventoryLoactionGuid,
+									 max(d.inventorydate) as pdate 
+						  from gt_court_inventory_plan_result d 
+						 where d.inventoryPlanId=#{guid,jdbcType=INTEGER}
+					  group by d.inventoryLoactionGuid 
+					  order by pdate desc 
+				   ) e ,
+				   gt_court_inventory_plan_result a 
+			 where a.inventoryPlanId=#{guid,jdbcType=INTEGER}
+               and e.pdate=a.inventorydate 
+			   and a.status!='-1' 
+  </select>
+  <select id="findInventoryDiffCount" resultType="java.lang.Integer" parameterType="java.lang.Integer" >
+   		select count(a.guid) 
+		  from (
+				  select d.inventoryLoactionGuid,
+					     max(d.inventorydate) as pdate 
+					from gt_court_inventory_plan_result d 
+				   where d.inventoryPlanId=#{guid,jdbcType=INTEGER}
+				group by d.inventoryLoactionGuid 
+				order by pdate desc ) e ,
+				gt_court_inventory_plan_result a 
+		  where a.inventoryPlanId=#{guid,jdbcType=INTEGER} 
+		    and e.pdate=a.inventorydate 
+		    and (a.status='-1' or a.status='0')
+  </select>
+  <select id="loadResultDetailData" resultMap="BaseResultMap" parameterType="java.util.Map" >
+   		select * from (
+				select 
+				    result.guid, 
+				    result.rfid, 
+				    result.inventoryPlanId, 
+				    result.inventoryLoactionGuid, 
+				    location.locationpath as inventoryLocationPath,
+				    result.sysLocationGuid, 
+				    result.inventoryDate, 
+				    result.status,
+				    case result.status when -1 then '少数据'
+				                       when 0  then '多数据'
+				                       when 1  then '正常'
+				                       end as statusName,
+				    info.guid as archiveId,
+				    info.caseName,
+				    info.caseCategory
+			   from gt_court_inventory_plan_result result,
+				    gt_court_arc_info info,
+					gt_court_arc_itemstatus item,
+					gt_court_location location
+			  where inventoryPlanId = #{m.inventoryPlanId,jdbcType=INTEGER}
+				and (result.status='1' or result.status='2')
+				and info.guid = item.itemId
+                and result.rfid = item.rfid 
+                and location.guid = result.inventoryLoactionGuid
+		) row_ limit #{m.start}, #{m.rows}
+  </select>
+  <select id="findInventoryResultCount" resultType="java.lang.Integer" parameterType="java.util.Map" >
+   		select count(1) from (
+					select 
+				    result.guid, 
+				    result.rfid,
+				    result.inventoryPlanId, 
+				    result.inventoryLoactionGuid, 
+				    location.locationpath as inventoryLocationPath,
+				    result.sysLocationGuid, 
+				    result.inventoryDate, 
+				    result.status,
+				    case result.status when -1 then '少数据'
+				                       when 0  then '多数据'
+				                       when 1  then '正常'
+				                       end as statusName,
+				    info.guid as archiveId,
+				    info.caseName,
+				    info.caseCategory
+			   from gt_court_inventory_plan_result result,
+				    gt_court_arc_info info,
+					gt_court_arc_itemstatus item,
+					gt_court_location location
+			  where inventoryPlanId = #{m.inventoryPlanId,jdbcType=INTEGER}
+				and (result.status='1' or result.status='2')
+				and info.guid = item.itemId
+                and result.rfid = item.rfid 
+                and location.guid = result.inventoryLoactionGuid
+		) count_
+  </select>
+  <select id="loadDiffDetailData" resultMap="BaseResultMap" parameterType="java.util.Map" >
+   		select * from (
+				select 
+				    result.guid, 
+				    result.rfid, 
+				    result.inventoryPlanId, 
+				    result.inventoryLoactionGuid, 
+				    location.locationPath as inventoryLocationPath,
+				    result.sysLocationGuid, 
+				    result.inventoryDate, 
+				    result.status,
+				    info.caseName,
+				    info.caseCategory,
+				    info.guid as archiveId
+			   from gt_court_inventory_plan_result result,
+				    gt_court_arc_info info,
+					gt_court_arc_itemstatus item,
+					gt_court_location location
+			  where inventoryPlanId = #{m.inventoryPlanId,jdbcType=INTEGER}
+				and (result.status='-1' or result.status='0')
+				and info.guid = item.itemId
+                and result.rfid = item.rfid 
+                and location.guid = result.inventoryLoactionGuid
+		) row_ limit #{m.start}, #{m.rows}
+  </select>
+  <select id="findInventoryDiffCountPage" resultType="java.lang.Integer" parameterType="java.util.Map" >
+   		select count(1) from (
+				select 
+				    result.guid, 
+				    result.rfid, 
+				    result.inventoryPlanId, 
+				    result.inventoryLoactionGuid, 
+				    location.locationPath as inventoryLocationPath,
+				    result.sysLocationGuid, 
+				    result.inventoryDate, 
+				    result.status,
+				    info.caseName,
+				    info.caseCategory,
+				    info.guid as archiveId
+			   from gt_court_inventory_plan_result result,
+				    gt_court_arc_info info,
+					gt_court_arc_itemstatus item,
+					gt_court_location location
+			  where inventoryPlanId = #{m.inventoryPlanId,jdbcType=INTEGER}
+				and (result.status='-1' or result.status='0')
+				and info.guid = item.itemId
+                and result.rfid = item.rfid 
+                and location.guid = result.inventoryLoactionGuid
+		) count_
+  </select>
+  <select id="isExistInInventoryPlan" resultType="java.lang.Integer" parameterType="java.util.Map" >
+   		select count(1) from gt_court_inventory_plan_result where inventoryPlanId=#{m.inventoryPlanId,jdbcType=INTEGER} and rfid=#{m.rfid,jdbcType=INTEGER} and status='0'
+  </select>
+  <select id="loadInstantInventoryData" resultMap="BaseResultMap" parameterType="java.util.Map" > <!-- 历史记录 单元格显示 -->
+   		select * from (
+				select 
+				    result.guid, 
+				    result.rfid,
+				    result.inventoryPlanId, 
+				    result.inventoryLoactionGuid, 
+				    location.locationpath as inventoryLocationPath,
+				    result.sysLocationGuid, 
+				    result.inventoryDate, 
+				    result.status,
+				    case result.status when -1 then '缺失档案'
+				                       when 0  then '错放档案'
+				                       when 1  then '正常档案'
+				                       end as statusName,
+				    info.guid as archiveId,
+				    info.caseName,
+				    item.itemNo caseNo,
+				    item.guid itemGuid,
+				    info.caseCategory
+			   from gt_court_inventory_plan_result result,
+				    gt_court_arc_info info,
+					gt_court_arc_itemstatus item,
+					gt_court_location location
+			  where  
+				info.guid = item.infoid
+                and result.rfid = item.rfid 
+   		        and location.guid = result.inventoryLoactionGuid 
+   		        and result.inventoryLoactionGuid = #{m.locationGuid, jdbcType=INTEGER} 
+   		        and result.inventoryPlanId = #{m.planId, jdbcType=INTEGER}	 
+              order by location.serialNoPath
+		) row_ limit #{m.start}, #{m.rows}
+  </select>
+  <select id="findInstantInventoryCount" resultType="java.lang.Integer" parameterType="java.util.Map" >
+   		select count(1) from (
+				select 
+				    result.guid, 
+				    result.rfid,
+				    result.inventoryPlanId, 
+				    result.inventoryLoactionGuid, 
+				    location.locationpath as inventoryLocationPath,
+				    result.sysLocationGuid, 
+				    result.inventoryDate, 
+				    result.status,
+				    case result.status when -1 then '缺失档案'
+				                       when 0  then '错放档案'
+				                       when 1  then '正常档案'
+				                       end as statusName,
+				    info.guid as archiveId,
+				    info.caseName,
+				    info.caseCategory
+			   from gt_court_inventory_plan_result result,
+				    gt_court_arc_info info,
+					gt_court_arc_itemstatus item,
+					gt_court_location location
+			  where  
+				info.guid = item.infoid
+                and result.rfid = item.rfid 
+   		        and location.guid = result.inventoryLoactionGuid 
+   		        and result.inventoryLoactionGuid = #{m.locationGuid, jdbcType=INTEGER} 
+   		        and result.inventoryPlanId = #{m.planId, jdbcType=INTEGER}	 
+              order by location.serialNoPath
+		) count_
+  </select>
+  <select id="isExistInInstantInventory" resultType="java.lang.Integer" parameterType="java.util.Map" >
+   		select count(1) from ( 
+   		               select d.inventoryLoactionGuid,
+                              max(d.inventorydate) as pdate  
+					     from gt_court_inventory_plan_result d,
+					          gt_sys_employee t,
+						      gt_court_inventory_plan p 
+						where p.creater=t.employeeId 
+				          and p.guid = d.inventoryPlanId 
+					   <if test="m.stime != null and m.stime != ''" >
+					      and d.inventoryDate >= CONCAT(#{m.stime},' 00:00:00')
+					   </if>
+					   <if test="m.etime != null and m.etime != ''" >
+						  and d.inventoryDate &lt;= CONCAT(#{m.etime},' 23:59:59')
+					   </if>
+					   <if test="m.inventoryMan != null and m.inventoryMan != ''" >
+						  and t.employeeName like  CONCAT('%',#{m.creater},'%')
+					   </if>
+				 group by d.inventoryLoactionGuid  order by pdate desc 
+				              ) e,
+				              gt_court_inventory_plan_result a 
+				              where e.pdate=a.inventorydate and a.rfid=#{m.rfid}
+  </select>
+  <select id="countLostInventory" resultType="java.lang.Integer">
+   		select count(1) from gt_court_inventory_plan plan,
+   		                     gt_court_inventory_plan_result result,
+						   	 gt_court_location location 
+			    where plan.guid = result.inventoryPlanId
+			      and result.status = '-1'
+                  and location.guid = result.sysLocationGuid
+				  and location.locationPath like CONCAT(#{locationPath},'%') 
+			      and plan.guid = #{guid, jdbcType=INTEGER}
+  </select>
+  
+  <select id="countSurplusInventory" resultType="java.lang.Integer">
+   		select count(1) from gt_court_inventory_plan plan,
+   		                     gt_court_inventory_plan_result result,
+						   	 gt_court_location location ,
+						   	 gt_court_arc_itemstatus items
+			    where plan.guid = result.inventoryPlanId
+			      and result.status = '0'
+                  and location.guid = result.inventoryLoactionGuid
+                  and result.rfid = items.rfid 
+				  and location.locationPath like CONCAT(#{locationPath},'%') 
+			      and plan.guid = #{guid, jdbcType=INTEGER}
+  </select>
+  
+  <select id="countBoxSurplusInventory" resultType="java.lang.Integer">
+   		select count(1) from gt_court_inventory_plan plan,
+   		                     gt_court_inventory_plan_result result,
+						   	 gt_court_location location ,
+						   	 gt_court_arc_boxstatus items
+			    where plan.guid = result.inventoryPlanId
+			      and result.status = '0'
+                  and location.guid = result.inventoryLoactionGuid
+                  and result.rfid = items.rfid 
+				  and location.locationPath like CONCAT(#{locationPath},'%') 
+			      and plan.guid = #{guid, jdbcType=INTEGER}
+  </select>
+  
+  <select id="countRightInventory" resultType="java.lang.Integer">
+   		select count(1) from gt_court_inventory_plan plan,
+   		                     gt_court_inventory_plan_result result,
+						   	 gt_court_location location 
+			    where plan.guid = result.inventoryPlanId
+			      and result.status = '1'
+                  and location.guid = result.inventoryLoactionGuid
+				  and location.locationPath like CONCAT(#{locationPath},'%') 
+			      and plan.guid = #{guid, jdbcType=INTEGER}
+  </select>
+  
+  <select id="selectArchivesByLocation" resultMap="BaseResultMap">
+  	SELECT 
+  		   stat.rfid,
+  		   info.caseNo,
+  		   info.year,
+		   info.caseWord,
+		   info.number,
+		   location.guid as inventoryLoactionGuid,
+  		   location.locationPath as inventoryLocationPath
+  		 from gt_court_arc_info info 
+   INNER JOIN gt_court_arc_itemstatus stat 
+           ON info.guid = stat.infoid 
+   INNER JOIN gt_court_location location
+           ON stat.location = location.guid
+        where location.locationPath like CONCAT((SELECT locationPath from gt_court_location  where guid = #{locationGuid, jdbcType=INTEGER}),'%')
+          and location.locationTypeGuid = 8
+     order by info.number
+  
+  </select>
+  
+  <select id="selectInventoryResult" resultMap="BaseResultMap">
+   		select 
+			    result.guid, 
+			    result.rfid,
+			    result.inventoryPlanId, 
+			    result.inventoryLoactionGuid, 
+			    location.locationpath as inventoryLocationPath,
+			    result.sysLocationGuid, 
+			    result.inventoryDate, 
+			    result.status,
+			    case result.status when -1 then '少数据'
+			                       when 0  then '多数据'
+			                       when 1  then '正常'
+			                       end as statusName,
+			    info.guid as archiveId,
+			    info.caseName,
+			    item.itemNo caseNo,
+			    info.archivesNo,
+			    item.guid as itemGuid,
+			    info.year,
+			    info.caseWord,
+			    info.number,
+			    info.caseCategory
+		   from gt_court_inventory_plan_result result,
+			    gt_court_arc_info info,
+				gt_court_arc_itemstatus item,
+				gt_court_location location
+		  where 
+			    info.guid = item.infoid
+                and result.rfid = item.rfid 
+  		        and location.guid = result.inventoryLoactionGuid 
+  		        and result.inventoryPlanId = #{inventoryPlanId, jdbcType=INTEGER}
+  		        and result.reading = 1
+  		        order by result.inventoryDate,result.status
+  </select>
+  
+  <update id="readInventoryResult" parameterType="java.lang.Object">
+  	update gt_court_inventory_plan_result set reading = 1
+  	 where reading = 0 
+  	   and inventoryLoactionGuid = #{inventoryLoactionGuid, jdbcType=INTEGER}
+  	   and inventoryPlanId = #{inventoryPlanId, jdbcType=INTEGER}
+  	   order by inventoryDate
+	   LIMIT 10
+  </update>
+  
+  <select id="loadDiffDetailDataGrid" resultMap="BaseResultMap">
+   		select 
+				    result.guid, 
+				    result.rfid,
+				    result.inventoryPlanId, 
+				    result.inventoryLoactionGuid, 
+				    location.locationpath as inventoryLocationPath,
+				    result.sysLocationGuid, 
+				    result.inventoryDate, 
+				    result.status,
+				    case result.status when -1 then '少数据'
+				                       when 0  then '多数据'
+				                       when 1  then '正常'
+				                       end as statusName,
+				    info.guid as archiveId,
+				    info.caseName,
+				    item.itemNo caseNo,
+				    info.archivesNo,
+				    item.guid as itemGuid,
+				    info.caseCategory
+			   from gt_court_inventory_plan_result result,
+				    gt_court_arc_info info,
+					gt_court_arc_itemstatus item,
+					gt_court_location location
+			  where 
+			    info.guid = item.infoid
+                and result.rfid = item.rfid 
+   		        and location.guid = result.inventoryLoactionGuid 
+   		        and result.inventoryLoactionGuid = #{inventoryLoactionGuid, jdbcType=INTEGER} 
+   		        and result.inventoryPlanId = #{inventoryPlanId, jdbcType=INTEGER}
+   		        <!-- order by result.status -->
+   		        order by result.status,info.number
+   		        limit #{start},#{rows}
+  </select>
+  
+  <!-- 文书盘点结果查看表格 -->
+  <select id="loadBoxDiffDetailDataGrid" resultMap="BaseResultMap">
+   		select 
+				    result.guid, 
+				    result.rfid,
+				    result.inventoryPlanId, 
+				    result.inventoryLoactionGuid, 
+				    location.locationpath as inventoryLocationPath,
+				    result.sysLocationGuid, 
+				    result.inventoryDate, 
+				    result.status,
+				    case result.status when -1 then '少数据'
+				                       when 0  then '多数据'
+				                       when 1  then '正常'
+				                       end as statusName,
+				    info.guid as boxId,
+				    info.boxNumber,
+				    info.year,
+				    info.safekeeping,
+				    info.mechanism
+			   from gt_court_inventory_plan_result result,
+				    gt_court_arc_box info,
+					gt_court_arc_boxstatus item,
+					gt_court_location location
+			   where 
+				    info.guid = item.boxid
+	                and result.rfid = item.rfid 
+	   		        and location.guid = result.inventoryLoactionGuid 
+	   		        and result.inventoryLoactionGuid = #{inventoryLoactionGuid, jdbcType=INTEGER} 
+	   		        and result.inventoryPlanId = #{inventoryPlanId, jdbcType=INTEGER}
+	   		        order by result.status,CAST(info.boxNumber AS SIGNED)
+	   		        limit #{start},#{rows}
+  </select>
+  
+  <select id="loadCountDiffDetailDataGrid" resultType="java.lang.Integer">
+   		select 
+			   count(*) 
+			   from gt_court_inventory_plan_result result,
+				    gt_court_arc_info info,
+					gt_court_arc_itemstatus item,
+					gt_court_location location
+			  where 
+			    info.guid = item.infoid
+                and result.rfid = item.rfid 
+   		        and location.guid = result.inventoryLoactionGuid 
+   		        and result.inventoryLoactionGuid = #{inventoryLoactionGuid, jdbcType=INTEGER} 
+   		        and result.inventoryPlanId = #{inventoryPlanId, jdbcType=INTEGER}
+   		       
+  </select>
+  
+  <select id="loadBoxCountDiffDetailDataGrid" resultType="java.lang.Integer">
+   		select 
+			   count(*) 
+			   from gt_court_inventory_plan_result result,
+				    gt_court_arc_box info,
+					gt_court_arc_boxstatus item,
+					gt_court_location location
+			  where 
+			    info.guid = item.boxid
+                and result.rfid = item.rfid 
+   		        and location.guid = result.inventoryLoactionGuid 
+   		        and result.inventoryLoactionGuid = #{inventoryLoactionGuid, jdbcType=INTEGER} 
+   		        and result.inventoryPlanId = #{inventoryPlanId, jdbcType=INTEGER}
+  </select>
+  
+  <select id="getTotalCellByLocationGuid" resultType="java.lang.Integer" parameterType="java.lang.Integer">
+   		SELECT count(1) from gt_court_location where serialNoPath like CONCAT((SELECT serialNoPath from gt_court_location  where guid = #{guid}),'%') 
+		and locationTypeGuid = 8
+  </select>
+  
+  <select id="getPassCellByLocationGuid" resultType="java.lang.Integer" parameterType="java.lang.Object">
+   		SELECT COUNT(1) from gt_court_location a INNER JOIN gt_court_inventory_plan_cell b where a.serialNoPath like CONCAT((SELECT serialNoPath from gt_court_location  where guid = #{guid}),'%') 
+		and a.locationTypeGuid = 8  and a.guid = b.locationGuid and b.isInventory = 1 and b.inventoryPlanId = #{planId}
+  </select>
+  
+  <!-- 获得诉讼某架子下报警的档案数量 -->
+  <select id="testWarningCount" resultType="java.lang.Integer" parameterType="java.lang.Object">
+	SELECT COUNT(1) from gt_court_location a INNER JOIN gt_court_inventory_plan_result b INNER JOIN gt_court_arc_itemstatus c where a.serialNoPath like CONCAT((SELECT serialNoPath from gt_court_location  where guid = #{guid}),'%') 
+	and a.locationTypeGuid = 8 and a.guid = b.inventoryLoactionGuid and b.rfid = c.rfid and (b.`status` = '0' or b.`status` = '-1') and b.inventoryPlanId = #{planId}
+  </select>
+  <!-- 获得文书某架子下报警的档案数量 -->
+  <select id="testBoxWarningCount" resultType="java.lang.Integer" parameterType="java.lang.Object">
+	SELECT COUNT(1) from gt_court_location a INNER JOIN gt_court_inventory_plan_result b INNER JOIN gt_court_arc_boxstatus c where a.serialNoPath like CONCAT((SELECT serialNoPath from gt_court_location  where guid = #{guid}),'%') 
+	and a.locationTypeGuid = 8 and a.guid = b.inventoryLoactionGuid and b.rfid = c.rfid and (b.`status` = '0' or b.`status` = '-1') and b.inventoryPlanId = #{planId}
+  </select>
+  
+  <!-- 检测某个格子是否盘点到 -->
+  <select id="testPassCess" resultType="java.lang.Integer" parameterType="java.lang.Object">
+	SELECT COUNT(1) from gt_court_inventory_plan_cell where locationGuid = #{guid} and inventoryPlanId = #{planId} and isInventory = '1'
+  </select>
+  <delete id="deleteInventoryPlanResultByIds" parameterType="java.lang.Integer" >
+  	delete from gt_court_inventory_plan_result
+    where inventoryPlanId in
+	<if test="idList != null" >
+		<foreach collection="idList" item="item" index="index" open="(" separator="," close=")">
+        #{item}
+  		</foreach>
+     </if>
+  </delete>
+  
+  <select id="getMissResult" resultMap="SpeakResultMap">
+  		select result.inventoryPlanId,result.status,l.locationPath,l.guid as locationGuid,count(1) as count
+   		  from gt_court_inventory_plan_result result, gt_court_arc_itemstatus s, gt_court_location l
+	   	 where l.guid = result.inventoryLoactionGuid and result.rfid = s.rfid
+		   and result.status = '-1'
+		   and result.reading = 1
+	       and result.inventoryPlanId = #{planId, jdbcType=INTEGER}
+	       and l.guid not in (select locationGuid from gt_court_inventory_speak where planId = #{planId, jdbcType=INTEGER})
+	  GROUP BY inventoryLoactionGuid
+  </select>
+  
+  <select id="getWrongResult" resultMap="SpeakResultMap">
+  		select result.inventoryPlanId,result.status,l.locationPath,l.guid as locationGuid,count(1) as count
+   		  from gt_court_inventory_plan_result result, gt_court_arc_itemstatus s, gt_court_location l
+	   	 where l.guid = result.inventoryLoactionGuid and result.rfid = s.rfid
+		   and result.status = '0'
+		   and result.reading = 1
+	       and result.inventoryPlanId = #{planId, jdbcType=INTEGER}
+	       and l.guid not in (select locationGuid from gt_court_inventory_speak where planId = #{planId, jdbcType=INTEGER})
+	  GROUP BY inventoryLoactionGuid
+  </select>
+  
+  <select id="getWarningCount" resultType="java.lang.Integer">
+  		select count(1) as count
+   		  from gt_court_inventory_plan_result result, gt_court_arc_itemstatus s, gt_court_location l
+	   	 where l.guid = result.inventoryLoactionGuid and result.rfid = s.rfid
+		   and (result.status = '0' or result.status = '-1')
+		   and result.reading = 1
+	       and result.inventoryPlanId = #{planId, jdbcType=INTEGER}
+	       and l.guid not in (select locationGuid from gt_court_inventory_speak where planId = #{planId, jdbcType=INTEGER})
+  </select>
+  
+  <insert id="insertSpeakResult" parameterType="com.archives.pojo.SpeakResult" >
+    insert into gt_court_inventory_speak
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="inventoryPlanId != null" >
+        planId,
+      </if>
+      <if test="locationGuid != null" >
+        locationGuid,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="inventoryPlanId != null" >
+        #{inventoryPlanId,jdbcType=INTEGER},
+      </if>
+      <if test="locationGuid != null" >
+        #{locationGuid,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  
+  <delete id="clear" parameterType="java.lang.Integer">
+  	 delete from gt_court_inventory_speak 
+  	 	   where planId = #{planId, jdbcType=INTEGER}
+  </delete>
+  
+  <select id="getUnReadCount" resultType="java.lang.Integer" parameterType="java.lang.Object">
+  	SELECT 
+  		  count(1) 
+	      from gt_court_inventory_plan_result result
+	     WHERE result.inventoryPlanId = #{planId}  
+		   and result.reading = 0 	
+  </select>
+  
+</mapper>

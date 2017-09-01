@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.archives.dao.WarnConfigDao" >
+  <select id="findWarnConfig" resultType="com.archives.pojo.WarnConfig"  >
+    select 
+  		*
+    from gt_court_arc_config where status is null
+  </select>
+  <select id="findDocWarnConfig" resultType="com.archives.pojo.WarnConfig"  >
+    select 
+  		*
+    from gt_court_arc_config where status='1'
+  </select>
+  <insert id="saveWarnConfig" parameterType="com.archives.pojo.WarnConfig" >
+    insert into gt_court_arc_config (guid, maxBorrowTime, firstWarning, 
+      secondWarning, thirdWarning,status
+      )
+    values (#{guid,jdbcType=INTEGER}, #{maxBorrowTime,jdbcType=INTEGER}, #{firstWarning,jdbcType=INTEGER}, 
+      #{secondWarning,jdbcType=INTEGER}, #{thirdWarning,jdbcType=INTEGER}, #{status,jdbcType=INTEGER}
+      )
+  </insert>
+  <update id="updateWarnConfig" parameterType="com.archives.pojo.WarnConfig" >
+    update gt_court_arc_config
+    <set >
+      <if test="maxBorrowTime != null" >
+        maxBorrowTime = #{maxBorrowTime,jdbcType=INTEGER},
+      </if>
+      <if test="firstWarning != null" >
+        firstWarning = #{firstWarning,jdbcType=INTEGER},
+      </if>
+      <if test="secondWarning != null" >
+        secondWarning = #{secondWarning,jdbcType=INTEGER},
+      </if>
+      <if test="thirdWarning != null" >
+        thirdWarning = #{thirdWarning,jdbcType=INTEGER},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=INTEGER},
+      </if>
+    </set>
+    where guid = #{guid,jdbcType=INTEGER}
+  </update>
+  <select id="findBorrowWarn" parameterType="com.system.base.pojo.Employee" resultType="com.archives.pojo.Borrow"  >
+   SELECT 
+  		b.*,DATEDIFF(CURRENT_DATE,b.borrowTime) AS borrowDays
+    FROM gt_court_arc_borrow b WHERE (b.status = '1' || b.status = '-1' || b.status = '-2') 
+    AND DATEDIFF(CURRENT_DATE,b.borrowTime) > (SELECT w.maxBorrowTime FROM gt_court_arc_config w where w.status is null)
+    and b.parentId is null and b.userid = #{employeeId}
+  </select>
+</mapper>

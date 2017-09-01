@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.archives.dao.ArcHistoryDao" >
+  <resultMap id="BaseResultMap" type="com.archives.pojo.ArcHistory" >
+    <id column="guid" property="guid" jdbcType="INTEGER" />
+    <result column="infoId" property="infoId" jdbcType="VARCHAR" />
+    <result column="event" property="event" jdbcType="VARCHAR" />
+    <result column="location" property="location" jdbcType="VARCHAR" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <result column="changeDate" property="changeDate" jdbcType="TIMESTAMP" />
+    <result column="changeMan" property="changeMan" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    guid, archivesNo, event, location, remark, changeDate, changeMan
+  </sql>
+  <select id="findArcHistoryForPage" parameterType="java.util.Map" resultType="com.archives.pojo.ArcHistory">
+	select h.guid, h.itemGuid, h.event, h.location, h.remark, h.changeDate, h.changeMan
+	 from gt_court_arc_history h left join gt_court_arc_itemstatus i  on h.itemGuid = i.guid 
+	  left join gt_court_arc_info f on i.infoid = f.guid
+		where 1 = 1
+		<if test="paraMap.archivesNo != null and paraMap.archivesNo != '' ">
+			and f.archivesNo like CONCAT('%',#{paraMap.archivesNo},'%') 
+		</if>
+		<if test="paraMap.itemGuid != null and paraMap.itemGuid != '' ">
+			and h.itemGuid = #{paraMap.itemGuid} 
+		</if>
+		<if test="paraMap.event != null and paraMap.event != '' ">
+			and h.event like CONCAT('%',#{paraMap.event},'%') 
+		</if>
+		<if test="paraMap.remark != null and paraMap.remark != '' ">
+			and h.remark like CONCAT('%',#{paraMap.remark},'%') 
+		</if>
+		order by h.changeDate
+		limit #{paraMap.start}, #{paraMap.rows}
+	</select>
+	
+	<select id="findCountArcHistoryForPage" parameterType="java.util.Map" resultType="java.lang.Integer">
+	select count(1) from gt_court_arc_history  h left join gt_court_arc_info f on h.infoId = f.guid 
+	where 1=1
+		<if test="paraMap.archivesNo != null and paraMap.archivesNo != '' ">
+			and f.archivesNo like CONCAT('%',#{paraMap.archivesNo},'%') 
+		</if>
+		<if test="paraMap.infoId != null and paraMap.infoId != '' ">
+			and h.infoId = #{paraMap.infoId} 
+		</if>
+		<if test="paraMap.event != null and paraMap.event != '' ">
+			and h.event like CONCAT('%',#{paraMap.event},'%') 
+		</if>
+		<if test="paraMap.remark != null and paraMap.remark != '' ">
+			and h.remark like CONCAT('%',#{paraMap.remark},'%') 
+		</if>
+	</select>
+  <insert id="insertArcHistory" parameterType="com.archives.pojo.ArcHistory" >
+    insert into gt_court_arc_history
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="itemGuid != null" >
+        itemGuid,
+      </if>
+      <if test="event != null" >
+        event,
+      </if>
+      <if test="location != null" >
+        location,
+      </if>
+      <if test="remark != null" >
+        remark,
+      </if>
+      <if test="changeDate != null" >
+        changeDate,
+      </if>
+      <if test="changeMan != null" >
+        changeMan,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="itemGuid != null" >
+        #{itemGuid,jdbcType=INTEGER},
+      </if>
+      <if test="event != null" >
+        #{event,jdbcType=VARCHAR},
+      </if>
+      <if test="location != null" >
+        #{location,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="changeDate != null" >
+        #{changeDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="changeMan != null" >
+        #{changeMan,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+</mapper>

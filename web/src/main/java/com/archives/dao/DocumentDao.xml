@@ -1,0 +1,588 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.archives.dao.DocumentDao" >
+  <resultMap id="BaseResultMap" type="com.archives.pojo.Document" >
+    <id column="guid" property="guid" jdbcType="INTEGER" />
+    <result column="documentYear" property="documentYear" jdbcType="VARCHAR" />
+    <result column="durationTorage" property="durationTorage" jdbcType="VARCHAR" />
+    <result column="departmentName" property="departmentName" jdbcType="VARCHAR" />
+    <result column="typeName" property="typeName" jdbcType="VARCHAR" />
+    <result column="fileType" property="fileType" jdbcType="VARCHAR" />
+    <result column="docketNo" property="docketNo" jdbcType="VARCHAR" />
+    <result column="partNo" property="partNo" jdbcType="VARCHAR" />
+    <result column="responsiblePerson" property="responsiblePerson" jdbcType="VARCHAR" />
+    <result column="documentNo" property="documentNo" jdbcType="VARCHAR" />
+    <result column="title" property="title" jdbcType="VARCHAR" />
+    <result column="documentDate" property="documentDate" jdbcType="VARCHAR" />
+    <result column="numberPages" property="numberPages" jdbcType="VARCHAR" />
+    <result column="remarks" property="remarks" jdbcType="VARCHAR" />
+    <result column="concentrated" property="concentrated" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    guid, documentYear, durationTorage, departmentName, typeName, fileType, docketNo, partNo, responsiblePerson, 
+    documentNo, title, documentDate, numberPages, remarks, concentrated,status
+  </sql>
+  <select id="findDocumentForPage" parameterType="java.util.Map" resultType="com.archives.pojo.Document">
+
+	select    a.guid, a.documentYear, a.durationTorage, a.departmentName, a.typeName, a.fileType, a.docketNo,
+	a.partNo, a.responsiblePerson, 
+    a.documentNo, a.title, a.documentDate, a.numberPages, a.remarks, a.concentrated,a.status ,ifnull(b.boxNumber,"")as boxNumber
+    from gt_court_arc_document a
+    left join gt_court_arc_box b on a.boxNo=b.guid
+	where 1=1
+        <if test="paraMap.status != null and paraMap.status != '' ">
+			and a.status=#{paraMap.status} 
+		</if>
+		<if test="paraMap.docketNo!= null and paraMap.docketNo != '' ">
+			and a.docketNo=#{paraMap.docketNo} 
+		</if>
+		<if test="paraMap.boxNo!= null and paraMap.boxNo != '' ">
+			and a.boxNo=#{paraMap.boxNo} 
+		</if>
+		<if test="paraMap.durationTorage != null and paraMap.durationTorage != '' ">
+			and a.durationTorage =#{paraMap.durationTorage}
+		</if>
+		<if test="paraMap.departmentName != null and paraMap.departmentName != '' ">
+			and a.departmentName=#{paraMap.departmentName}
+		</if>
+		<if test="paraMap.fileType != null and paraMap.fileType != '' ">
+			and a.fileType like CONCAT('%',#{paraMap.fileType},'%') 
+		</if>
+		<if test="paraMap.partNo != null and paraMap.partNo != '' ">
+			and a.partNo like CONCAT('%',#{paraMap.partNo},'%') 
+		</if>
+		<if test="paraMap.typeName != null and paraMap.typeName != '' ">
+			and a.typeName like CONCAT('%',#{paraMap.typeName},'%') 
+		</if>
+		<if test="paraMap.responsiblePerson != null and paraMap.responsiblePerson != '' ">
+			and a.responsiblePerson like CONCAT('%',#{paraMap.responsiblePerson},'%') 
+		</if>
+		<if test="paraMap.documentNo != null and paraMap.documentNo != '' ">
+			and a.documentNo like CONCAT('%',#{paraMap.documentNo},'%') 
+		</if>
+		<if test="paraMap.title != null and paraMap.title != '' ">
+			and a.title like CONCAT('%',#{paraMap.title},'%') 
+		</if>
+		<if test="paraMap.documentDate != null and paraMap.documentDate != '' ">
+			and a.documentDate like CONCAT('%',#{paraMap.documentDate},'%') 
+		</if>
+		<if test="paraMap.remarks != null and paraMap.remarks != '' ">
+			and a.remarks like CONCAT('%',#{paraMap.remarks},'%') 
+		</if>
+		<if test="paraMap.concentrated != null and paraMap.concentrated != '' ">
+			and concentrated like CONCAT('%',#{paraMap.concentrated},'%') 
+		</if>
+		 <if test="paraMap.yearm1  != null and paraMap.year1 != '' and paraMap.yearm2  != null and paraMap.yearm2 != ''">
+			and  a.documentYear &gt;= #{paraMap.yearm1,jdbcType=INTEGER} and a.documentYear &lt;= #{paraMap.yearm2,jdbcType=INTEGER} 
+		</if> 
+		 <if test="paraMap.docketNo1  != null and paraMap.docketNo1 != '' and paraMap.docketNo2  != null and paraMap.docketNo2 != ''">
+			and  b.boxNumber &gt;= #{paraMap.docketNo1,jdbcType=INTEGER} and b.boxNumber &lt;= #{paraMap.docketNo2,jdbcType=INTEGER} 
+		</if>
+		<if test="paraMap.numberPages1  != null and paraMap.numberPages1 != '' and paraMap.numberPages2  != null and paraMap.numberPages2 != ''">
+			and  a.numberPages &gt;= #{paraMap.numberPages1,jdbcType=INTEGER} and a.numberPages &lt;= #{paraMap.numberPages2,jdbcType=INTEGER} 
+		</if>
+		<if test="paraMap.documentYear  != null and paraMap.documentYear != ''">
+			and  a.documentYear= #{paraMap.documentYear,jdbcType=VARCHAR} 
+		</if>
+		<!-- <if test="paraMap.CaseNo != null and paraMap.CaseNo != '' ">
+			and c.CaseNo like CONCAT('%',#{paraMap.CaseNo},'%') 
+		</if>
+		<if test="paraMap.locatdoorNo != null and paraMap.locatdoorNo != '' ">
+			and  a.locatdoorNo like CONCAT('%',#{paraMap.locatdoorNo},'%') 
+		</if>
+		<if test="paraMap.passDate != null and paraMap.passDate != '' ">
+		<![CDATA[   and DATE_FORMAT(a.passDate, '%Y-%m-%d')=  DATE_FORMAT(#{paraMap.passDate}, '%Y-%m-%d')   ]]>
+		</if> -->
+		 limit #{paraMap.start}, #{paraMap.rows}
+	</select>
+	
+	<select id="findCountDocumentForPage" parameterType="java.util.Map" resultType="java.lang.Integer">
+		select  count(*)   from gt_court_arc_document a
+    	left join gt_court_arc_box b on a.boxNo=b.guid
+		where 1=1
+		 <if test="paraMap.status != null and paraMap.status != '' ">
+			and a.status=#{paraMap.status} 
+		</if>
+		<if test="paraMap.docketNo!= null and paraMap.docketNo != '' ">
+			and a.docketNo=#{paraMap.docketNo} 
+		</if>
+		<if test="paraMap.boxNo!= null and paraMap.boxNo != '' ">
+			and a.boxNo=#{paraMap.boxNo} 
+		</if>
+		<if test="paraMap.durationTorage != null and paraMap.durationTorage != '' ">
+			and a.durationTorage =#{paraMap.durationTorage}
+		</if>
+		<if test="paraMap.departmentName != null and paraMap.departmentName != '' ">
+			and a.departmentName=#{paraMap.departmentName}
+		</if>
+		<if test="paraMap.fileType != null and paraMap.fileType != '' ">
+			and a.fileType like CONCAT('%',#{paraMap.fileType},'%') 
+		</if>
+		<if test="paraMap.partNo != null and paraMap.partNo != '' ">
+			and a.partNo like CONCAT('%',#{paraMap.partNo},'%') 
+		</if>
+		<if test="paraMap.typeName != null and paraMap.typeName != '' ">
+			and a.typeName like CONCAT('%',#{paraMap.typeName},'%') 
+		</if>
+		<if test="paraMap.responsiblePerson != null and paraMap.responsiblePerson != '' ">
+			and a.responsiblePerson like CONCAT('%',#{paraMap.responsiblePerson},'%') 
+		</if>
+		<if test="paraMap.documentNo != null and paraMap.documentNo != '' ">
+			and a.documentNo like CONCAT('%',#{paraMap.documentNo},'%') 
+		</if>
+		<if test="paraMap.title != null and paraMap.title != '' ">
+			and a.title like CONCAT('%',#{paraMap.title},'%') 
+		</if>
+		<if test="paraMap.documentDate != null and paraMap.documentDate != '' ">
+			and a.documentDate like CONCAT('%',#{paraMap.documentDate},'%') 
+		</if>
+		<if test="paraMap.remarks != null and paraMap.remarks != '' ">
+			and a.remarks like CONCAT('%',#{paraMap.remarks},'%') 
+		</if>
+		<if test="paraMap.concentrated != null and paraMap.concentrated != '' ">
+			and concentrated like CONCAT('%',#{paraMap.concentrated},'%') 
+		</if>
+		 <if test="paraMap.yearm1  != null and paraMap.year1 != '' and paraMap.yearm2  != null and paraMap.yearm2 != ''">
+			and  a.documentYear &gt;= #{paraMap.yearm1,jdbcType=INTEGER} and a.documentYear &lt;= #{paraMap.yearm2,jdbcType=INTEGER} 
+		</if> 
+		 <if test="paraMap.docketNo1  != null and paraMap.docketNo1 != '' and paraMap.docketNo2  != null and paraMap.docketNo2 != ''">
+			and  b.boxNumber &gt;= #{paraMap.docketNo1,jdbcType=INTEGER} and b.boxNumber &lt;= #{paraMap.docketNo2,jdbcType=INTEGER} 
+		</if>
+		<if test="paraMap.numberPages1  != null and paraMap.numberPages1 != '' and paraMap.numberPages2  != null and paraMap.numberPages2 != ''">
+			and  a.numberPages &gt;= #{paraMap.numberPages1,jdbcType=INTEGER} and a.numberPages &lt;= #{paraMap.numberPages2,jdbcType=INTEGER} 
+		</if>
+		<if test="paraMap.documentYear  != null and paraMap.documentYear != ''">
+			and  a.documentYear= #{paraMap.documentYear,jdbcType=VARCHAR} 
+		</if>
+		
+	</select>
+	
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    *
+    from gt_court_arc_document
+    where guid = #{guid,jdbcType=INTEGER}
+  </select>
+  <select id="selectByDocketNo"  resultType="com.archives.pojo.Document" parameterType="String" >
+    select 
+    *
+    from gt_court_arc_document
+    where docketNo = #{docketNo}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from gt_court_arc_document
+    where guid = #{guid,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.archives.pojo.Document" >
+    insert into gt_court_arc_document (guid, documentYear, durationTorage, 
+      departmentName, typeName, fileType, 
+      docketNo, partNo, responsiblePerson, 
+      documentNo, title, documentDate, 
+      numberPages, remarks, concentrated
+      )
+    values (#{guid,jdbcType=INTEGER}, #{documentYear,jdbcType=VARCHAR}, #{durationtorage,jdbcType=VARCHAR}, 
+      #{departmentName,jdbcType=VARCHAR}, #{typename,jdbcType=VARCHAR}, #{filetype,jdbcType=VARCHAR}, 
+      #{docketno,jdbcType=VARCHAR}, #{partno,jdbcType=VARCHAR}, #{responsibleperson,jdbcType=VARCHAR}, 
+      #{documentNo,jdbcType=VARCHAR}, #{title,jdbcType=VARCHAR}, #{documentdate,jdbcType=VARCHAR}, 
+      #{numberpages,jdbcType=VARCHAR}, #{remarks,jdbcType=VARCHAR}, #{concentrated,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.archives.pojo.Document" >
+    insert into gt_court_arc_document
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="guid != null" >
+        guid,
+      </if>
+      <if test="documentYear != null" >
+        documentYear,
+      </if>
+      <if test="durationtorage != null" >
+        durationTorage,
+      </if>
+      <if test="departmentName != null" >
+        departmentName,
+      </if>
+      <if test="typename != null" >
+        typeName,
+      </if>
+      <if test="filetype != null" >
+        fileType,
+      </if>
+      <if test="docketno != null" >
+        docketNo,
+      </if>
+      <if test="partno != null" >
+        partNo,
+      </if>
+      <if test="responsibleperson != null" >
+        responsiblePerson,
+      </if>
+      <if test="documentNo != null" >
+        documentNo,
+      </if>
+      <if test="title != null" >
+        title,
+      </if>
+      <if test="documentdate != null" >
+        documentDate,
+      </if>
+      <if test="numberpages != null" >
+        numberPages,
+      </if>
+      <if test="remarks != null" >
+        remarks,
+      </if>
+      <if test="concentrated != null" >
+        concentrated,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="guid != null" >
+        #{guid,jdbcType=INTEGER},
+      </if>
+      <if test="documentYear != null" >
+        #{documentYear,jdbcType=VARCHAR},
+      </if>
+      <if test="durationtorage != null" >
+        #{durationtorage,jdbcType=VARCHAR},
+      </if>
+      <if test="departmentName != null" >
+        #{departmentName,jdbcType=VARCHAR},
+      </if>
+      <if test="typename != null" >
+        #{typename,jdbcType=VARCHAR},
+      </if>
+      <if test="filetype != null" >
+        #{filetype,jdbcType=VARCHAR},
+      </if>
+      <if test="docketno != null" >
+        #{docketno,jdbcType=VARCHAR},
+      </if>
+      <if test="partno != null" >
+        #{partno,jdbcType=VARCHAR},
+      </if>
+      <if test="responsibleperson != null" >
+        #{responsibleperson,jdbcType=VARCHAR},
+      </if>
+      <if test="documentNo != null" >
+        #{documentNo,jdbcType=VARCHAR},
+      </if>
+      <if test="title != null" >
+        #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="documentdate != null" >
+        #{documentdate,jdbcType=VARCHAR},
+      </if>
+      <if test="numberpages != null" >
+        #{numberpages,jdbcType=VARCHAR},
+      </if>
+      <if test="remarks != null" >
+        #{remarks,jdbcType=VARCHAR},
+      </if>
+      <if test="concentrated != null" >
+        #{concentrated,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.archives.pojo.Document" >
+    update gt_court_arc_document
+    <set >
+      <if test="documentYear != null" >
+        documentYear = #{documentYear,jdbcType=VARCHAR},
+      </if>
+      <if test="durationTorage != null" >
+        durationTorage = #{durationTorage,jdbcType=VARCHAR},
+      </if>
+      <if test="departmentName != null" >
+        departmentName = #{departmentName,jdbcType=VARCHAR},
+      </if>
+      <if test="typeName != null" >
+        typeName = #{typeName,jdbcType=VARCHAR},
+      </if>
+      <if test="fileType != null" >
+        fileType = #{fileType,jdbcType=VARCHAR},
+      </if>
+      <if test="docketNo != null" >
+        docketNo = #{docketNo,jdbcType=VARCHAR},
+      </if>
+      <if test="partNo != null" >
+        partNo = #{partNo,jdbcType=VARCHAR},
+      </if>
+      <if test="responsiblePerson != null" >
+        responsiblePerson = #{responsiblePerson,jdbcType=VARCHAR},
+      </if>
+      <if test="documentNo != null" >
+        documentNo = #{documentNo,jdbcType=VARCHAR},
+      </if>
+      <if test="title != null" >
+        title = #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="documentDate != null" >
+        documentDate = #{documentDate,jdbcType=VARCHAR},
+      </if>
+      <if test="numberPages != null" >
+        numberPages = #{numberPages,jdbcType=VARCHAR},
+      </if>
+      <if test="remarks != null" >
+        remarks = #{remarks,jdbcType=VARCHAR},
+      </if>
+      <if test="concentrated != null" >
+        concentrated = #{concentrated,jdbcType=VARCHAR},
+      </if>
+       <if test="status != null" >
+        status = #{status,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where guid = #{guid,jdbcType=INTEGER}
+  </update>
+  <update id="updateDocketNo" parameterType="com.archives.pojo.Document" >
+    update gt_court_arc_document
+           docketNo = #{docketNo,jdbcType=VARCHAR},
+    where guid = #{guid,jdbcType=INTEGER}
+  </update>
+  <update id="updateboxNo" parameterType="com.archives.pojo.Document" >
+    update gt_court_arc_document
+         set  boxNo = #{boxNo}
+    where guid = #{guid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.archives.pojo.Document" >
+    update gt_court_arc_document
+    set documentYear = #{documentYear,jdbcType=VARCHAR},
+      durationTorage = #{durationtorage,jdbcType=VARCHAR},
+      departmentName = #{departmentName,jdbcType=VARCHAR},
+      typeName = #{typename,jdbcType=VARCHAR},
+      fileType = #{filetype,jdbcType=VARCHAR},
+      docketNo = #{docketno,jdbcType=VARCHAR},
+      partNo = #{partno,jdbcType=VARCHAR},
+      responsiblePerson = #{responsibleperson,jdbcType=VARCHAR},
+      documentNo = #{documentNo,jdbcType=VARCHAR},
+      title = #{title,jdbcType=VARCHAR},
+      documentDate = #{documentdate,jdbcType=VARCHAR},
+      numberPages = #{numberpages,jdbcType=VARCHAR},
+      remarks = #{remarks,jdbcType=VARCHAR},
+      concentrated = #{concentrated,jdbcType=VARCHAR},
+      status = #{status,jdbcType=VARCHAR}
+    where guid = #{guid,jdbcType=INTEGER}
+  </update>
+  <update id="takeDown"  parameterType="String">
+		update gt_court_arc_document set status = '1' where guid = #{documentId,jdbcType=INTEGER}
+	</update>
+	<select id="findAllByIds" parameterType="java.lang.String" resultType="com.archives.pojo.Document">
+	select * from  gt_court_arc_document
+	where guid in
+	<foreach collection="idList" item="item" index="index" open="(" separator="," close=")">
+		#{item}
+	</foreach>
+ </select>
+ <!-- 生成借阅单号 -->
+	<insert id="getDocFormSeq" parameterType="com.system.base.pojo.Result" >
+		<selectKey resultType="INTEGER" order="AFTER"  keyProperty="status">
+			SELECT LAST_INSERT_ID() AS seqid
+		</selectKey>
+		insert into gt_court_arc_docformseq values()
+	</insert>
+	
+	<select id="findAllByIdsForPage" parameterType="java.util.Map" resultType="com.archives.pojo.Document">
+
+	select    a.guid, a.documentYear, a.durationTorage, a.departmentName, a.typeName, a.fileType, a.docketNo,
+	a.partNo, a.responsiblePerson, 
+    a.documentNo, a.title, a.documentDate, a.numberPages, a.remarks, a.concentrated,a.status 
+    from gt_court_arc_document a
+   where guid in
+	<foreach collection="paraMap.idList" item="item" index="index" open="(" separator="," close=")">
+		#{item}
+	</foreach>
+        <if test="paraMap.status != null and paraMap.status != '' ">
+			and a.status=#{paraMap.status} 
+		</if>
+		<if test="paraMap.durationTorage != null and paraMap.durationTorage != '' ">
+			and a.durationTorage like CONCAT('%',#{paraMap.durationTorage},'%') 
+		</if>
+		<if test="paraMap.departmentName != null and paraMap.departmentName != '' ">
+			and a.departmentName like CONCAT('%',#{paraMap.departmentName},'%') 
+		</if>
+		<if test="paraMap.fileType != null and paraMap.fileType != '' ">
+			and a.fileType like CONCAT('%',#{paraMap.fileType},'%') 
+		</if>
+		<if test="paraMap.partNo != null and paraMap.partNo != '' ">
+			and a.partNo like CONCAT('%',#{paraMap.partNo},'%') 
+		</if>
+		<if test="paraMap.typeName != null and paraMap.typeName != '' ">
+			and a.typeName like CONCAT('%',#{paraMap.typeName},'%') 
+		</if>
+		<if test="paraMap.responsiblePerson != null and paraMap.responsiblePerson != '' ">
+			and a.responsiblePerson like CONCAT('%',#{paraMap.responsiblePerson},'%') 
+		</if>
+		<if test="paraMap.documentNo != null and paraMap.documentNo != '' ">
+			and a.documentNo like CONCAT('%',#{paraMap.documentNo},'%') 
+		</if>
+		<if test="paraMap.title != null and paraMap.title != '' ">
+			and a.title like CONCAT('%',#{paraMap.title},'%') 
+		</if>
+		<if test="paraMap.documentDate != null and paraMap.documentDate != '' ">
+			and a.durationTorage like CONCAT('%',#{paraMap.durationTorage},'%') 
+		</if>
+		<if test="paraMap.remarks != null and paraMap.remarks != '' ">
+			and a.remarks like CONCAT('%',#{paraMap.remarks},'%') 
+		</if>
+		<if test="paraMap.concentrated != null and paraMap.concentrated != '' ">
+			and concentrated like CONCAT('%',#{paraMap.concentrated},'%') 
+		</if>
+		 <if test="paraMap.yearm1  != null and paraMap.year1 != '' and paraMap.yearm2  != null and paraMap.yearm2 != ''">
+			and  a.documentYear &gt;= #{paraMap.yearm1,jdbcType=INTEGER} and a.documentYear &lt;= #{paraMap.yearm2,jdbcType=INTEGER} 
+		</if> 
+		 <if test="paraMap.docketNo1  != null and paraMap.docketNo1 != '' and paraMap.docketNo2  != null and paraMap.docketNo2 != ''">
+			and  a.docketNo &gt;= #{paraMap.docketNo1,jdbcType=INTEGER} and a.docketNo &lt;= #{paraMap.docketNo2,jdbcType=INTEGER} 
+		</if>
+		 <if test="paraMap.numberPages1  != null and paraMap.numberPages1 != '' and paraMap.numberPages2  != null and paraMap.numberPages2 != ''">
+			and  a.numberPages &gt;= #{paraMap.numberPages1,jdbcType=INTEGER} and a.numberPages &lt;= #{paraMap.numberPages2,jdbcType=INTEGER} 
+		</if>
+		 limit #{paraMap.start}, #{paraMap.rows}
+	</select>
+	
+	<select id="findCountfindAllByIdsForPage" parameterType="java.util.Map" resultType="java.lang.Integer">
+	select   
+count(*)   from gt_court_arc_document a
+  
+		where guid in
+	<foreach collection="paraMap.idList" item="item" index="index" open="(" separator="," close=")">
+		#{item}
+	</foreach>
+		<if test="paraMap.status != null and paraMap.status != '' ">
+			and a.status=#{paraMap.status} 
+		</if>
+		<if test="paraMap.durationTorage != null and paraMap.durationTorage != '' ">
+			and a.durationTorage like CONCAT('%',#{paraMap.durationTorage},'%') 
+		</if>
+		<if test="paraMap.departmentName != null and paraMap.departmentName != '' ">
+			and a.departmentName like CONCAT('%',#{paraMap.departmentName},'%') 
+		</if>
+		<if test="paraMap.fileType != null and paraMap.fileType != '' ">
+			and a.fileType like CONCAT('%',#{paraMap.fileType},'%') 
+		</if>
+		<if test="paraMap.partNo != null and paraMap.partNo != '' ">
+			and a.partNo like CONCAT('%',#{paraMap.partNo},'%') 
+		</if>
+		<if test="paraMap.typeName != null and paraMap.typeName != '' ">
+			and a.typeName like CONCAT('%',#{paraMap.typeName},'%') 
+		</if>
+		<if test="paraMap.responsiblePerson != null and paraMap.responsiblePerson != '' ">
+			and a.responsiblePerson like CONCAT('%',#{paraMap.responsiblePerson},'%') 
+		</if>
+		<if test="paraMap.documentNo != null and paraMap.documentNo != '' ">
+			and a.documentNo like CONCAT('%',#{paraMap.documentNo},'%') 
+		</if>
+		<if test="paraMap.title != null and paraMap.title != '' ">
+			and a.title like CONCAT('%',#{paraMap.title},'%') 
+		</if>
+		<if test="paraMap.documentDate != null and paraMap.documentDate != '' ">
+			and a.durationTorage like CONCAT('%',#{paraMap.durationTorage},'%') 
+		</if>
+		<if test="paraMap.remarks != null and paraMap.remarks != '' ">
+			and a.remarks like CONCAT('%',#{paraMap.remarks},'%') 
+		</if>
+		<if test="paraMap.concentrated != null and paraMap.concentrated != '' ">
+			and concentrated like CONCAT('%',#{paraMap.concentrated},'%') 
+		</if>
+		 <if test="paraMap.yearm1  != null and paraMap.year1 != '' and paraMap.yearm2  != null and paraMap.yearm2 != ''">
+			and  a.documentYear &gt;= #{paraMap.yearm1,jdbcType=INTEGER} and a.documentYear &lt;= #{paraMap.yearm2,jdbcType=INTEGER} 
+		</if> 
+		 <if test="paraMap.docketNo1  != null and paraMap.docketNo1 != '' and paraMap.docketNo2  != null and paraMap.docketNo2 != ''">
+			and  a.docketNo &gt;= #{paraMap.docketNo1,jdbcType=INTEGER} and a.docketNo &lt;= #{paraMap.docketNo2,jdbcType=INTEGER} 
+		</if>
+		 <if test="paraMap.numberPages1  != null and paraMap.numberPages1 != '' and paraMap.numberPages2  != null and paraMap.numberPages2 != ''">
+			and  a.numberPages &gt;= #{paraMap.numberPages1,jdbcType=INTEGER} and a.numberPages &lt;= #{paraMap.numberPages2,jdbcType=INTEGER} 
+		</if>
+		
+	</select>
+	<select id="findDocketNoByIds" parameterType="java.lang.String" resultType="com.archives.pojo.Document">
+	select * from gt_court_arc_document
+	where boxNo in
+	<foreach collection="idList" item="item" index="index" open="(" separator="," close=")">
+		#{item}
+	</foreach>
+ </select>
+ 
+ 	<!-- 更新文数据档案关联的盒子主键 -->
+	<update id="updateBoxNumForDoc" parameterType="java.lang.Object">
+		update gt_court_arc_document
+		<set>
+			<if test="boxNumber != null">
+				boxNo = #{boxNumber, jdbcType=INTEGER},
+			</if>
+		</set>
+		where guid = #{guid,jdbcType=INTEGER}
+	</update>
+ <update id="destroyByIds" parameterType="java.lang.Integer" >
+    update gt_court_arc_document set status='3'
+   where guid in
+	<foreach collection="idList" item="item" index="index" open="(" separator="," close=")">
+		#{item}
+	</foreach>
+  </update>
+  
+   <select id="findDocumentBoxForPage" parameterType="java.util.Map" resultType="com.archives.pojo.Document">
+
+	select    a.guid, a.documentYear, a.durationTorage, a.departmentName, a.typeName, a.fileType, a.docketNo,
+	a.partNo, a.responsiblePerson, 
+    a.documentNo, a.title, a.documentDate, a.numberPages, a.remarks, a.concentrated,a.status ,ifnull(b.boxNumber,"")as boxNumber
+    from gt_court_arc_document a
+    left join gt_court_arc_box b on a.docketNo=b.guid
+where a.status!='2'
+     
+		 <if test="paraMap.documentYear!= null and paraMap.documentYear != '' ">
+			and a.documentYear=#{paraMap.documentYear} 
+		</if>
+		<if test="paraMap.departmentName!= null and paraMap.departmentName != '' ">
+			and a.departmentName=#{paraMap.departmentName}
+		</if>
+		<if test="paraMap.docketNo != null and paraMap.docketNo != '' ">
+			and b.boxNumber=#{paraMap.docketNo}
+		</if>
+		
+		<if test="paraMap.durationTorage != null and paraMap.durationTorage != '' ">
+			and a.durationTorage=#{paraMap.durationTorage}
+		</if>
+		
+		 limit #{paraMap.start}, #{paraMap.rows}
+	</select>
+	
+	<select id="findCountDocumentBoxForPage" parameterType="java.util.Map" resultType="java.lang.Integer">
+	select   
+count(*)   from gt_court_arc_document a
+    left join gt_court_arc_box b on a.docketNo=b.guid
+		where a.status!='2'
+		 <if test="paraMap.documentYear!= null and paraMap.documentYear != '' ">
+			and a.documentYear=#{paraMap.documentYear} 
+		</if>
+		<if test="paraMap.departmentName!= null and paraMap.departmentName != '' ">
+			and a.departmentName=#{paraMap.departmentName}
+		</if>
+		<if test="paraMap.docketNo != null and paraMap.docketNo != '' ">
+			and b.boxNumber=#{paraMap.docketNo}
+		</if>
+		
+		<if test="paraMap.durationTorage != null and paraMap.durationTorage != '' ">
+			and a.durationTorage=#{paraMap.durationTorage}
+		</if>
+	</select>
+	  <update id="updateDocument"  parameterType="java.lang.Object" >
+    update gt_court_arc_document
+    set boxNo = #{boxNo}
+    where 1=1
+   <if test="documentYear!= null and documentYear != '' ">
+			and documentYear=#{documentYear} 
+		</if>
+		<if test="departmentName!= null and departmentName != '' ">
+			and departmentName=#{departmentName}
+		</if>
+		<if test="docketNo != null and docketNo != '' ">
+			and docketNo=#{docketNo}
+		</if>
+		
+		<if test="durationTorage != null and durationTorage != '' ">
+			and durationTorage=#{durationTorage}
+		</if>
+  </update>
+</mapper>

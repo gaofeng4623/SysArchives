@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.archives.dao.DocborrowdetailDao" >
+  <resultMap id="BaseResultMap" type="com.archives.pojo.Docborrowdetail" >
+    <id column="guid" property="guid" jdbcType="INTEGER" />
+    <result column="borrowId" property="borrowid" jdbcType="VARCHAR" />
+    <result column="docId" property="docId" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="VARCHAR" />
+    <result column="returnTime" property="returntime" jdbcType="DATE" />
+    <result column="returnPerson" property="returnperson" jdbcType="VARCHAR" />
+    <result column="reborrow" property="reborrow" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    guid, borrowId, docId, status, returnTime, returnPerson, reborrow
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from gt_court_arc_docborrowdetail
+    where guid = #{guid,jdbcType=INTEGER}
+  </select>
+
+   <select id="selectByBorrowId" parameterType="String" resultType="com.archives.pojo.Docborrowdetail" >
+    select b.title,b.documentNo,b.responsiblePerson,b.docketNo,e.locationName from gt_court_arc_docborrowdetail a
+LEFT join gt_court_arc_document b on a.docId=b.guid
+LEFT join gt_court_arc_box c on b.boxNo=c.boxNumber
+LEFT join gt_court_arc_boxstatus d on b.guid=d.boxid
+LEFT join gt_court_location e on e.guid=d.location
+    where a.borrowId = #{borrowId,jdbcType=VARCHAR}
+  </select>
+   <select id="selectListTail" parameterType="int" resultType="java.lang.Integer">
+    select count(*) from gt_court_arc_docborrowdetail a,gt_court_arc_document b
+where a.docId=b.guid and b.status=1 and  a.borrowId = #{borrowId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from gt_court_arc_docborrowdetail
+    where guid = #{guid,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.archives.pojo.Docborrowdetail" >
+    insert into gt_court_arc_docborrowdetail (guid, borrowId, docId, 
+      status, returnTime, returnPerson, 
+      reborrow)
+    values (#{guid,jdbcType=INTEGER}, #{borrowid,jdbcType=VARCHAR}, #{docId,jdbcType=VARCHAR}, 
+      #{status,jdbcType=VARCHAR}, #{returntime,jdbcType=DATE}, #{returnperson,jdbcType=VARCHAR}, 
+      #{reborrow,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.archives.pojo.Docborrowdetail" >
+    insert into gt_court_arc_docborrowdetail
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="guid != null" >
+        guid,
+      </if>
+      <if test="borrowid != null" >
+        borrowId,
+      </if>
+      <if test="docId != null" >
+        docId,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="returntime != null" >
+        returnTime,
+      </if>
+      <if test="returnperson != null" >
+        returnPerson,
+      </if>
+      <if test="reborrow != null" >
+        reborrow,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="guid != null" >
+        #{guid,jdbcType=INTEGER},
+      </if>
+      <if test="borrowid != null" >
+        #{borrowid,jdbcType=VARCHAR},
+      </if>
+      <if test="docId != null" >
+        #{docId,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="returntime != null" >
+        #{returntime,jdbcType=DATE},
+      </if>
+      <if test="returnperson != null" >
+        #{returnperson,jdbcType=VARCHAR},
+      </if>
+      <if test="reborrow != null" >
+        #{reborrow,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.archives.pojo.Docborrowdetail" >
+    update gt_court_arc_docborrowdetail
+    <set >
+      <if test="borrowid != null" >
+        borrowId = #{borrowid,jdbcType=VARCHAR},
+      </if>
+      <if test="docId != null" >
+        docId = #{docId,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="returntime != null" >
+        returnTime = #{returntime,jdbcType=DATE},
+      </if>
+      <if test="returnperson != null" >
+        returnPerson = #{returnperson,jdbcType=VARCHAR},
+      </if>
+      <if test="reborrow != null" >
+        reborrow = #{reborrow,jdbcType=INTEGER},
+      </if>
+    </set>
+    where guid = #{guid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.archives.pojo.Docborrowdetail" >
+    update gt_court_arc_docborrowdetail
+    set borrowId = #{borrowid,jdbcType=VARCHAR},
+      docId = #{docId,jdbcType=VARCHAR},
+      status = #{status,jdbcType=VARCHAR},
+      returnTime = #{returntime,jdbcType=DATE},
+      returnPerson = #{returnperson,jdbcType=VARCHAR},
+      reborrow = #{reborrow,jdbcType=INTEGER}
+    where guid = #{guid,jdbcType=INTEGER}
+  </update>
+  <select id="findDocborrowdetailForPage" parameterType="java.util.Map" resultType="com.archives.pojo.Document">
+
+  select  a.guid as tailGuid,b.guid, b.documentYear, b.durationTorage, b.departmentName, b.typeName, b.fileType, b.docketNo,  b. partNo, b.responsiblePerson, 
+     b.documentNo, b.title, b.documentDate, b.numberPages, b.remarks, b.concentrated,  b.status 
+from gt_court_arc_docborrowdetail a,gt_court_arc_document b
+where a.docId=b.guid and a.borrowId=#{paraMap.borrowId}
+      <if test="paraMap.status != null and paraMap.status != '' ">
+         and b.status = #{paraMap.status}
+      </if>
+		 limit #{paraMap.start}, #{paraMap.rows}
+	</select>
+	
+	<select id="findCountDocborrowdetailForPage" parameterType="java.util.Map" resultType="java.lang.Integer">
+select count(*) from gt_court_arc_docborrowdetail a,gt_court_arc_document b
+where a.docId=b.guid and a.borrowId=#{paraMap.borrowId}
+      <if test="paraMap.status != null and paraMap.status != '' ">
+         and b.status = #{paraMap.status}
+      </if>
+		
+	</select>
+</mapper>

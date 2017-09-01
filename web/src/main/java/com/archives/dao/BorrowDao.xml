@@ -1,0 +1,638 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.archives.dao.BorrowDao">
+
+	<sql id="borrowColumns">
+		mb.id,
+		mb.infoid,
+		mb.empId,
+		i.guid,
+		i.caseno,
+		i.archivesno,
+		i.putonrecorddate,
+		i.undertakeper,
+		i.parties,
+		i.storagelife
+
+	</sql>
+	<insert id="addBorrow" parameterType="com.archives.pojo.Borrow">
+		<selectKey resultType="INTEGER" order="AFTER" keyProperty="borrowId">
+			SELECT LAST_INSERT_ID() AS borrowId
+		</selectKey>
+		insert into gt_court_arc_borrow
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="formNo != null">
+				formNo,
+			</if>
+			<if test="parentId != null">
+				parentId,
+			</if>
+			<if test="itemGuids != null">
+				itemGuids,
+			</if>
+			<if test="userId != null">
+				userId,
+			</if>
+			<if test="employeeName != null">
+				userName,
+			</if>
+			<if test="depName != null">
+				depName,
+			</if>
+			<if test="mobile != null">
+				mobile,
+			</if>
+			<if test="borrowTime != null">
+				borrowTime,
+			</if>
+			<if test="expireDate != null">
+				expireDate,
+			</if>
+			<if test="borrowCase != null">
+				borrowCase,
+			</if>
+			<if test="caseDetail != null">
+				caseDetail,
+			</if>
+			<if test="borrowType != null">
+				borrowType,
+			</if>
+			<if test="channel != null"> 
+				channel,
+			</if>
+			<if test="status != null">
+				status,
+			</if>
+			<if test="workflow != null">
+				workflow,
+			</if>
+			<if test="selectPersons != null">
+				selectPersons,
+			</if>
+			<if test="workflowStatus != null">
+				workflowStatus,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="formNo != null">
+				#{formNo,jdbcType=VARCHAR},
+			</if>
+			<if test="parentId != null">
+				#{parentId,jdbcType=VARCHAR},
+			</if>
+			<if test="itemGuids != null">
+				#{itemGuids,jdbcType=VARCHAR},
+			</if>
+			<if test="userId != null">
+				#{userId,jdbcType=VARCHAR},
+			</if>
+			<if test="employeeName != null">
+				#{employeeName,jdbcType=VARCHAR},
+			</if>
+			<if test="depName != null">
+				#{depName,jdbcType=VARCHAR},
+			</if>
+			<if test="mobile != null">
+				#{mobile,jdbcType=VARCHAR},
+			</if>
+			<if test="borrowTime != null">
+				#{borrowTime,jdbcType=VARCHAR},
+			</if>
+			<if test="expireDate != null">
+				#{expireDate,jdbcType=VARCHAR},
+			</if>
+			<if test="borrowCase != null">
+				#{borrowCase,jdbcType=VARCHAR},
+			</if>
+			<if test="caseDetail != null">
+				#{caseDetail,jdbcType=VARCHAR},
+			</if>
+			<if test="borrowType != null">
+				#{borrowType,jdbcType=VARCHAR},
+			</if>
+			<if test="channel != null">
+				#{channel,jdbcType=VARCHAR},
+			</if>
+			<if test="status != null">
+				#{status,jdbcType=VARCHAR},
+			</if>
+			<if test="workflow != null">
+				#{workflow,jdbcType=INTEGER},
+			</if>
+			<if test="selectPersons != null">
+				#{selectPersons,jdbcType=VARCHAR},
+			</if>
+			<if test="workflowStatus != null">
+				#{workflowStatus,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+	
+	<update id="updateBorrow"  parameterType="com.archives.pojo.Borrow">
+		update gt_court_arc_borrow
+		<set>
+			<if test="itemGuids != null">
+				itemGuids = #{itemGuids,jdbcType=VARCHAR},
+			</if>
+			<if test="mobile != null">
+				mobile = #{mobile,jdbcType=VARCHAR},
+			</if>
+			<if test="borrowTime != null">
+				borrowTime = #{borrowTime,jdbcType=VARCHAR},
+			</if>
+			<if test="expireDate != null">
+				expireDate = #{expireDate,jdbcType=VARCHAR},
+			</if>
+			<if test="borrowCase != null">
+				borrowCase = #{borrowCase,jdbcType=VARCHAR},
+			</if>
+			<if test="caseDetail != null">
+				caseDetail = #{caseDetail,jdbcType=VARCHAR},
+			</if>
+			<if test="borrowType != null">
+				borrowType = #{borrowType,jdbcType=VARCHAR},
+			</if>
+			<if test="status != null">
+				status = #{status,jdbcType=VARCHAR},
+			</if>
+			<if test="workflow != null">
+				workflow = #{workflow,jdbcType=INTEGER},
+			</if>
+			<if test="selectPersons != null">
+				selectPersons = #{selectPersons,jdbcType=VARCHAR},
+			</if>
+			<if test="workflowStatus != null">
+				workflowStatus=#{workflowStatus,jdbcType=VARCHAR},
+			</if>
+		</set>
+		 where borrowId = #{borrowId,jdbcType=INTEGER}
+	</update>
+	
+	<insert id="addBorrowDetail" parameterType="com.archives.pojo.BorrowDetail">
+		insert into gt_court_arc_borrowdetail
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="borrowId != null">
+				borrowId,
+			</if>
+			<if test="itemGuid != null">
+				itemGuid,
+			</if>
+			<if test="status != null">
+				status,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="borrowId != null">
+				#{borrowId,jdbcType=VARCHAR},
+			</if>
+			<if test="itemGuid != null">
+				#{itemGuid,jdbcType=VARCHAR},
+			</if>
+			<if test="status != null">
+				#{status,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+	
+	<update id="clearBorrowDetail" parameterType="java.lang.String">
+		delete from gt_court_arc_borrowdetail where borrowId = #{borrowId,jdbcType=INTEGER}
+	</update>
+	
+	<update id="deleteBorrow" parameterType="java.lang.String">
+		delete from gt_court_arc_borrow where borrowId = #{borrowId,jdbcType=INTEGER}
+	</update>
+	
+	<select id="queryBorrowInfoTable" parameterType="java.util.Map"
+		resultType="com.archives.pojo.Borrow">
+		SELECT
+		A.borrowId borrowId,
+		D.archivesNo archivesNo,
+		C.caseName caseName,
+		A.expireDate expireDate
+		FROM gt_court_arc_borrow A
+		INNER JOIN gt_court_arc_borrowdetail B ON B.borrowId = A.borrowId
+		INNER JOIN
+		gt_court_arc_info C ON C.archivesNo = B.archivesNo
+		INNER JOIN
+		gt_court_arc_info D ON D.guid = B.infoid
+		WHERE
+		A.borrowId in(#{borrowId,jdbcType=INTEGER})
+		limit #{paraMap.start},
+		#{paraMap.rows}
+	</select>
+	<select id="queryBorrowInfoTableCount" parameterType="java.util.Map"
+		resultType="java.lang.Integer">
+		SELECT
+		count(1)
+		FROM gt_court_arc_borrow A
+		INNER JOIN gt_court_arc_borrowdetail B ON B.borrowId = A.borrowId
+		INNER JOIN
+		gt_court_arc_info C ON C.archivesNo = B.archivesNo
+		WHERE A.borrowId IN
+		<if test="borrowIdArr != null">
+			<foreach collection="borrowIdArr" item="borrowId" index="index"
+				open="(" separator="," close=")">
+				#{borrowId,jdbcType=INTEGER}
+			</foreach>
+		</if>
+		limit #{start}, #{rows}
+	</select>
+
+
+	<select id="findBorrowAllList" parameterType="java.util.Map"
+		resultType="com.archives.pojo.Borrow">
+		SELECT
+		a.channel,a.borrowId,a.userid,a.borrowTime,a.expireDate,a.returnTime,a.returnPerson,a.status,a.borrowCase,b.employeeName,a.depName,a.mobile,a.caseDetail,a.formNo,a.userName,c.status
+		as borrowsstatus
+		FROM gt_court_arc_borrow a, gt_sys_employee
+		b,gt_court_arc_borrowstatus c where a.userid=b.employeeId and
+		a.borrowId=c.borrowId
+		<if test="paraMap.userId != null and paraMap.userId != '' ">
+			and a.userid=#{paraMap.userId}
+		</if>
+		<if test="paraMap.userName != null and paraMap.userName != '' ">
+			and a.userName
+			like
+			CONCAT('%',#{paraMap.userName},'%')
+		</if>
+		<if test="paraMap.formNo != null and paraMap.formNo != '' ">
+			and a.formNo like CONCAT('%',#{paraMap.formNo},'%')
+		</if>
+		<if test="paraMap.borrowTime != null and paraMap.borrowTime != '' ">
+			and a.borrowTime=#{paraMap.borrowTime}
+		</if>
+		<if test="paraMap.returnTime != null and paraMap.returnTime != '' ">
+			and a.returnTime=#{paraMap.returnTime}
+		</if>
+		<if test="paraMap.returnPerson != null and paraMap.returnPerson != '' ">
+			and a.returnPerson like
+			CONCAT('%',#{paraMap.returnPerson},'%')
+		</if>
+		<if test="paraMap.borrowsstatus != null and paraMap.borrowsstatus != '' ">
+			and c.status=#{paraMap.borrowsstatus}
+		</if>
+		<if test="paraMap.active != null and paraMap.active != '' ">
+			and a.active=#{paraMap.active}
+		</if>
+		<if test="paraMap.channel != null and paraMap.channel != '' ">
+			and a.channel=#{paraMap.channel}
+		</if>
+		<if test="paraMap.status != null and paraMap.status != '' ">
+			and a.status=#{paraMap.status}
+		</if>
+		order by a.borrowTime desc
+		limit #{paraMap.start}, #{paraMap.rows}
+	</select>
+	
+	<select id="findBorrowRenewList" parameterType="java.util.Map"
+		resultType="com.archives.pojo.Borrow">
+		SELECT
+		a.channel,a.borrowId,a.userid,a.borrowTime,a.expireDate,a.returnTime,a.returnPerson,a.status,a.borrowCase,b.employeeName,a.depName,a.mobile,a.caseDetail,d.formNo,a.userName,c.status
+		as borrowsstatus
+		FROM gt_court_arc_borrow a, gt_sys_employee
+		b,gt_court_arc_borrowstatus c,gt_court_arc_borrow d where a.userid=b.employeeId and
+		a.borrowId=c.borrowId and d.borrowId = a.parentId and a.parentId is not null
+		<if test="paraMap.userId != null and paraMap.userId != '' ">
+			and a.userid=#{paraMap.userId}
+		</if>
+		<if test="paraMap.userName != null and paraMap.userName != '' ">
+			and a.userName
+			like
+			CONCAT('%',#{paraMap.userName},'%')
+		</if>
+		<if test="paraMap.formNo != null and paraMap.formNo != '' ">
+			and a.formNo like CONCAT('%',#{paraMap.formNo},'%')
+		</if>
+		<if test="paraMap.borrowTime != null and paraMap.borrowTime != '' ">
+			and a.borrowTime=#{paraMap.borrowTime}
+		</if>
+		<if test="paraMap.returnTime != null and paraMap.returnTime != '' ">
+			and a.returnTime=#{paraMap.returnTime}
+		</if>
+		<if test="paraMap.returnPerson != null and paraMap.returnPerson != '' ">
+			and a.returnPerson like
+			CONCAT('%',#{paraMap.returnPerson},'%')
+		</if>
+		<if test="paraMap.borrowsstatus != null and paraMap.borrowsstatus != '' ">
+			and c.status=#{paraMap.borrowsstatus}
+		</if>
+		<if test="paraMap.active != null and paraMap.active != '' ">
+			and a.active=#{paraMap.active}
+		</if>
+		<if test="paraMap.channel != null and paraMap.channel != '' ">
+			and a.channel=#{paraMap.channel}
+		</if>
+		<if test="paraMap.status != null and paraMap.status != '' ">
+			and a.status=#{paraMap.status}
+		</if>
+		order by a.borrowTime desc
+		limit #{paraMap.start}, #{paraMap.rows}
+	</select>
+	
+	<select id="findPersonBorrowList" parameterType="java.util.Map"
+		resultType="com.archives.pojo.Borrow">
+		SELECT
+		a.channel,a.taked, a.parentId, a.borrowId,a.userid,a.borrowTime,a.expireDate,a.returnTime,a.returnPerson,a.status,a.borrowCase,b.employeeName,a.depName,a.mobile,a.caseDetail,a.formNo,a.userName,
+		a.workflowStatus as workflowStatus,a.reborrow,dep.departmentName
+		FROM gt_court_arc_borrow a, gt_sys_employee
+		b,gt_sys_department dep  where a.userid=b.employeeId and b.departmentId=dep.departmentId
+		<if test="paraMap.userId != null and paraMap.userId != '' ">
+			and a.userid=#{paraMap.userId}
+		</if>
+		<if test="paraMap.formNo != null and paraMap.formNo != '' ">
+			and a.formNo like CONCAT('%',#{paraMap.formNo},'%')
+		</if>
+		<if test="paraMap.status != null and paraMap.status != '' ">
+			and a.status=#{paraMap.status}
+		</if>
+		<if test="paraMap.departmentName != null and paraMap.departmentName != '' ">
+			and dep.departmentName=#{paraMap.departmentName}
+		</if>
+		<if test="paraMap.beginTime != null and paraMap.beginTime != '' and paraMap.endTime != null and paraMap.endTime != '' ">
+		and STR_TO_DATE(a.borrowTime, '%Y-%m-%d')&gt;= #{paraMap.beginTime} and STR_TO_DATE(a.borrowTime, '%Y-%m-%d') &lt;= #{paraMap.endTime} 
+		</if>
+		<!-- and a.parentId IS NULL -->
+		order by a.borrowTime desc
+		limit #{paraMap.start}, #{paraMap.rows}
+	</select>
+	
+	<select id="findCountPersonBorrowList" parameterType="java.util.Map"
+		resultType="java.lang.Integer">
+	SELECT count(*)
+		FROM gt_court_arc_borrow a, gt_sys_employee
+		b ,gt_sys_department dep where a.userid=b.employeeId and b.departmentId=dep.departmentId 
+		<if test="paraMap.userId != null and paraMap.userId != '' ">
+			and a.userid=#{paraMap.userId}
+		</if>
+		<if test="paraMap.formNo != null and paraMap.formNo != '' ">
+			and a.formNo like CONCAT('%',#{paraMap.formNo},'%')
+		</if>
+		<if test="paraMap.status != null and paraMap.status != '' ">
+			and a.status=#{paraMap.status}
+		</if>
+		<if test="paraMap.departmentName != null and paraMap.departmentName != '' ">
+			and dep.departmentName=#{paraMap.departmentName}
+		</if>
+		<if test="paraMap.beginTime != null and paraMap.beginTime != '' and paraMap.endTime != null and paraMap.endTime != '' ">
+		and STR_TO_DATE(a.borrowTime, '%Y-%m-%d')&gt;= #{paraMap.beginTime} and STR_TO_DATE(a.borrowTime, '%Y-%m-%d') &lt;= #{paraMap.endTime} 
+		</if>
+		and a.parentId IS NULL
+	</select>
+	
+	<select id="findBorrowCountAllList" parameterType="java.util.Map"
+		resultType="java.lang.Integer">
+		SELECT
+		count(1)
+		FROM gt_court_arc_borrow a, gt_sys_employee
+		b,gt_court_arc_borrowstatus c where a.userid=b.employeeId and
+		a.borrowId=c.borrowId
+		<if test="paraMap.userId != null and paraMap.userId != '' ">
+			and a.userid=#{paraMap.userId}
+		</if>
+		<if test="paraMap.userName != null and paraMap.userName != '' ">
+			and a.userName
+			like
+			CONCAT('%',#{paraMap.userName},'%')
+		</if>
+		<if test="paraMap.formNo != null and paraMap.formNo != '' ">
+			and a.formNo like CONCAT('%',#{paraMap.formNo},'%')
+		</if>
+		<if test="paraMap.borrowTime != null and paraMap.borrowTime != '' ">
+			and a.borrowTime=#{paraMap.borrowTime}
+		</if>
+		<if test="paraMap.returnTime != null and paraMap.returnTime != '' ">
+			and a.returnTime=#{paraMap.returnTime}
+		</if>
+		<if test="paraMap.returnPerson != null and paraMap.returnPerson != '' ">
+			and a.returnPerson like
+			CONCAT('%',#{paraMap.returnPerson},'%')
+		</if>
+		<if test="paraMap.borrowsstatus != null and paraMap.borrowsstatus != '' ">
+			and c.status=#{paraMap.borrowsstatus}
+		</if>
+		<if test="paraMap.active != null and paraMap.active != '' ">
+			and a.active=#{paraMap.active}
+		</if>
+		<if test="paraMap.channel != null and paraMap.channel != '' ">
+			and a.channel=#{paraMap.channel}
+		</if>
+		<if test="paraMap.status != null and paraMap.status != '' ">
+			and a.status=#{paraMap.status}
+		</if>
+	</select>
+	<select id="findBorrowRenewCount" parameterType="java.util.Map"
+		resultType="java.lang.Integer">
+		SELECT
+		count(1)
+		FROM gt_court_arc_borrow a, gt_sys_employee
+		b,gt_court_arc_borrowstatus c,gt_court_arc_borrow d where a.userid=b.employeeId and
+		a.borrowId=c.borrowId and d.borrowId = a.parentId and a.parentId is not null
+		<if test="paraMap.userId != null and paraMap.userId != '' ">
+			and a.userid=#{paraMap.userId}
+		</if>
+		<if test="paraMap.userName != null and paraMap.userName != '' ">
+			and a.userName
+			like
+			CONCAT('%',#{paraMap.userName},'%')
+		</if>
+		<if test="paraMap.formNo != null and paraMap.formNo != '' ">
+			and a.formNo like CONCAT('%',#{paraMap.formNo},'%')
+		</if>
+		<if test="paraMap.borrowTime != null and paraMap.borrowTime != '' ">
+			and a.borrowTime=#{paraMap.borrowTime}
+		</if>
+		<if test="paraMap.returnTime != null and paraMap.returnTime != '' ">
+			and a.returnTime=#{paraMap.returnTime}
+		</if>
+		<if test="paraMap.returnPerson != null and paraMap.returnPerson != '' ">
+			and a.returnPerson like
+			CONCAT('%',#{paraMap.returnPerson},'%')
+		</if>
+		<if test="paraMap.borrowsstatus != null and paraMap.borrowsstatus != '' ">
+			and c.status=#{paraMap.borrowsstatus}
+		</if>
+		<if test="paraMap.active != null and paraMap.active != '' ">
+			and a.active=#{paraMap.active}
+		</if>
+		<if test="paraMap.channel != null and paraMap.channel != '' ">
+			and a.channel=#{paraMap.channel}
+		</if>
+		<if test="paraMap.status != null and paraMap.status != '' ">
+			and a.status=#{paraMap.status}
+		</if>
+	</select>
+	<select id="findByuserId" parameterType="String"
+		resultType="com.archives.pojo.Borrow">
+		select b.roleName from gt_sys_rolemembers a
+		LEFT JOIN gt_sys_roledefine b on a.roleId=b.guid
+		where a.userId=#{userId} and b.roleName like '%借阅室%'
+	</select>
+	<select id="findDetail" parameterType="String"
+		resultType="com.archives.pojo.BorrowDetail">
+	select a.*,b.*,b.returnTime as detailTime,d.guid as itemGuid, d.guid as temsGuid,d.location,d.rfid,d.status as zjstatus,b.status as detailStatus 
+	,c.guid infguid,c.handleStatus ,a.borrowId as borrborrowId,b.guid as tailguid,e.locationPath,b.returnPerson as person,b.reborrow,
+	c.flowId, d.itemNo caseNo,c.markType, c.archivesNo, c.year, c.caseProerty, c.caseWord, c.courtShortName, c.number, 
+    c.caseCategory, c.judgeProcedure, c.caseName, c.shortDetailsCase, c.parties, DATE_FORMAT(c.putOnRecordDate, '%Y-%m-%d')putOnRecordDate, 
+    c.putOnRecordDep, c.approvePer, c.undertakeDep, c.undertakePer, c.courtClerk, c.chiefJudge, c.collegiateBench, 
+    c.formalDocument, c.counterpart, c.otherDoucment, c.formalDocPageNum, c.counterpartPageNum, 
+    c.mergeCase, c.settleManner,DATE_FORMAT(c.settleDate, '%Y-%m-%d %k:%i')settleDate , c.settleReason, c.OriginalCourt, c.OriginalCaseNo, 
+    c.firstResult, c.secondResult, c.lastResult, c.fullDocNo, c.catalogNo, c.evidenceBag, c.degreeOfSecrets, 
+    c.storageLife, c.applyPer, c.receivePer, c.placeOnPer,   DATE_FORMAT(c.placeOnDate, '%Y-%m-%d %k:%i')placeOnDate, c.registerPer, DATE_FORMAT(c.registerTime, '%Y-%m-%d %k:%i')registerTime, 
+    c.remark, c.status
+		from gt_court_arc_borrow a
+		left join gt_court_arc_borrowdetail b on a.borrowId=b.borrowId
+		left join gt_court_arc_itemstatus d on d.guid=b.itemGuid
+		left join gt_court_arc_info c on d.infoid=c.guid
+		left join gt_court_location e on e.guid=d.location
+		where  a.borrowId = #{borrowId} ORDER BY e.locationPath
+	</select>
+	<select id="findTableDetail" parameterType="String"
+		resultType="com.archives.pojo.ArchivesInfo">
+		select a.*,b.infoid as guid, b.*,c.*,e.locationPath as location
+		from gt_court_arc_borrow a
+		left join gt_court_arc_borrowdetail b on a.borrowId=b.borrowId
+		left join gt_court_arc_info c on b.infoid=c.guid
+		left join gt_court_arc_itemstatus d on d.infoid=c.guid
+		 left join gt_court_location e on e.guid=d.location
+		where  a.borrowId = #{borrowId}
+	</select>
+		<select id="findBorrowtableCount" parameterType="String"
+		resultType="java.lang.Integer">
+<!-- 		select count(*) from gt_court_arc_borrow a
+		left join gt_court_arc_borrowdetail b on a.borrowId=b.borrowId
+		left join gt_court_arc_info c on b.infoid=c.guid
+		left join gt_court_arc_itemstatus d on d.infoid=c.guid
+		where d.status='1' and a.borrowId = #{borrowId} -->
+		select count(*) from gt_court_arc_borrowdetail where status='0' and borrowId = #{borrowId}
+	</select>
+	<select id="findrfid" parameterType="String"
+		resultType="com.archives.pojo.BorrowDetail">
+				select c.borrowId from gt_court_arc_itemstatus a,gt_court_arc_info
+		b,gt_court_arc_borrowdetail c,gt_court_arc_borrow d
+		where a.infoid=b.guid and c.infoid=b.guid and d.active='1' and d.borrowId=c.borrowId and a.rfid=#{rfid}
+		LIMIT 1
+	</select>
+	<select id="findBorrowById" parameterType="String"
+		resultType="com.archives.pojo.Borrow">
+		select b.*,b.userName as employeeName from gt_court_arc_borrow b 
+		where b.borrowId = #{borrowId}
+	</select>
+	
+	<select id="isReborrow" parameterType="String"
+		resultType="java.lang.Integer">
+		select count(*) from gt_court_arc_borrow b 
+		where b.parentId is not null and b.borrowId = #{borrowId}
+	</select>
+	
+	<insert id="createBorrowStatus" parameterType="java.lang.Object">
+		insert into gt_court_arc_borrowStatus values(#{borrowId,jdbcType=INTEGER},#{status,jdbcType=VARCHAR})
+	</insert>
+	<update id="updateBorrowStatus"  parameterType="String">
+		update gt_court_arc_borrowStatus set status = '1' where borrowId = #{borrowId,jdbcType=INTEGER}
+	</update>
+	<update id="updateWorkflowStatus"  parameterType="java.lang.Object">
+		update gt_court_arc_borrow set workflowStatus = #{status} where borrowId = #{borrowId,jdbcType=INTEGER}
+	</update>
+	<update id="setReborrowStatus"  parameterType="String">
+		update gt_court_arc_borrow set reborrow = '1' where borrowId = #{borrowId,jdbcType=INTEGER}
+	</update>
+	<update id="setReborrowDetailStatus"  parameterType="java.lang.Object">
+		update gt_court_arc_borrowdetail set reborrow = '1' where borrowId = #{borrowId,jdbcType=INTEGER} and itemGuid=#{itemGuid,jdbcType=VARCHAR}
+	</update>
+	
+	<update id="updateBorrowByStatus"   parameterType="java.util.Map">
+		update gt_court_arc_borrow set status =#{paraMap.status} where borrowId = #{paraMap.borrborrowId}
+	</update> 
+<!-- 	  <update id="updateBorrowByStatus"  parameterType="java.util.Map">
+   update gt_court_arc_borrow 
+   <if test="paraMap.status != null and paraMap.status != '' ">
+			 set status=#{status}
+		</if>
+  
+    where borrowId in
+     <if test="borrborrowId != null" >
+		<foreach collection="paraMap.borrborrowId" item="item" index="index" open="(" separator="," close=")">
+        #{item}
+  		</foreach>
+    </if>
+  </update> -->
+  
+  
+  <!-- 	<update id="updateArchivesInfoStatus"  parameterType="String" >
+    update gt_court_arc_info as a 
+set a.status='2' where guid
+ <foreach collection="idList" item="item" index="index" open="(" separator="," close=")">
+		#{item}
+	</foreach>
+  </update> -->
+     <update id="updateArchivesInfoStatus" parameterType="String">
+   update gt_court_arc_itemstatus set status='2'
+    where guid in
+     <if test="infguid != null" >
+		<foreach collection="infguid" item="item" index="index" open="(" separator="," close=")">
+        #{item}
+  		</foreach>
+    </if>
+  </update>
+  
+  
+		<update id="updateBorrowDetailByStatus"  parameterType="String">
+		update gt_court_arc_borrowdetail set status = '1' where borrowId = #{borrowId,jdbcType=INTEGER}
+	</update>
+	
+	  <update id="updateBorrowByStatusList" parameterType="String">
+   update gt_court_arc_borrowdetail set status = '1'
+    where guid in
+     <if test="tailguid != null" >
+		<foreach collection="tailguid" item="item" index="index" open="(" separator="," close=")">
+        #{item}
+  		</foreach>
+    </if>
+  </update>
+	<update id="takeDown"  parameterType="String">
+		update gt_court_arc_itemstatus set status = '2' where guid = #{itemGuid,jdbcType=INTEGER}
+	</update>
+	
+	<update id="borrowLock"  parameterType="String">
+		update gt_court_arc_info set handleStatus = '1' where guid = (SELECT infoid from gt_court_arc_itemstatus 
+		where guid = #{itemGuid,jdbcType=INTEGER})
+	</update>
+	
+	<select id="testBorrowLock" parameterType="String" resultType="java.lang.Integer">
+		select count(1) from gt_court_arc_info where guid = (SELECT infoid from gt_court_arc_itemstatus 
+		where guid = #{itemGuid,jdbcType=INTEGER}) and handleStatus = '0'
+	</select>
+	
+	<update id="reborrowLock"  parameterType="String">
+		update gt_court_arc_info set reborrowLock = '1' where guid = (SELECT infoid from gt_court_arc_itemstatus 
+		where guid = #{itemGuid,jdbcType=INTEGER})
+	</update>
+	
+	<update id="unReborrowLock"  parameterType="String">
+		update gt_court_arc_info set reborrowLock = '0' where guid in (select infoId from gt_court_arc_borrowdetail where borrowId=#{borrowId,jdbcType=INTEGER})
+	</update>
+	
+	<update id="takedLock"  parameterType="java.lang.Object">
+		update gt_court_arc_borrow set taked = #{status, jdbcType=INTEGER}  where borrowId = #{borrowId,jdbcType=INTEGER}
+	</update>
+		
+	<update id="setBorrowMainStatus"  parameterType="String">
+		update gt_court_arc_borrow set status = '1' where borrowId = #{borrowId,jdbcType=INTEGER}
+	</update>
+	
+	<update id="setBorrowDetailStatus"  parameterType="String">
+		update gt_court_arc_borrowdetail set status = '1' where itemGuid = #{itemGuid,jdbcType=INTEGER}
+	</update>
+	<!-- 生成借阅单号 -->
+	<insert id="getFormSeq" parameterType="com.system.base.pojo.Result" >
+		<selectKey resultType="INTEGER" order="AFTER"  keyProperty="status">
+			SELECT LAST_INSERT_ID() AS seqid
+		</selectKey>
+		insert into gt_court_arc_formseq values()
+	</insert>
+	<select id="findBorrowRenew" parameterType="String"
+		resultType="com.archives.pojo.Borrow">
+		select * from gt_court_arc_borrow b
+		where b.parentId=#{parentId}
+	</select>
+</mapper>

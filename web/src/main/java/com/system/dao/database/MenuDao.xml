@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.system.dao.database.MenuDao" >
+  <resultMap id="BaseResultMap" type="com.system.base.pojo.Menu" >
+    <id column="guid" property="guid" jdbcType="VARCHAR" />
+    <result column="suporId" property="suporId" jdbcType="VARCHAR" />
+    <result column="menuName" property="menuName" jdbcType="VARCHAR" />
+    <result column="isGroup" property="isGroup" jdbcType="INTEGER" />
+    <result column="icon" property="icon" jdbcType="VARCHAR" />
+    <result column="url" property="url" jdbcType="VARCHAR" />
+    <result column="isMenu" property="isMenu" jdbcType="INTEGER" />
+    <result column="defaultPage" property="defaultPage" jdbcType="VARCHAR" />
+    <result column="tabIndex" property="tabIndex" jdbcType="INTEGER" />
+  </resultMap>
+  
+  <resultMap id="MenuMap" type="com.system.base.pojo.MenuItem" >
+    <id column="guid" property="guid" jdbcType="VARCHAR" />
+    <result column="suporId" property="suporId" jdbcType="VARCHAR" />
+    <result column="menuName" property="text" jdbcType="VARCHAR" />
+    <result column="url" property="url" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    guid, suporId, menuName, url, isGroup, isMenu, isExtend, icon, defaultPage, tabIndex
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="String" >
+    select 
+    <include refid="Base_Column_List" />
+    from gt_sys_menu
+    where guid = #{guid,jdbcType=VARCHAR}
+    order by tabIndex
+  </select>
+  <select id="selectAllMenu" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from gt_sys_menu
+    order by tabIndex
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="String" >
+    delete from gt_sys_menu
+    where guid = #{guid,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteLimitByMenuId" parameterType="String" >
+    delete from gt_sys_limit
+    where itemid = #{itemid,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.system.base.pojo.Menu" >
+    insert into gt_sys_menu (guid, suporId, menuName, url, isGroup, isMenu, isExtend, icon, defaultPage, tabIndex)
+    values (#{guid,jdbcType=VARCHAR}, #{suporId,jdbcType=VARCHAR}, #{menuName,jdbcType=VARCHAR}, 
+    #{url,jdbcType=VARCHAR}, #{isGroup,jdbcType=INTEGER}, #{isMenu,jdbcType=INTEGER},#{isExtend,jdbcType=INTEGER},
+    #{icon,jdbcType=VARCHAR},#{defaultPage,jdbcType=VARCHAR}, #{tabIndex,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.system.base.pojo.Menu" >
+    insert into gt_sys_menu
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="guid != null" >
+        guid,
+      </if>
+      <if test="suporId != null" >
+        suporId,
+      </if>
+      <if test="menuName != null" >
+        menuName,
+      </if>
+      <if test="isGroup != null" >
+        isGroup,
+      </if>
+      <if test="icon != null" >
+        icon,
+      </if>
+      <if test="url != null" >
+        url,
+      </if>
+      <if test="isMenu != null" >
+        isMenu,
+      </if>
+      <if test="isExtend != null" >
+        isExtend,
+      </if>
+      <if test="defaultPage != null" >
+        defaultPage,
+      </if>
+      <if test="tabIndex != null" >
+        tabIndex,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="guid != null" >
+        #{guid,jdbcType=VARCHAR},
+      </if>
+      <if test="suporId != null" >
+        #{suporId,jdbcType=VARCHAR},
+      </if>
+      <if test="menuName != null" >
+        #{menuName,jdbcType=VARCHAR},
+      </if>
+      <if test="isGroup != null" >
+        #{isGroup,jdbcType=INTEGER},
+      </if>
+      <if test="icon != null" >
+        #{icon,jdbcType=VARCHAR},
+      </if>
+      <if test="url != null" >
+        #{url,jdbcType=VARCHAR},
+      </if>
+      <if test="isMenu != null" >
+        #{isMenu,jdbcType=INTEGER},
+      </if>
+      <if test="isExtend != null" >
+        #{isExtend,jdbcType=INTEGER},
+      </if>
+      <if test="defaultPage != null" >
+        #{defaultPage,jdbcType=VARCHAR},
+      </if>
+      <if test="tabIndex != null" >
+        #{tabIndex,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.system.base.pojo.Menu" >
+    update gt_sys_menu
+    <set >
+      <if test="suporId != null" >
+        suporId = #{suporId,jdbcType=VARCHAR},
+      </if>
+      <if test="menuName != null" >
+        menuName = #{menuName,jdbcType=VARCHAR},
+      </if>
+      <if test="isGroup != null" >
+        isGroup = #{isGroup,jdbcType=INTEGER},
+      </if>
+      <if test="icon != null" >
+        icon = #{icon,jdbcType=VARCHAR},
+      </if>
+      <if test="url != null" >
+        url = #{url,jdbcType=VARCHAR},
+      </if>
+      <if test="isMenu != null" >
+        isMenu = #{isMenu,jdbcType=INTEGER},
+      </if>
+      <if test="isExtend != null" >
+        isExtend = #{isExtend,jdbcType=INTEGER},
+      </if>
+      <if test="defaultPage != null" >
+        defaultPage = #{defaultPage,jdbcType=VARCHAR},
+      </if>
+      <if test="tabIndex != null" >
+        tabIndex = #{tabIndex,jdbcType=INTEGER},
+      </if>
+    </set>
+    where guid = #{guid,jdbcType=VARCHAR}
+  </update>
+  <select id="findMenuByIds" parameterType="long" resultMap="BaseResultMap">
+      select 
+      <include refid="Base_Column_List" />
+      from gt_sys_menu
+      <if test="idList != null" >
+          where guid in 
+          <foreach collection="idList" item="item" index="index" open="(" separator="," close=")">
+          #{item}
+          </foreach>
+      </if>
+      order by tabIndex
+  </select>
+  <select id="selectBySuperId" resultMap="BaseResultMap" parameterType="String" >
+    select 
+    <include refid="Base_Column_List" />
+    from gt_sys_menu
+    where suporId = #{suporId,jdbcType=VARCHAR}
+    order by tabIndex
+  </select>
+  <select id="selectMenuByMenuIds" parameterType="String" resultMap="BaseResultMap">
+      select 
+      <include refid="Base_Column_List" />
+      from gt_sys_menu
+      <if test="idList != null" >
+     	 where guid in 
+          <foreach collection="idList" item="item" index="index" open="(" separator="," close=")">
+          #{item}
+          </foreach>
+      </if>
+      order by tabIndex
+      limit #{startIndex},#{perPageNum}
+  </select>
+  <select id="countMenuByMenuIds" parameterType="String" resultType="int">
+      select count(*)
+      from gt_sys_menu
+      <if test="idList != null" >
+          where guid in 
+          <foreach collection="idList" item="item" index="index" open="(" separator="," close=")">
+          #{item}
+          </foreach>
+      </if>
+  </select>
+  
+   <!-- 用于菜单的角色关联加载 -->
+  <select id="selectLimitedMenusByRoleId"  parameterType="String"  resultMap="BaseResultMap" >	
+  	select  
+  	<include refid="Base_Column_List" /> 
+  		from gt_sys_menu where guid in (select distinct(itemid) from gt_sys_limit where roleid = #{roleid})
+  		order by tabIndex
+  </select>
+  
+  <!-- 查询登录用户的权限菜单 -->
+  <select id="selectLimitedMenusByUserid"  parameterType="String"  resultMap="MenuMap" >
+		  select  
+  	<include refid="Base_Column_List" /> 
+  		from gt_sys_menu where guid in (select distinct(itemid) from gt_sys_limit 
+  		 where roleid in (select distinct(roleid) from gt_sys_rolemembers where userid=#{userid})
+  		  ) and isMenu = 0 order by tabIndex
+  </select>
+  
+  <!-- 用于加载全部菜单 -->
+  <select id="selectAllMenuItems"  parameterType="String"  resultMap="MenuMap" >
+  		select  
+  	<include refid="Base_Column_List" />
+  		from gt_sys_menu where isMenu = 0 order by tabIndex
+  </select>
+  
+  <!--  首页面的加载-->
+  <select id="selectMenusByGroupId"  parameterType="String"  resultMap="BaseResultMap">
+  		select  
+  	<include refid="Base_Column_List" /> 
+  		from gt_sys_menu where suporId = #{groupid} and isMenu = 1 order by tabIndex
+  </select>
+  
+  <!-- 首页分组菜单加载 -->
+  <select id="selectGroupMenus"  parameterType="String"  resultMap="BaseResultMap">
+  	select  
+  	<include refid="Base_Column_List" /> 
+  		from gt_sys_menu where isGroup = 1 order by tabIndex
+  </select>
+  
+</mapper>

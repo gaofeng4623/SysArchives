@@ -1,0 +1,535 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.archives.dao.ArchivesSynDao" >
+	<select id="findArcByArchivesNo" parameterType="String"  resultType="String">
+		select caseNo from gt_court_arc_info where caseNo =#{caseNo,jdbcType=VARCHAR}
+	</select>
+	
+	<insert id="saveArchivesInfo" parameterType="com.archives.pojo.ArchivesInfo" >
+		 insert into gt_court_arc_info 
+		  <trim prefix="(" suffix=")" suffixOverrides=",">
+		  	 <if test="flowid != null and flowid != ''">
+			   flowId,
+			 </if>
+			 <if test="caseno != null">
+			 caseNo, 
+			 </if>
+			 <if test="gdbz != null">
+			 gdbz, 
+			 </if>
+			 <if test="markType != null">
+			 markType, 
+			 </if>
+			 <if test="archivesno != null">
+	      	 archivesNo,
+	      	 </if>
+	      	 <if test="year != null and year != ''">
+	      	 year,
+	      	 </if>
+	      	 <if test="caseproerty != null and caseproerty != ''">
+	      	 caseProerty, 
+	      	 </if>
+	      	 <if test="caseword != null and caseword != ''">
+	         caseWord,
+	         </if>
+	         <if test="courtshortname != null and courtshortname != ''">
+	         courtShortName,
+	         </if>
+	         <if test="number != null and number != ''">
+	         number, 
+	         </if>
+	         <if test="casecategory != null and casecategory != ''">
+	         caseCategory,
+	         </if>
+	         <if test="judgeprocedure != null and judgeprocedure != ''">
+	         judgeProcedure,
+	         </if>
+	         <if test="casename != null and casename != ''">
+	         caseName, 
+	         </if>
+	         <if test="shortdetailscase != null and shortdetailscase != ''">
+	         shortDetailsCase,
+	         </if>
+	         <if test="parties != null and parties != ''">
+	         parties,
+	         </if>
+	         <if test="putonrecorddate != null and putonrecorddate != ''">
+	         putOnRecordDate, 
+	         </if>
+	         <if test="putonrecorddep != null and putonrecorddep != ''">
+	         putOnRecordDep,
+	         </if>
+	         <if test="approveper != null and approveper != ''">
+	         approvePer,
+	         </if>
+	         <if test="undertakedep != null and undertakedep != ''">
+	         undertakeDep, 
+	         </if>
+	         <if test="undertakeper != null and undertakeper != ''">
+	         undertakePer,
+	         </if>
+	         <if test="courtclerk != null and courtclerk != ''">
+	         courtClerk, 
+	         </if>
+	         <if test="chiefjudge != null and chiefjudge != ''">
+	         chiefJudge, 
+	         </if>
+	         <if test="collegiatebench != null and collegiatebench != ''">
+	         collegiateBench, 
+	         </if>
+	         <if test="formaldocument != null and formaldocument != ''">
+	         formalDocument, 
+	         </if>
+	         <if test="counterpart != null and counterpart != ''">
+	         counterpart, 
+	         </if>
+	         <if test="otherdoucment != null and otherdoucment != ''">
+	         otherDoucment, 
+	         </if>
+	         <if test="formaldocpagenum != null and formaldocpagenum != ''">
+	         formalDocPageNum,
+	         </if>
+	         <if test="counterpartpagenum != null and counterpartpagenum != ''"> 
+	         counterpartPageNum, 
+	         </if>
+	         <if test="mergecase != null and mergecase != ''"> 
+	         mergeCase, 
+	         </if>
+	         <if test="settlemanner != null and settlemanner != ''"> 
+	         settleManner, 
+	         </if>
+	         <if test="settledate != null and settledate != ''"> 
+	         settleDate, 
+	         </if>
+	         <if test="settlereason != null and settlereason != ''"> 
+		     settleReason, 
+		     </if>
+		     <if test="originalcourt != null and originalcourt != ''"> 
+		     OriginalCourt, 
+		     </if>
+		     <if test="originalcaseno != null and originalcaseno != ''"> 
+		     OriginalCaseNo, 
+		     </if>
+		     <if test="firstresult != null and firstresult != ''"> 
+		     firstResult,
+		     </if> 
+		     <if test="secondresult != null and secondresult != ''"> 
+		     secondResult, 
+		     </if>
+		     <if test="lastresult != null and lastresult != ''">
+		     lastResult,
+		     </if>
+		     <if test="fulldocno != null and fulldocno != ''"> 
+		     fullDocNo, 
+		     </if>
+		     <if test="catalogno != null and catalogno != ''">
+		     catalogNo, 
+		     </if>
+		     <if test="evidencebag != null and evidencebag != ''">
+		     evidenceBag, 
+		     </if>
+		     <if test="degreeofsecrets != null and degreeofsecrets != ''">
+		     degreeOfSecrets, 
+		     </if>
+		     <if test="storagelife != null and storagelife != ''">
+		     storageLife, 
+		     </if>
+		     <if test="applyper != null and applyper != ''">
+		     applyPer, 
+		     </if>
+		     <if test="receiveper != null and receiveper != ''">
+		     receivePer, 
+		     </if>
+		     <if test="placeonper != null and placeonper != ''">
+		     placeOnPer, 
+		     </if>
+		     <if test="placeondate != null and placeondate != ''">
+		     placeOnDate, 
+		     </if>
+		     <if test="registerper != null and registerper != ''">
+		     registerPer, 
+		     </if>
+		     <if test="registertime != null and registertime != ''">
+		     registerTime,
+		     </if>
+		     <if test="remark != null and remark != ''"> 
+		     remark, 
+		     </if>
+		     <if test="status != null and status != ''">
+		     status
+		     </if>
+		 </trim>
+	     <trim prefix="values (" suffix=")" suffixOverrides=",">
+		    <if test="flowid != null and flowid != ''">
+		    	 #{flowid,jdbcType=VARCHAR},
+		    </if>
+		    <if test="caseno != null">
+		    	 #{caseno,jdbcType=VARCHAR}, 
+		    </if>
+		    <if test="gdbz != null">
+		    	 #{gdbz,jdbcType=VARCHAR}, 
+		    </if>
+		    <if test="markType != null">
+		    	 #{markType,jdbcType=VARCHAR}, 
+		    </if>
+		    <if test="archivesno != null">
+		    	#{archivesno,jdbcType=VARCHAR},
+		    </if>
+		    <if test="year != null and year != ''">
+		    	#{year,jdbcType=VARCHAR}, 
+		    </if>
+		    <if test="caseproerty != null and caseproerty != ''">
+		    	#{caseproerty,jdbcType=VARCHAR},
+		    </if>
+		    <if test="caseword != null and caseword != ''">
+		    	#{caseword,jdbcType=VARCHAR},
+		    </if>
+		    <if test="courtshortname != null and courtshortname != ''">
+		    	#{courtshortname,jdbcType=VARCHAR}, 
+		    </if>
+		    <if test="number != null and number != ''">
+		    	#{number,jdbcType=VARCHAR}, 
+		    </if>
+		    <if test="casecategory != null and casecategory != ''">
+		    	#{casecategory,jdbcType=VARCHAR}, 
+		    </if>
+		    <if test="judgeprocedure != null and judgeprocedure != ''">
+		    	#{judgeprocedure,jdbcType=VARCHAR},
+		    </if>
+		    <if test="casename != null and casename != ''">
+		    	#{casename,jdbcType=VARCHAR},
+		    </if>
+		    <if test="shortdetailscase != null and shortdetailscase != ''">
+		    	#{shortdetailscase,jdbcType=VARCHAR},
+		    </if>
+		    <if test="parties != null and parties != ''">
+		    	#{parties,jdbcType=VARCHAR}, 
+		    </if>
+		    <if test="putonrecorddate != null and putonrecorddate != ''">
+		    	#{putonrecorddate,jdbcType=TIMESTAMP},
+		    </if>
+		    <if test="putonrecorddep != null and putonrecorddep != ''">
+		    	#{putonrecorddep,jdbcType=VARCHAR},
+		    </if>
+		    <if test="approveper != null and approveper != ''">
+		    	#{approveper,jdbcType=VARCHAR},
+		    </if>
+		    <if test="undertakedep != null and undertakedep != ''">
+		    	#{undertakedep,jdbcType=VARCHAR}, 
+		    </if>
+		    <if test="undertakeper != null and undertakeper != ''">
+		    	#{undertakeper,jdbcType=VARCHAR},
+		    </if>
+		    <if test="courtclerk != null and courtclerk != ''">
+		    	#{courtclerk,jdbcType=VARCHAR},
+		    </if>
+		    <if test="chiefjudge != null and chiefjudge != ''">
+		    	#{chiefjudge,jdbcType=VARCHAR},
+		    </if>
+		    <if test="collegiatebench != null and collegiatebench != ''">
+		    	#{collegiatebench,jdbcType=VARCHAR},
+		    </if>
+		    <if test="formaldocument != null and formaldocument != ''">
+		    	#{formaldocument,jdbcType=INTEGER},
+		    </if>
+		    <if test="counterpart != null and counterpart != ''">
+		    	#{counterpart,jdbcType=INTEGER}, 
+		    </if>
+		    <if test="otherdoucment != null and otherdoucment != ''">
+		    	#{otherdoucment,jdbcType=INTEGER},
+		    </if>
+		    <if test="formaldocpagenum != null and formaldocpagenum != ''">
+		    	#{formaldocpagenum,jdbcType=INTEGER}, 
+		    </if>
+		    <if test="counterpartpagenum != null and counterpartpagenum != ''">
+		    	#{counterpartpagenum,jdbcType=INTEGER},
+		    </if>
+		    <if test="mergecase != null and mergecase != ''">
+		    	#{mergecase,jdbcType=VARCHAR}, 
+		    </if>
+		    <if test="settlemanner != null and settlemanner != ''">
+		    	#{settlemanner,jdbcType=VARCHAR},
+		    </if>
+		    <if test="settledate != null and settledate != ''">
+		    	#{settledate,jdbcType=VARCHAR}, 
+		    </if>
+		    <if test="settlereason != null and settlereason != ''">
+		    	#{settlereason,jdbcType=VARCHAR}, 
+		    </if>
+		    <if test="originalcourt != null and originalcourt != ''">
+		    	#{originalcourt,jdbcType=VARCHAR},
+		    </if>
+		    <if test="originalcaseno != null and originalcaseno != ''">
+		    	#{originalcaseno,jdbcType=VARCHAR},
+		    </if>
+		    <if test="firstresult != null and firstresult != ''">
+		    	#{firstresult,jdbcType=VARCHAR}, 
+		    </if>
+		    <if test="secondresult != null and secondresult != ''">
+		    	#{secondresult,jdbcType=VARCHAR},
+		    </if>
+		    <if test="lastresult != null and lastresult != ''">
+		    	#{lastresult,jdbcType=VARCHAR}, 
+		    </if>
+		    <if test="fulldocno != null and fulldocno != ''">
+		    	#{fulldocno,jdbcType=VARCHAR}, 
+		    </if>
+		    <if test="catalogno != null and catalogno != ''">
+		    	#{catalogno,jdbcType=VARCHAR}, 
+		    </if>
+		    <if test="evidencebag != null and evidencebag != ''">
+		    	#{evidencebag,jdbcType=VARCHAR}, 
+		    </if>
+		    <if test="degreeofsecrets != null and degreeofsecrets != ''">
+		    	#{degreeofsecrets,jdbcType=VARCHAR}, 
+		    </if>
+		    <if test="storagelife != null and storagelife != ''">
+		    	#{storagelife,jdbcType=VARCHAR},
+		    </if>
+		    <if test="applyper != null and applyper != ''">
+		    	#{applyper,jdbcType=VARCHAR}, 
+		    </if>
+		    <if test="receiveper != null and receiveper != ''">
+		    	#{receiveper,jdbcType=VARCHAR}, 
+		    </if>
+		    <if test="placeonper != null and placeonper != ''">
+		    	#{placeonper,jdbcType=VARCHAR}, 
+		    </if>
+		    <if test="placeondate != null and placeondate != ''">
+		    	#{placeondate,jdbcType=VARCHAR},
+		    </if>
+		    <if test="registerper != null and registerper != ''">
+		    	#{registerper,jdbcType=VARCHAR}, 
+		    </if>
+		    <if test="registertime != null and registertime != ''">
+		    	#{registertime,jdbcType=VARCHAR}, 
+		    </if>
+		    <if test="remark != null and remark != ''">
+		    	#{remark,jdbcType=VARCHAR}, 
+		    </if>
+		    <if test="status != null and status != ''">
+		    	#{status,jdbcType=CHAR}
+		    </if>
+	   </trim>
+			 <selectKey resultType="INTEGER" order="AFTER" keyProperty="guid">
+			SELECT LAST_INSERT_ID() AS guid
+			</selectKey>
+	</insert>
+	
+	<update id="updateArchivesInfo" parameterType="com.archives.pojo.ArchivesInfo" >
+    update gt_court_arc_info
+    <set>
+     <!--  <if test="flowid  !=  null" >
+        flowId = #{flowid,jdbcType=VARCHAR},
+      </if>
+      <if test="caseno  !=  null" >
+        caseNo = #{caseno,jdbcType=VARCHAR},
+      </if>
+      <if test="archivesno  !=  null" >
+        archivesNo = #{archivesno,jdbcType=VARCHAR},
+      </if>
+      <if test="year  !=  null" >
+        year = #{year,jdbcType=VARCHAR},
+      </if>
+      <if test="caseproerty  !=  null" >
+        caseProerty = #{caseproerty,jdbcType=VARCHAR},
+      </if>
+      <if test="caseword  !=  null" >
+        caseWord = #{caseword,jdbcType=VARCHAR},
+      </if>
+      <if test="courtshortname  !=  null" >
+        courtShortName = #{courtshortname,jdbcType=VARCHAR},
+      </if>
+      <if test="number  !=  null" >
+        number = #{number,jdbcType=VARCHAR},
+      </if>
+      <if test="casecategory  !=  null" >
+        caseCategory = #{casecategory,jdbcType=VARCHAR},
+      </if>
+      <if test="judgeprocedure  !=  null" >
+        judgeProcedure = #{judgeprocedure,jdbcType=VARCHAR},
+      </if>
+      <if test="casename  !=  null" >
+        caseName = #{casename,jdbcType=VARCHAR},
+      </if>
+      <if test="shortdetailscase  !=  null" >
+        shortDetailsCase = #{shortdetailscase,jdbcType=VARCHAR},
+      </if>
+      <if test="parties  !=  null" >
+        parties = #{parties,jdbcType=VARCHAR},
+      </if>
+      <if test="putonrecorddate  !=  null" >
+        putOnRecordDate = #{putonrecorddate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="putonrecorddep  !=  null" >
+        putOnRecordDep = #{putonrecorddep,jdbcType=VARCHAR},
+      </if>
+      <if test="approveper  !=  null" >
+        approvePer = #{approveper,jdbcType=VARCHAR},
+      </if>
+      <if test="undertakedep  !=  null" >
+        undertakeDep = #{undertakedep,jdbcType=VARCHAR},
+      </if>
+      <if test="undertakeper  !=  null" >
+        undertakePer = #{undertakeper,jdbcType=VARCHAR},
+      </if>
+      <if test="courtclerk  !=  null" >
+        courtClerk = #{courtclerk,jdbcType=VARCHAR},
+      </if>
+      <if test="chiefjudge  !=  null" >
+        chiefJudge = #{chiefjudge,jdbcType=VARCHAR},
+      </if>
+      <if test="collegiatebench  !=  null" >
+        collegiateBench = #{collegiatebench,jdbcType=VARCHAR},
+      </if>
+      <if test="formaldocument  !=  null" >
+        formalDocument = #{formaldocument,jdbcType=INTEGER},
+      </if>
+      <if test="counterpart  !=  null" >
+        counterpart = #{counterpart,jdbcType=INTEGER},
+      </if>
+      <if test="otherdoucment  !=  null" >
+        otherDoucment = #{otherdoucment,jdbcType=INTEGER},
+      </if>
+      <if test="formaldocpagenum  !=  null" >
+        formalDocPageNum = #{formaldocpagenum,jdbcType=INTEGER},
+      </if>
+      <if test="counterpartpagenum  !=  null" >
+        counterpartPageNum = #{counterpartpagenum,jdbcType=INTEGER},
+      </if>
+      <if test="mergecase  !=  null" >
+        mergeCase = #{mergecase,jdbcType=VARCHAR},
+      </if>
+      <if test="settlemanner  !=  null" >
+        settleManner = #{settlemanner,jdbcType=VARCHAR},
+      </if>
+      <if test="settledate  !=  null" >
+        settleDate = #{settledate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="settlereason  !=  null" >
+        settleReason = #{settlereason,jdbcType=VARCHAR},
+      </if>
+      <if test="originalcourt  !=  null" >
+        OriginalCourt = #{originalcourt,jdbcType=VARCHAR},
+      </if>
+      <if test="originalcaseno  !=  null" >
+        OriginalCaseNo = #{originalcaseno,jdbcType=VARCHAR},
+      </if>
+      <if test="firstresult  !=  null" >
+        firstResult = #{firstresult,jdbcType=VARCHAR},
+      </if>
+      <if test="secondresult  !=  null" >
+        secondResult = #{secondresult,jdbcType=VARCHAR},
+      </if>
+      <if test="lastresult  !=  null" >
+        lastResult = #{lastresult,jdbcType=VARCHAR},
+      </if>
+      <if test="fulldocno  !=  null" >
+        fullDocNo = #{fulldocno,jdbcType=VARCHAR},
+      </if>
+      <if test="catalogno  !=  null" >
+        catalogNo = #{catalogno,jdbcType=VARCHAR},
+      </if>
+      <if test="evidencebag  !=  null" >
+        evidenceBag = #{evidencebag,jdbcType=VARCHAR},
+      </if>
+      <if test="degreeofsecrets  !=  null" >
+        degreeOfSecrets = #{degreeofsecrets,jdbcType=VARCHAR},
+      </if>
+      <if test="storagelife  !=  null" >
+        storageLife = #{storagelife,jdbcType=VARCHAR},
+      </if>
+      <if test="applyper  !=  null" >
+        applyPer = #{applyper,jdbcType=VARCHAR},
+      </if>
+      <if test="receiveper  !=  null" >
+        receivePer = #{receiveper,jdbcType=VARCHAR},
+      </if>
+      <if test="placeonper  !=  null" >
+        placeOnPer = #{placeonper,jdbcType=VARCHAR},
+      </if>
+      <if test="registerper  !=  null" >
+        registerPer = #{registerper,jdbcType=VARCHAR},
+      </if>
+      <if test="registertime  !=  null" >
+        registerTime = #{registertime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="remark  !=  null" >
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="status  !=  null" >
+        status = #{status,jdbcType=CHAR}
+      </if> -->
+      <!-- 为了安全起见及提高更新效率，只更新归档标志和归档日期,高峰2016-09-10 -->
+      <if test="placeondate  !=  null" >
+        placeOnDate = #{placeondate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updated  !=  null" >
+        updated = #{updated,jdbcType=INTEGER},
+      </if>
+      <if test="gdbz  !=  null" >
+        gdbz = #{gdbz,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where caseNo = #{caseno}
+  </update>
+  
+   
+   <insert id="saveItemstatus" parameterType="com.archives.pojo.Itemstatus">
+   	insert into gt_court_arc_itemstatus 
+   	<trim prefix="(" suffix=")" suffixOverrides=",">
+   		<if test="infoid != null and infoid != ''">
+   			infoid,
+   		</if>
+   		<if test="status != null and status != ''">
+   			status,
+   		</if>
+   		<if test="itemNo != null and itemNo != ''">
+   			itemNo,
+   		</if>
+   		<if test="itemid != null and itemid != ''">
+   			itemid,
+   		</if>
+	</trim>
+   	<trim prefix="values (" suffix=")" suffixOverrides=",">
+	   	<if test="infoid != null and infoid != ''">
+	   		#{infoid,jdbcType=INTEGER}, 
+	   	</if>
+	   	<if test="status != null and status != ''">
+	   		#{status,jdbcType=VARCHAR},
+	   	</if>
+	   	<if test="itemNo != null and itemNo != ''">
+	   		#{itemNo,jdbcType=VARCHAR},
+	   	</if>
+	   	<if test="itemid != null and itemid != ''">
+	   		#{itemid,jdbcType=INTEGER},
+	   	</if>
+   	</trim>
+   </insert>
+   
+   <insert id="insertSynLog" parameterType="com.archives.pojo.SynLog">
+	   	insert into gt_court_syn
+	   	<trim prefix="(" suffix=")" suffixOverrides=",">
+	   		<if test="infoid != null and infoid != ''">
+	   			infoid,
+	   		</if>
+	   		<if test="status != null and status != ''">
+	   			status,
+	   		</if>
+	   		<if test="syndate != null and syndate != ''">
+	   			syndate,
+	   		</if>
+	   	</trim>
+	   	<trim prefix="values (" suffix=")" suffixOverrides=",">
+		   	<if test="infoid != null and infoid != ''">
+		   		#{infoid,jdbcType=INTEGER}, 
+		   	</if>
+		   	<if test="status != null and status != ''">
+		   		#{status,jdbcType=INTEGER}
+		   	</if>
+		   	<if test="syndate != null and syndate != ''">
+		   		#{syndate,jdbcType=VARCHAR}
+		   	</if>
+	   	</trim>
+   </insert>
+</mapper>

@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.archives.dao.SysDeskDao" >
+  <select id="queryArchiveCount" resultType="java.lang.Integer">
+	select count(1) from gt_court_arc_info A 
+	inner join gt_court_arc_itemstatus B on A.guid = B.infoid
+	inner join gt_court_location C on B.location = C.guid
+		where 1=1 and B.status = '1'
+  </select>
+  <select id="queryborrowArchiveCount" resultType="java.lang.Integer">
+	select count(H.guid) from 
+	(
+		select d.guid guid from gt_court_arc_borrow a
+				inner join gt_court_arc_borrowdetail b on a.borrowId=b.borrowId
+				inner join gt_court_arc_itemstatus d on d.guid=b.itemGuid
+				where b.status='0' or b.status='1'
+		    GROUP BY d.guid
+	)H
+  </select>
+  <select id="eachMonthCount" parameterType="Object" resultType="com.archives.pojo.ArchivesInfo">
+    select  count(a.guid )guidCount, DATE_FORMAT(a.placeOnDate,'%Y-%m')placecount from gt_court_arc_info a,gt_court_arc_itemstatus b,gt_court_location c
+where a.guid=b.infoid and b.location=c.guid 
+and (a.archivesNo is not null  and a.gdbz is not null) 
+<!--    select  count(a.guid )guidCount, DATE_FORMAT(a.placeOnDate,'%Y-%m')placecount from gt_court_arc_info a
+where  
+ (a.archivesNo is not null  and a.gdbz is not null) -->
+ <if test="depot != null and depot != '' ">
+			and c.locationPath like CONCAT(#{depot},'%') 
+</if>
+<if test="month != null and month != '' ">
+			and a.placeOnDate like CONCAT(#{month},'%')
+</if> 
+ group by placecount
+  </select>
+    <select id="borrowCount" parameterType="Object" resultType="com.archives.pojo.BorrowDetail">
+   select count(a.guid)guidCount,DATE_FORMAT(b.borrowTime,'%Y-%m')borrowCount from gt_court_arc_borrowdetail a,gt_court_arc_borrow b
+where a.borrowId=b.borrowId 
+
+<if test="month != null and month != '' ">
+			and b.borrowTime like CONCAT(#{month},'%')
+</if> 
+ group by borrowCount
+  </select>
+  <select id="caseProertyCount" resultType="com.archives.pojo.ArchivesInfo">
+  select count(a.caseProerty)caseProertyCount, b.mark from gt_court_arc_info a,
+  gt_court_arc_map_total b, gt_court_arc_itemstatus c where a.caseProerty=b.mark and a.guid=c.infoid and c.status='1' group by b.mark
+
+  </select>
+  <select id="queryCollectionCount" resultType="java.lang.Integer">
+	SELECT
+			count(info.guid)
+		FROM gt_court_arc_info info 
+		<where>
+			settleDate>=DATE_SUB(CURDATE(), INTERVAL 3 MONTH)and (info.gdbz is  null and info.placeOnDate is null)
+		</where>
+  </select>
+   <select id="destroyArchives" resultType="java.lang.Integer">
+	SELECT
+			count(1)
+		FROM gt_court_arc_itemstatus ite 
+		<where>
+			ite.status = '3'
+		</where>
+  </select>
+  <select id="queryBorrowSheetCount" resultType="java.lang.Integer">
+	SELECT
+			count(b.borrowId)
+		FROM gt_court_arc_borrow b 
+		left join gt_court_arc_borrowstatus bs on bs.borrowId = b.borrowId and (b.status = '1' || b.status = '-1')
+		<where>
+			bs.status = '1'
+			and DATEDIFF(b.expireDate,CURRENT_DATE) &lt;= 0
+		</where>
+  </select>
+  <select id="queryBorrowNotDeliveredCount" resultType="java.lang.Integer">
+	SELECT count(1)
+		FROM gt_court_arc_borrow a, gt_sys_employee b,gt_court_arc_borrowstatus c 
+		WHERE a.userid = b.employeeId
+		AND a.borrowId = c.borrowId
+		AND c.status = '1'
+		AND a.status = '0'
+  </select>
+  <select id="queryUserBorrowArchiveCount" parameterType="String" resultType="java.lang.Integer">
+	select count(H.guid) from 
+	(
+		select d.guid guid from gt_court_arc_borrow a
+				inner join gt_court_arc_borrowdetail b on a.borrowId=b.borrowId
+				inner join gt_court_arc_itemstatus d on d.guid=b.itemGuid
+				where (b.status='0' or b.status='1') 
+				and a.userid = #{userid,jdbcType=VARCHAR}
+			GROUP BY d.guid
+	)H
+  </select>
+  <select id="queryUserReturnArchiveCount" parameterType="String" resultType="java.lang.Integer">
+	select count(H.guid) from 
+	(
+		select d.guid guid from gt_court_arc_borrow a
+				inner join gt_court_arc_borrowdetail b on a.borrowId=b.borrowId
+				inner join gt_court_arc_itemstatus d on d.guid=b.itemGuid
+				where (b.status='2') 
+				and b.returnPerson = #{userName,jdbcType=VARCHAR}
+			GROUP BY d.guid
+	)H
+  </select>
+  <select id="queryUserBorrowNotDeliveredCount" parameterType="String" resultType="java.lang.Integer">
+	SELECT count(1)
+		FROM gt_court_arc_borrow a, gt_sys_employee b,gt_court_arc_borrowstatus c 
+		WHERE a.userid = b.employeeId
+		AND a.borrowId = c.borrowId
+		AND c.status = '1'
+		AND a.status = '0'
+		AND a.userid = #{userName,jdbcType=VARCHAR}
+  </select>
+  <select id="queryBorrowRoomBorrowArchiveCount" resultType="java.lang.Integer">
+	select count(H.guid) from 
+	(
+		select d.guid guid from gt_court_arc_borrow a
+				inner join gt_court_arc_borrowdetail b on a.borrowId=b.borrowId
+				inner join gt_court_arc_itemstatus d on d.guid=b.itemGuid
+				inner join gt_sys_employee e on a.userid=e.employeeId
+				inner join gt_sys_department f on e.departmentId = f.departmentId
+				where (b.status='0' or b.status='1') 
+				and  f.departmentName = '借阅室'
+			GROUP BY d.guid
+	)H
+  </select>
+  <select id="queryBorrowRoomReturnArchiveCount" resultType="java.lang.Integer">
+	select count(H.guid) from 
+	(
+		select d.guid guid from gt_court_arc_borrow a
+				inner join gt_court_arc_borrowdetail b on a.borrowId=b.borrowId
+				inner join gt_court_arc_itemstatus d on d.guid=b.itemGuid
+				inner join gt_sys_employee e on a.userid=e.employeeId
+				inner join gt_sys_department f on e.departmentId = f.departmentId
+				where (b.status='2')
+				and  f.departmentName = '借阅室'
+			GROUP BY d.guid
+	)H
+  </select>
+   <select id="twoLibraryCount" resultType="java.lang.Integer">
+	select count(*) from gt_court_arc_info info, gt_court_arc_itemstatus item,gt_court_location loc
+where item.location=loc.guid and info.guid=item.infoid and loc.locationPath like '2号库房%'
+  </select>
+   <select id="threeLibraryCount" resultType="java.lang.Integer">
+	select count(*) from gt_court_arc_info info, gt_court_arc_itemstatus item,gt_court_location loc
+where item.location=loc.guid and info.guid=item.infoid and loc.locationPath like '3号库房%'
+  </select>
+  <select id="fiveLibraryCount" resultType="java.lang.Integer">
+	select count(*) from gt_court_arc_box box, gt_court_arc_boxstatus boxitem,gt_court_location loc
+where boxitem.location=loc.guid and box.guid=boxitem.boxid and loc.locationPath like '5号库房%'
+  </select>
+  <select id="queryBorrowRoomBorrowNotDeliveredCount" resultType="java.lang.Integer">
+	SELECT count(1)
+		FROM gt_court_arc_borrow a, gt_sys_employee b,gt_court_arc_borrowstatus c, gt_sys_department d
+		WHERE a.userid = b.employeeId
+		AND b.departmentId = d.departmentId
+		AND a.borrowId = c.borrowId
+		AND c.status = '1'
+		AND a.status = '0'
+		AND d.departmentName = '借阅室'
+  </select>
+  <!-- 文书首页统计 -->
+  <select id="docCount" resultType="java.lang.Integer">
+	select count(*) from gt_court_arc_document
+		<where>
+			status != '2'
+		</where>
+  </select>
+  <select id="queryBorrowRoomBorrowCount" resultType="java.lang.Integer">
+	select count(*) from gt_court_arc_docborrowdetail
+		<where>
+			status = '1'
+		</where>
+  </select>
+  <select id="querBorrowSheetCount" resultType="java.lang.Integer">
+	select count(*) from gt_court_arc_documentborrow borrow left join gt_court_arc_docborrowdetail tail
+	on borrow.guid=tail.borrowId
+		<where>
+		 tail.status='0'
+		<if test="day != null and day != '' ">
+		and	DATEDIFF(CURRENT_DATE,borrow.expireDate) &gt;=#{day}
+        </if> 
+
+		</where>
+  </select>
+  <select id="destroyCount" resultType="java.lang.Integer">
+	select count(*) from gt_court_arc_document 
+		<where>
+		status='3'
+		</where>
+  </select>
+ <select id="docBorrowCount" parameterType="Object" resultType="com.archives.pojo.Docborrowdetail">
+   select count(a.guid)guidCount,DATE_FORMAT(b.borrowDate,'%Y-%m')borrowCount from gt_court_arc_docborrowdetail a,gt_court_arc_documentborrow b
+where a.borrowId=b.guid 
+<if test="month != null and month != '' ">
+			and b.borrowDate like CONCAT(#{month},'%')
+</if> 
+ group by borrowCount
+  </select>
+</mapper>

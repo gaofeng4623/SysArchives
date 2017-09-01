@@ -1,0 +1,399 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.archives.dao.LocationInfoDao" >
+  <resultMap id="BaseResultMap" type="com.archives.pojo.LocationInfo" >
+    <id column="guid" property="guid" jdbcType="INTEGER" />
+    <result column="companyId" property="companyId" jdbcType="VARCHAR" />
+    <result column="locationName" property="locationName" jdbcType="VARCHAR" />
+    <result column="parentId" property="parentId" jdbcType="INTEGER" />
+    <result column="locationPath" property="locationPath" jdbcType="VARCHAR" />
+    <result column="typeName" property="typeName" jdbcType="VARCHAR" />
+    <result column="state" property="state" jdbcType="VARCHAR" />
+    <result column="locationTypeGuid" property="locationTypeGuid" jdbcType="INTEGER" />
+    <result column="serialNo" property="serialNo" jdbcType="INTEGER" />
+    <result column="serialNoPath" property="serialNoPath" jdbcType="VARCHAR" />
+    <result column="controlId" property="controlId" jdbcType="INTEGER" />
+    <result column="controlAddress" property="controlAddress" jdbcType="VARCHAR" />
+    <result column="branchNum" property="branchNum" jdbcType="INTEGER" />
+    <result column="branchAddress" property="branchAddress" jdbcType="VARCHAR" />
+    <result column="antennaNum" property="antennaNum" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    guid, companyId, locationName, parentId, locationPath, locationTypeGuid, serialNo, 
+    serialNoPath, antennaNum
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select location.guid, 
+    	   location.companyId,
+    	   'closed' as state,
+    	   location.locationName, 
+    	   location.parentId, 
+    	   location.locationPath, 
+    	   location.locationTypeGuid, 
+    	   location.serialNo, 
+   		   location.serialNoPath,
+   		   location.controlId,
+   		   control.controlAddress, 
+   		   control.branchNum, 
+   		   control.branchAddress, 
+   		   location.antennaNum,
+   		   location.sign,
+    	   type.name  as typeName 
+      from gt_court_location location 
+ left join gt_court_location_type type
+        on location.locationTypeGuid = type.guid
+ left join gt_court_location_control control
+        on location.controlId = control.guid
+     where location.guid=#{guid,jdbcType=INTEGER}
+  order by serialNo
+  </select>
+  
+  <select id="getCellsByParentId" resultType="com.archives.pojo.LocationInfo" parameterType="java.lang.Integer" >
+  		SELECT lc.guid,
+  			   lc.locationTypeGuid,
+  			   lc.locationPath 
+  		     from gt_court_location lc
+  		    where lc.locationPath like 
+  		    CONCAT((SELECT locationPath from gt_court_location WHERE guid = #{pid,jdbcType=INTEGER}),'%') 
+			   and lc.locationTypeGuid = 8
+  </select>
+  
+  <select id="getNodesByParentId" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+      select location.guid, 
+    	   location.companyId,
+    	   'closed' as state,
+    	   location.locationName, 
+    	   location.parentId, 
+    	   location.locationPath, 
+    	   location.locationTypeGuid, 
+    	   location.serialNo, 
+   		   location.serialNoPath,
+   		   location.controlId,
+   		   control.controlAddress, 
+   		   control.branchNum, 
+   		   control.branchAddress, 
+   		   location.antennaNum,
+    	   type.name  as typeName 
+      from gt_court_location location 
+ left join gt_court_location_type type
+        on location.locationTypeGuid = type.guid
+ left join gt_court_location_control control
+        on location.controlId = control.guid
+     where location.parentid=#{pid,jdbcType=INTEGER}
+  order by serialNo
+  </select>
+  <select id="NodesByParentId" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+      select location.guid, 
+    	   location.companyId,
+    	   'closed' as state,
+    	   location.locationName, 
+    	   location.parentId, 
+    	   location.locationPath, 
+    	   location.locationTypeGuid, 
+    	   location.serialNo, 
+   		   location.serialNoPath,
+   		   location.controlId,
+   		   control.controlAddress, 
+   		   control.branchNum, 
+   		   control.branchAddress, 
+   		   location.antennaNum,
+   		   location.sign,
+    	   type.name  as typeName 
+      from gt_court_location location 
+ left join gt_court_location_type type
+        on location.locationTypeGuid = type.guid
+ left join gt_court_location_control control
+        on location.controlId = control.guid
+     where location.parentid=#{pid,jdbcType=INTEGER}
+      
+         <if test="type != null and type != '' ">
+         and location.sign=#{type}
+   </if>
+  order by serialNo
+  </select>
+  <select id="queryPageLocationList" resultMap="BaseResultMap" parameterType="java.util.Map" >
+    select * from ( 
+    	select location.guid, 
+    	   location.companyId,
+    	   'closed' as state,
+    	   location.locationName, 
+    	   location.parentId, 
+    	   location.locationPath, 
+    	   location.locationTypeGuid, 
+    	   location.serialNo, 
+   		   location.serialNoPath,
+   		   location.controlId,
+   		   control.controlAddress, 
+   		   control.branchNum, 
+   		   control.branchAddress, 
+   		   location.antennaNum,
+    	   type.name as typeName 
+      from gt_court_location location 
+ left join gt_court_location_type type
+        on location.locationTypeGuid = type.guid
+ left join gt_court_location_control control
+        on location.controlId = control.guid
+     where 1=1 
+     <if test="m.pid != null">
+		 and location.parentid = #{m.pid,jdbcType=INTEGER}
+	 </if>
+		 order by serialNo) row_ limit #{m.start}, #{m.rows}
+  </select>
+  
+  <select id="queryPageLocationCount" resultType="java.lang.Integer" parameterType="java.util.Map" >
+    select count(1) from (
+		 select location.guid, 
+    	   location.companyId,
+    	   'closed' as state,
+    	   location.locationName, 
+    	   location.parentId, 
+    	   location.locationPath, 
+    	   location.locationTypeGuid, 
+    	   location.serialNo, 
+   		   location.serialNoPath,
+   		   location.controlId,
+   		   control.controlAddress, 
+   		   control.branchNum, 
+   		   control.branchAddress, 
+   		   location.antennaNum,
+    	   type.name as typeName 
+      from gt_court_location location 
+ left join gt_court_location_type type
+        on location.locationTypeGuid = type.guid
+ left join gt_court_location_control control
+        on location.controlId = control.guid
+     where 1=1 
+     <if test="m.pid != null">
+		 and location.parentid = #{m.pid,jdbcType=INTEGER}
+	 </if>
+		) count_
+  </select>
+  
+  <select id="getTypeList" resultType="com.archives.pojo.LocationType" parameterType="java.lang.Integer" >
+     select config.typeGuid as guid ,
+     		type.name 
+       from gt_court_location_type type,
+       		gt_court_location_config config 
+      where type.guid=config.typeguid
+     <if test="parentcode != null and parentcode != -1">
+		and config.typeguid > #{parentcode,jdbcType=INTEGER}
+	 </if>
+		order by type.guid
+  </select>
+  <select id="queryPageLocationAll" parameterType="String" resultType="com.archives.pojo.LocationInfo">
+  select 
+		 *
+    from gt_court_location where parentId!='-1'
+ </select>
+  <select id="queryMaxSerialNo" resultType="java.lang.Integer" parameterType="java.lang.Integer" >
+  	select max(serialNo) from gt_court_location where parentId = #{pid,jdbcType=INTEGER}
+  </select>
+  
+  <delete id="delLocationInfoByIds" parameterType="java.lang.Integer" >
+    delete from gt_court_location 
+    where guid in
+	<if test="idList != null" >
+		<foreach collection="idList" item="item" index="index" open="(" separator="," close=")">
+        #{item}
+  		</foreach>
+     </if>
+  </delete>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from gt_court_location
+    where guid = #{guid,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.archives.pojo.LocationInfo" >
+    insert into gt_court_location (guid, companyId, locationName, 
+      parentId, locationPath, locationTypeGuid, 
+      serialNo, serialNoPath, controlId, antennaNum
+      )
+    values (#{guid,jdbcType=INTEGER}, #{companyid,jdbcType=VARCHAR}, #{locationname,jdbcType=VARCHAR}, 
+      #{parentid,jdbcType=INTEGER}, #{locationpath,jdbcType=VARCHAR}, #{locationtypeguid,jdbcType=INTEGER}, 
+      #{serialno,jdbcType=INTEGER}, #{serialnopath,jdbcType=VARCHAR}, #{controlId,jdbcType=INTEGER},  #{antennanum,jdbcType=INTEGER}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.archives.pojo.LocationInfo" >
+    insert into gt_court_location
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="guid != null" >
+        guid,
+      </if>
+      <if test="companyId != null" >
+        companyId,
+      </if>
+      <if test="locationName != null" >
+        locationName,
+      </if>
+      <if test="parentId != null" >
+        parentId,
+      </if>
+      <if test="locationPath != null" >
+        locationPath,
+      </if>
+      <if test="locationTypeGuid != null" >
+        locationTypeGuid,
+      </if>
+      <if test="serialNo != null" >
+        serialNo,
+      </if>
+      <if test="serialNoPath != null" >
+        serialNoPath,
+      </if>
+      <if test="controlId != null" >
+        controlId,
+      </if>
+      <if test="antennaNum != null" >
+        antennaNum,
+      </if>
+       <if test="sign != null" >
+        sign,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="guid != null" >
+        #{guid,jdbcType=INTEGER},
+      </if>
+      <if test="companyId != null" >
+        #{companyId,jdbcType=VARCHAR},
+      </if>
+      <if test="locationName != null" >
+        #{locationName,jdbcType=VARCHAR},
+      </if>
+      <if test="parentId != null" >
+        #{parentId,jdbcType=INTEGER},
+      </if>
+      <if test="locationPath != null" >
+        #{locationPath,jdbcType=VARCHAR},
+      </if>
+      <if test="locationTypeGuid != null" >
+        #{locationTypeGuid,jdbcType=INTEGER},
+      </if>
+      <if test="serialNo != null" >
+        #{serialNo,jdbcType=INTEGER},
+      </if>
+      <if test="serialNoPath != null" >
+        #{serialNoPath,jdbcType=VARCHAR},
+      </if>
+      <if test="controlId != null" >
+        #{controlId,jdbcType=INTEGER},
+      </if>
+      <if test="antennaNum != null" >
+        #{antennaNum,jdbcType=INTEGER},
+      </if>
+       <if test="sign != null" >
+        #{sign,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.archives.pojo.LocationInfo" >
+    update gt_court_location
+    <set >
+      <if test="companyId != null" >
+        companyId = #{companyId,jdbcType=VARCHAR},
+      </if>
+      <if test="locationName != null" >
+        locationName = #{locationName,jdbcType=VARCHAR},
+      </if>
+      <if test="parentId != null" >
+        parentId = #{parentId,jdbcType=INTEGER},
+      </if>
+      <if test="locationPath != null" >
+        locationPath = #{locationPath,jdbcType=VARCHAR},
+      </if>
+      <if test="locationTypeGuid != null" >
+        locationTypeGuid = #{locationTypeGuid,jdbcType=INTEGER},
+      </if>
+      <if test="serialNo != null" >
+        serialNo = #{serialNo,jdbcType=INTEGER},
+      </if>
+      <if test="serialNoPath != null" >
+        serialNoPath = #{serialNoPath,jdbcType=VARCHAR},
+      </if>
+      <if test="controlId != null" >
+        controlId = #{controlId,jdbcType=INTEGER},
+      </if>
+      <if test="antennaNum != null" >
+        antennaNum = #{antennaNum,jdbcType=INTEGER},
+      </if>
+       <if test="sign != null" >
+        sign = #{sign,jdbcType=INTEGER},
+      </if>
+    </set>
+    where guid = #{guid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.archives.pojo.LocationInfo" >
+    update gt_court_location
+    set companyId = #{companyid,jdbcType=VARCHAR},
+      locationName = #{locationname,jdbcType=VARCHAR},
+      parentId = #{parentid,jdbcType=INTEGER},
+      locationPath = #{locationpath,jdbcType=VARCHAR},
+      locationTypeGuid = #{locationtypeguid,jdbcType=INTEGER},
+      serialNo = #{serialno,jdbcType=INTEGER},
+      serialNoPath = #{serialnopath,jdbcType=VARCHAR},
+      controlId = #{controlId,jdbcType=INTEGER},
+      antennaNum = #{antennanum,jdbcType=INTEGER}
+    where guid = #{guid,jdbcType=INTEGER}
+  </update>
+  <update id="updateLocationPath" parameterType="java.util.Map" >
+    update gt_court_location 
+    set locationPath = concat(#{map.locationPath_new},substring(locationPath,#{map.len})) 
+    where guid=#{map.locationPath_old}
+  </update>
+  <update id="updateSerialNoByGuid" parameterType="java.util.Map">
+    update gt_court_location set serialNo=#{map.num} where guid=#{map.tempGuid}
+  </update>
+  <update id="updateSerialNoPath" parameterType="java.util.Map">
+    update gt_court_location 
+       set serialNoPath = concat(#{map.newSerial},substring(serialNoPath, #{map.len})) 
+     where serialNoPath like  CONCAT(#{map.oldSerial},'%') 
+       and guid = #{map.guid}
+  </update>
+  
+  <select id="getCellLocationByLocationName" resultMap="BaseResultMap" parameterType="java.util.Map" >
+    select location.guid, 
+    	   location.companyId,
+    	   'closed' as state,
+    	   location.locationName, 
+    	   location.parentId, 
+    	   location.locationPath, 
+    	   location.locationTypeGuid, 
+    	   location.serialNo, 
+   		   location.serialNoPath,
+   		   location.controlId,
+   		   control.controlAddress, 
+   		   control.branchNum, 
+   		   control.branchAddress, 
+   		   location.antennaNum,
+   		   location.sign,
+    	   type.name  as typeName 
+      from gt_court_location location 
+ left join gt_court_location_type type
+        on location.locationTypeGuid = type.guid
+ left join gt_court_location_control control
+        on location.controlId = control.guid
+     where location.locationPath like CONCAT(#{map.locationPath},'%') 
+       and location.locationTypeGuid = #{map.locationType}
+  order by serialNo
+  </select>
+  
+  <select id="getLocationPathByIds" resultType="java.lang.String" parameterType="java.lang.Integer" >
+  	select GROUP_CONCAT(locationPath) from  gt_court_location location 
+  	 where location.guid in
+	<if test="idList != null" >
+		<foreach collection="idList" item="item" index="index" open="(" separator="," close=")">
+        #{item}
+  		</foreach>
+     </if>
+    </select>
+  <select id="getLocationCount" resultType="java.lang.Integer" parameterType="java.lang.String" >
+  	select count(1) from  gt_court_location location 
+  	 where location.parentid in
+	<if test="idList != null" >
+		<foreach collection="idList" item="item" index="index" open="(" separator="," close=")">
+        #{item}
+  		</foreach>
+     </if>
+  </select>
+  
+</mapper>

@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.archives.dao.InsertformDao" >
+  <resultMap id="BaseResultMap" type="com.archives.pojo.Insertform" >
+    <id column="formid" property="formid" jdbcType="CHAR" />
+    <result column="title" property="title" jdbcType="VARCHAR" />
+    <result column="userid" property="userid" jdbcType="CHAR" />
+    <result column="createDate" property="createdate" jdbcType="DATE" />
+    <result column="mark" property="mark" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    formid, title, userid, createDate createdate, mark
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from gt_court_insertform
+    where formid = #{formid,jdbcType=CHAR}
+  </select>
+  <insert id="insertSelective" parameterType="com.archives.pojo.Insertform" >
+    insert into gt_court_insertform
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="formid != null" >
+        formid,
+      </if>
+      <if test="title != null" >
+        title,
+      </if>
+      <if test="userid != null" >
+        userid,
+      </if>
+      <if test="createdate != null" >
+        createDate,
+      </if>
+      <if test="mark != null" >
+        mark,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="formid != null" >
+        #{formid,jdbcType=CHAR},
+      </if>
+      <if test="title != null" >
+        #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="userid != null" >
+        #{userid,jdbcType=CHAR},
+      </if>
+      <if test="createdate != null" >
+        #{createdate,jdbcType=DATE},
+      </if>
+      <if test="mark != null" >
+        #{mark,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.archives.pojo.Insertform" >
+    update gt_court_insertform
+    <set >
+      <if test="title != null" >
+        title = #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="userid != null" >
+        userid = #{userid,jdbcType=CHAR},
+      </if>
+      <if test="createdate != null" >
+        createDate = #{createdate,jdbcType=DATE},
+      </if>
+      <if test="mark != null" >
+        mark = #{mark,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where formid = #{formid,jdbcType=CHAR}
+  </update>
+  <select id="findInsertformForPage" parameterType="java.util.Map" resultType="com.archives.pojo.Insertform">
+    select A.formid,A.title,A.userid,A.createDate createdate,A.mark,B.employeeName as userName
+     from gt_court_insertform A inner join gt_sys_employee B on A.userid = B.employeeId
+        where 1=1
+        <if test="paraMap.insertTitle != null and paraMap.insertTitle != '' ">
+            and A.title like CONCAT('%',#{paraMap.insertTitle},'%') 
+        </if>
+        <if test="paraMap.insertRemark != null and paraMap.insertRemark != '' ">
+            and A.mark like CONCAT('%',#{paraMap.insertRemark},'%') 
+        </if>
+        limit #{paraMap.start}, #{paraMap.rows}
+  </select>
+  <select id="findCountInsertformForPage" parameterType="java.util.Map" resultType="java.lang.Integer">
+    select count(1) from gt_court_insertform A inner join gt_sys_employee B on A.userid = B.employeeId
+      where 1=1
+      <if test="paraMap.insertTitle != null and paraMap.insertTitle != '' ">
+          and A.title like CONCAT('%',#{paraMap.insertTitle},'%') 
+      </if>
+      <if test="paraMap.insertRemark != null and paraMap.insertRemark != '' ">
+          and A.mark like CONCAT('%',#{paraMap.insertRemark},'%') 
+      </if>
+  </select>
+</mapper>

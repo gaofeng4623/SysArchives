@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.system.dao.database.SysLogDao" >
+  <resultMap id="BaseResultMap" type="com.system.base.pojo.SysLog" >
+    <id column="guid" property="guid" jdbcType="INTEGER" />
+    <result column="event" property="event" jdbcType="VARCHAR" />
+    <result column="updateTime" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="person" property="person" jdbcType="VARCHAR" />
+    <result column="ip" property="ip" jdbcType="VARCHAR" />
+    <result column="operationType" property="operationType" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    guid, event, updateTime, person, ip, operationType
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from gt_sys_syslog
+    where guid = #{guid,jdbcType=INTEGER}
+  </select>
+  <insert id="insertSelective" parameterType="com.system.base.pojo.SysLog" >
+    insert into gt_sys_syslog
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="guid != null" >
+        guid,
+      </if>
+      <if test="event != null" >
+        event,
+      </if>
+      <if test="updateTime != null" >
+        updateTime,
+      </if>
+      <if test="person != null" >
+        person,
+      </if>
+      <if test="ip != null" >
+        ip,
+      </if>
+      <if test="operationType != null" >
+        operationType,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="guid != null" >
+        #{guid,jdbcType=INTEGER},
+      </if>
+      <if test="event != null" >
+        #{event,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="person != null" >
+        #{person,jdbcType=VARCHAR},
+      </if>
+      <if test="ip != null" >
+        #{ip,jdbcType=VARCHAR},
+      </if>
+      <if test="operationType != null" >
+        #{operationType,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.system.base.pojo.SysLog" >
+    update gt_sys_syslog
+    <set >
+      <if test="event != null" >
+        event = #{event,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        updateTime = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="person != null" >
+        person = #{person,jdbcType=VARCHAR},
+      </if>
+      <if test="ip != null" >
+        ip = #{ip,jdbcType=VARCHAR},
+      </if>
+      <if test="operationType != null" >
+        operationType = #{operationType,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where guid = #{guid,jdbcType=INTEGER}
+  </update>
+  <select id="findSysLogForPage" parameterType="java.util.Map" resultType="com.system.base.pojo.SysLog">
+	select 
+		guid, event, updateTime, B.employeeName person, ip, operationType
+	from gt_sys_syslog A join gt_sys_employee B on A.person = B.employeeId
+	where 1=1
+		<if test="paraMap.event != null and paraMap.event != '' ">
+			and event like CONCAT('%',#{paraMap.event},'%') 
+		</if>
+		<if test="paraMap.stime != null and paraMap.stime != '' ">
+			and updateTime >= #{paraMap.stime}
+		</if>
+		<if test="paraMap.etime != null and paraMap.etime != '' ">
+			and #{paraMap.etime} >= updateTime
+		</if>
+		<if test="paraMap.operationType != null and paraMap.operationType != '' ">
+			and operationType = #{paraMap.operationType} 
+		</if>
+		<if test="paraMap.ip != null and paraMap.ip != '' ">
+			and ip like CONCAT('%',#{paraMap.ip},'%') 
+		</if>
+		<if test="paraMap.person != null and paraMap.person != '' ">
+			and B.employeeName like CONCAT('%',#{paraMap.person},'%') 
+		</if>
+		order by updateTime DESC
+		limit #{paraMap.start}, #{paraMap.rows}
+		
+	</select>
+	
+	<select id="findCountSysLogForPage" parameterType="java.util.Map" resultType="java.lang.Integer">
+	select count(1) from gt_sys_syslog A join gt_sys_employee B on A.person = B.employeeId where 1=1
+		<if test="paraMap.event != null and paraMap.event != '' ">
+			and event like CONCAT('%',#{paraMap.event},'%') 
+		</if>
+		<if test="paraMap.stime != null and paraMap.stime != '' ">
+			and updateTime >= #{paraMap.stime}
+		</if>
+		<if test="paraMap.etime != null and paraMap.etime != '' ">
+			and #{paraMap.etime} >= updateTime
+		</if>
+		<if test="paraMap.operationType != null and paraMap.operationType != '' ">
+			and operationType = #{paraMap.operationType} 
+		</if>
+		<if test="paraMap.ip != null and paraMap.ip != '' ">
+			and ip like CONCAT('%',#{paraMap.ip},'%') 
+		</if>
+		<if test="paraMap.person != null and paraMap.person != '' ">
+			and B.employeeName like CONCAT('%',#{paraMap.person},'%') 
+		</if>
+	</select>
+	
+	<!-- 嵌入的数据定时同步日志查询页面begin -->
+	<select id="findSynLogForPage" parameterType="java.util.Map" resultType="com.system.base.pojo.SysLog">
+	select 
+		guid, event, updateTime, ip, operationType
+	from gt_sys_syslog where 1=1
+		<if test="paraMap.stime != null and paraMap.stime != '' ">
+			and updateTime >= #{paraMap.stime}
+		</if>
+		<if test="paraMap.etime != null and paraMap.etime != '' ">
+			and #{paraMap.etime} >= updateTime
+		</if>
+		<if test="paraMap.operationType != null and paraMap.operationType != '' ">
+			and operationType = #{paraMap.operationType} 
+		</if>
+		order by updateTime DESC
+		limit #{paraMap.start}, #{paraMap.rows}
+		
+	</select>
+	
+	<select id="findCountSynLogForPage" parameterType="java.util.Map" resultType="java.lang.Integer">
+	select count(1) from gt_sys_syslog  where 1=1
+		<if test="paraMap.stime != null and paraMap.stime != '' ">
+			and updateTime >= #{paraMap.stime}
+		</if>
+		<if test="paraMap.etime != null and paraMap.etime != '' ">
+			and #{paraMap.etime} >= updateTime
+		</if>
+		<if test="paraMap.operationType != null and paraMap.operationType != '' ">
+			and operationType = #{paraMap.operationType} 
+		</if>
+	</select>
+	<!-- 嵌入的数据定时同步日志查询页面end -->
+</mapper>

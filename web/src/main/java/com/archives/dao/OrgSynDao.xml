@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.archives.dao.OrgSynDao" >
+	<insert id="createDepartment" parameterType="com.system.base.pojo.Department" >
+		insert into gt_sys_department (departmentId, superiorId, departmentName, tabIndex)
+		values (#{departmentid,jdbcType=VARCHAR}, #{superiorid,jdbcType=VARCHAR}, #{departmentname,jdbcType=VARCHAR}, 
+		#{tabindex,jdbcType=VARCHAR})
+	</insert>
+	<insert id="createDepartmentRef" parameterType="Object" >
+		insert into gt_court_deparmentref (remoteId, localId)
+		values (#{remoteId,jdbcType=VARCHAR}, #{departmentId,jdbcType=CHAR})
+	</insert>
+	<delete id="deleteDepartment" parameterType="String" >
+		delete A from gt_sys_department as A
+		inner join gt_court_deparmentref as B on A.departmentId = B.localId
+		where B.remoteId = #{deptNo,jdbcType=VARCHAR}
+	</delete>
+	<update id="updateDepartment" parameterType="Object" >
+		update gt_sys_department as A
+		inner join gt_court_deparmentref as B on B.localId = A.departmentId
+		<set>
+		<if test="departmentName != null">
+			A.departmentName = #{departmentName,jdbcType=VARCHAR},
+		</if>
+		<if test="parentGuid != null">
+			A.superiorId= #{parentGuid,jdbcType=VARCHAR},
+		</if>
+		<if test="departmentTabIndex != null">
+			A.tabIndex = #{departmentTabIndex,jdbcType=INTEGER},
+		</if>
+		</set>
+		where B.remoteId = #{deptNo,jdbcType=VARCHAR}
+	</update>
+	
+	<insert id="createEmployee" parameterType="com.system.base.pojo.Employee" >
+		insert into gt_sys_employee
+	<trim prefix="(" suffix=")" suffixOverrides=",">
+	<if test="employeeId != null">
+		employeeId,
+	</if>
+	<if test="employeeName != null">
+		employeeName,
+	</if>
+	<if test="sex != null">
+		sex,
+	</if>
+	<if test="mobile != null">
+		mobile,
+	</if>
+	<if test="birthday != null">
+		birthday,
+	</if>
+	<if test="departmentId != null">
+		departmentId,
+	</if>
+	<if test="employeeLoginName != null">
+		employeeLoginName,
+	</if>
+	<if test="password != null">
+		password,
+	</if>
+	<if test="userEmail != null">
+		userEmail,
+	</if>
+	<if test="photo != null">
+		photo,
+	</if>
+	<if test="post != null">
+		post,
+	</if>
+	</trim>
+	<trim prefix="values (" suffix=")" suffixOverrides=",">
+	<if test="employeeId != null">
+		#{employeeId,jdbcType=INTEGER},
+	</if>
+	<if test="employeeName != null">
+		#{employeeName,jdbcType=VARCHAR},
+	</if>
+	<if test="sex != null">
+		#{sex,jdbcType=VARCHAR},
+	</if>
+	<if test="mobile != null">
+		#{mobile,jdbcType=VARCHAR},
+	</if>
+	<if test="birthday != null">
+		#{birthday,jdbcType=DATE},
+	</if>
+	<if test="departmentId != null">
+		#{departmentId,jdbcType=INTEGER},
+	</if>
+	<if test="employeeLoginName != null">
+		#{employeeLoginName,jdbcType=VARCHAR},
+	</if>
+	<if test="password != null">
+		#{password,jdbcType=VARCHAR},
+	</if>
+	<if test="userEmail != null">
+		#{userEmail,jdbcType=VARCHAR},
+	</if>
+	<if test="photo != null">
+		#{photo,jdbcType=LONGVARBINARY},
+	</if>
+	<if test="post != null">
+		#{post,jdbcType=VARCHAR},
+	</if>
+	</trim>
+	</insert>
+	<insert id="createEmployeeRef" parameterType="Object" >
+		insert into gt_court_employeeref (remoteId, localId)
+		values (#{remoteId,jdbcType=VARCHAR}, #{employeeId,jdbcType=CHAR})
+	</insert>
+	<delete id="deleteEmployee" parameterType="String" >
+		delete A from gt_sys_employee as A
+		inner join gt_court_employeeref as B on A.employeeId = B.localId
+		where B.remoteId = #{empNo,jdbcType=VARCHAR}
+	</delete>
+	<update id="updateEmployee" parameterType="com.system.base.pojo.Employee" >
+		update gt_sys_employee
+	<set>
+	<if test="employeeName != null" >
+		employeeName = #{employeeName,jdbcType=VARCHAR},
+	</if>
+	<if test="sex != null" >
+		sex = #{sex,jdbcType=VARCHAR},
+	</if>
+	<if test="mobile != null" >
+		mobile = #{mobile,jdbcType=VARCHAR},
+	</if>
+	<if test="birthday != null" >
+		birthday = #{birthday,jdbcType=DATE},
+	</if>
+	<if test="departmentId != null" >
+		departmentId = #{departmentId,jdbcType=INTEGER},
+	</if>
+	<if test="employeeLoginName != null" >
+		employeeLoginName = #{employeeLoginName,jdbcType=VARCHAR},
+	</if>
+	<if test="password != null" >
+		password = #{password,jdbcType=VARCHAR},
+	</if>
+	<if test="userEmail != null">
+		userEmail = #{userEmail,jdbcType=VARCHAR},
+	</if>
+	<if test="photo != null" >
+		photo = #{photo,jdbcType=LONGVARBINARY},
+	</if>
+	<if test="post != null" >
+		post = #{post,jdbcType=VARCHAR},
+	</if>
+	</set>
+		where employeeId = #{employeeId,jdbcType=INTEGER}
+	</update>
+	<update id="removeEmployee" parameterType="Object" >
+		update gt_sys_employee as A
+		inner join gt_court_employeeref as B on A.employeeId = B.localId
+		set A.departmentId = (select localId from gt_court_deparmentref C 
+			where C.remoteId = #{newDeptNo,jdbcType=VARCHAR})
+		where B.remoteId = #{empNo,jdbcType=VARCHAR}
+	</update>
+	<update id="changePassword" parameterType="Object" >
+		update gt_sys_employee as A
+		inner join gt_court_employeeref as B on B.localId = A.employeeId
+		set A.password = #{password,jdbcType=VARCHAR}
+		where B.remoteId = #{empNo,jdbcType=VARCHAR}
+	</update>
+	<select id="selecByRemoteId" parameterType="String"  resultType="String">
+		select localId from gt_court_deparmentref where remoteId =#{remoteId,jdbcType=VARCHAR}
+	</select>
+		<select id="selecByremoteIdEmploy" parameterType="String"  resultType="String">
+		select localId from gt_court_employeeref where remoteId =#{remoteId,jdbcType=VARCHAR}
+	</select>
+	<delete id="deleteDepartmentRef" parameterType="String" >
+		delete from gt_court_deparmentref
+		where gt_court_deparmentref.remoteId = #{remoteId,jdbcType=VARCHAR}
+	</delete>
+	<delete id="deleteEmployeeRef" parameterType="String" >
+		delete from gt_court_employeeref
+		where gt_court_employeeref.remoteId = #{empNo,jdbcType=VARCHAR}
+	</delete>
+</mapper>

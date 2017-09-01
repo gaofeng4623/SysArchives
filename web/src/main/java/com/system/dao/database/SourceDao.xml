@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.system.dao.database.SourceDao" >
+  <resultMap id="BaseResultMap" type="com.system.base.pojo.Source" >
+    <result column="guid" property="guid" jdbcType="CHAR" />
+    <result column="suporId" property="suporId" jdbcType="CHAR" />
+    <result column="title" property="title" jdbcType="VARCHAR" />
+    <result column="type" property="type" jdbcType="VARCHAR" />
+    <result column="url" property="url" jdbcType="VARCHAR" />
+    <result column="imgs" property="imgs" jdbcType="VARCHAR" />
+    <result column="initMethod" property="initMethod" jdbcType="VARCHAR" />
+    <result column="scripts" property="scripts" jdbcType="VARCHAR" />
+    <result column="onclick" property="onclick" jdbcType="VARCHAR" />
+    <result column="sname" property="sname" jdbcType="VARCHAR" />
+    <result column="sid" property="sid" jdbcType="VARCHAR" />
+    <result column="className" property="className" jdbcType="VARCHAR" />
+    <result column="content" property="content" jdbcType="VARCHAR" />
+    <result column="isSource" property="isSource" jdbcType="INTEGER" />
+    <result column="tabIndex" property="tabIndex" jdbcType="INTEGER" />
+  </resultMap>
+ 
+   <sql id="Base_Column_List" >
+    guid, suporId, title, type, url, imgs, initMethod, scripts,
+    onclick, sname, sid, className, content,isSource, tabIndex
+  </sql>
+  
+  <select id="findAllSource" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    	from gt_sys_source
+   		order by tabIndex
+  </select>
+  
+  <select id="selectSourceBySourceIds" parameterType="Object" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    	from gt_sys_source
+    	<if test="idList != null" >
+     	 where guid in 
+          <foreach collection="idList" item="item" index="index" open="(" separator="," close=")">
+          #{item}
+          </foreach>
+      </if>
+      order by tabIndex
+      limit #{start},#{rows}
+  </select>
+  
+  <select id="countSourceBySourceIds" parameterType="Object" resultType="java.lang.Integer">
+  	select count(*)
+    from gt_sys_source
+    <if test="idList != null" >
+     	 where guid in 
+         <foreach collection="idList" item="item" index="index" open="(" separator="," close=")">
+          #{item}
+         </foreach>
+    </if>
+  </select>
+  
+   <!-- 用于资源的角色关联加载 -->
+  <select id="selectLimitedSourceByRoleId"  parameterType="String"  resultMap="BaseResultMap" >	
+  	select  
+  	<include refid="Base_Column_List" /> 
+  		from gt_sys_source where guid in (select distinct(sourceId) from gt_sys_sourcemember where roleId = #{roleId})
+  		order by tabIndex
+   </select>
+  
+  
+  <select id="selectBySourceId" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    	from gt_sys_source
+   		where guid =#{sourceId}
+  </select>
+  
+  <select id="selectByTypeName" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    	from gt_sys_source where guid in (select distinct(sourceId) from gt_sys_sourcemember where roleId 
+		in (select distinct(roleid) from gt_sys_rolemembers where userid=#{userId}))
+   		and type =#{type}
+  </select>
+
+  <delete id="deleteBySourceId" parameterType="java.lang.String" >
+    delete from gt_sys_source where guid = #{sourceId}
+  </delete>
+  
+  <delete id="deleteMembersBySourceId" parameterType="java.lang.String" >
+    delete from gt_sys_sourcemember where sourceId = #{sourceId}
+  </delete>
+  
+  
+  <insert id="insertSelective" parameterType="com.system.base.pojo.Source" >
+    insert into gt_sys_source
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="guid != null" >
+        guid,
+      </if>
+      <if test="suporId != null" >
+        suporId,
+      </if>
+      <if test="title != null" >
+        title,
+      </if>
+      <if test="type != null" >
+        type,
+      </if>
+      <if test="url != null" >
+        url,
+      </if>
+      <if test="imgs != null" >
+        imgs,
+      </if>
+      <if test="initMethod != null" >
+        initMethod,
+      </if>
+      <if test="scripts != null" >
+        scripts,
+      </if>
+      <if test="onclick != null" >
+        onclick,
+      </if>
+      <if test="sname != null" >
+        sname,
+      </if>
+      <if test="sid != null" >
+        sid,
+      </if>
+      <if test="className != null" >
+        className,
+      </if>
+      <if test="content != null" >
+        content,
+      </if>
+      <if test="isSource != null" >
+        isSource,
+      </if>
+      <if test="tabIndex != null" >
+        tabIndex,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="guid != null" >
+        #{guid,jdbcType=CHAR},
+      </if>
+      <if test="suporId != null" >
+        #{suporId,jdbcType=CHAR},
+      </if>
+      <if test="title != null" >
+        #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null" >
+        #{type,jdbcType=VARCHAR},
+      </if>
+      <if test="url != null" >
+        #{url,jdbcType=VARCHAR},
+      </if>
+      <if test="imgs != null" >
+        #{imgs,jdbcType=VARCHAR},
+      </if>
+      <if test="initMethod != null" >
+        #{initMethod,jdbcType=VARCHAR},
+      </if>
+      <if test="scripts != null" >
+        #{scripts,jdbcType=VARCHAR},
+      </if>
+      <if test="onclick != null" >
+        #{onclick,jdbcType=VARCHAR},
+      </if>
+      <if test="sname != null" >
+        #{sname,jdbcType=VARCHAR},
+      </if>
+      <if test="sid != null" >
+        #{sid,jdbcType=VARCHAR},
+      </if>
+      <if test="className != null" >
+        #{className,jdbcType=VARCHAR},
+      </if>
+       <if test="content != null" >
+        #{content,jdbcType=VARCHAR},
+      </if>
+      <if test="isSource != null" >
+        #{isSource,jdbcType=INTEGER},
+      </if>
+      <if test="tabIndex != null" >
+        #{tabIndex,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  
+  <update id="updateBySelective" parameterType="com.system.base.pojo.Source" >
+    update gt_sys_source
+     <set>
+     <if test="suporId != null" >
+        suporId = #{suporId,jdbcType=CHAR},
+      </if>
+      <if test="title != null" >
+        title = #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null" >
+        type = #{type,jdbcType=VARCHAR},
+      </if>
+      <if test="url != null" >
+        url = #{url,jdbcType=VARCHAR},
+      </if>
+      <if test="imgs != null" >
+        imgs = #{imgs,jdbcType=VARCHAR},
+      </if>
+      <if test="initMethod != null" >
+        initMethod = #{initMethod,jdbcType=VARCHAR},
+      </if>
+      <if test="scripts != null" >
+        scripts = #{scripts,jdbcType=VARCHAR},
+      </if>
+      <if test="onclick != null" >
+        onclick = #{onclick,jdbcType=VARCHAR},
+      </if>
+      <if test="sname != null" >
+        sname = #{sname,jdbcType=VARCHAR},
+      </if>
+      <if test="sid != null" >
+        sid = #{sid,jdbcType=VARCHAR},
+      </if>
+      <if test="className != null" >
+        className = #{className,jdbcType=VARCHAR},
+      </if>
+      <if test="content != null" >
+        content = #{content,jdbcType=VARCHAR},
+      </if>
+      <if test="isSource != null" >
+        isSource = #{isSource,jdbcType=INTEGER},
+      </if>
+      <if test="tabIndex != null" >
+        tabIndex = #{tabIndex,jdbcType=INTEGER},
+      </if>
+    </set>
+    where guid = #{guid, jdbcType=CHAR}
+  </update>
+  
+  <insert id="insertRoleSourceForMysql" parameterType="java.lang.Object">
+		insert into gt_sys_sourcemember (roleId, sourceId)
+		values
+		<if test="data != null">
+			<foreach collection="data" item="item" index="index"
+				separator=",">
+				(#{roleId, jdbcType=VARCHAR}, #{item, jdbcType=VARCHAR})
+			</foreach>
+		</if>
+	</insert>
+
+	<insert id="insertRoleSourceForOracle" parameterType="java.lang.Object">
+		<if test="data != null">
+			begin
+			<foreach collection="data" item="item" index="index"
+				separator=";">
+				insert into gt_sys_sourcemember (roleId, sourceId)
+				values
+				(#{roleId, jdbcType=VARCHAR}, #{item, jdbcType=VARCHAR})
+			</foreach>
+			end;
+		</if>
+	</insert>
+	
+	<delete id="removeRoleSource" parameterType="String">
+		delete from
+		gt_sys_sourcemember where roleId = #{roleId}
+	</delete>
+</mapper>

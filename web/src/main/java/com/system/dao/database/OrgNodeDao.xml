@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.system.dao.database.OrgNodeDao" >
+
+  <resultMap id="DeptResultMap" type="com.system.base.pojo.OrgNode" >
+    <id column="departmentId" property="guid" jdbcType="VARCHAR" />
+    <result column="superiorId" property="suporId" jdbcType="VARCHAR" />
+    <result column="departmentName" property="nodeName" jdbcType="VARCHAR" />
+  </resultMap>
+  <resultMap id="RoleMap" type="com.system.base.pojo.OrgNode" >
+    <id column="guid" property="guid" jdbcType="VARCHAR" />
+    <result column="groupId" property="suporId" jdbcType="VARCHAR" />
+    <result column="roleName" property="nodeName" jdbcType="VARCHAR" />
+  </resultMap>
+
+  <resultMap id="EmpResultMap" type="com.system.base.pojo.OrgNode" >
+    <id column="employeeId" property="guid" jdbcType="VARCHAR" />
+    <result column="departmentId" property="suporId" jdbcType="VARCHAR" />
+    <result column="employeeName" property="nodeName" jdbcType="VARCHAR" />
+    <result column="employeeLoginName" property="loginName" jdbcType="VARCHAR" />
+  </resultMap>
+   <resultMap id="WorkMap" type="com.system.base.pojo.OrgNode" >
+    <id column="employeeId" property="guid" jdbcType="VARCHAR" />
+    <result column="roleId" property="suporId" jdbcType="VARCHAR" />
+    <result column="employeeName" property="nodeName" jdbcType="VARCHAR" />
+    <result column="employeeLoginName" property="loginName" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Dept_Column_List" >
+   	departmentId, superiorId, departmentName
+  </sql>
+  
+  <sql id="Emp_Column_List" >
+   employeeId,departmentId,employeeName,employeeLoginName
+  </sql>
+  
+  <select id="getDeptNode" resultMap="DeptResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Dept_Column_List" />
+    from gt_sys_department
+  </select>
+  <select id="getDeptNodeByRoleName" resultMap="DeptResultMap" parameterType="java.lang.String" >
+    SELECT DISTINCT(d.departmentId), d.superiorId, d.departmentName from gt_sys_department d, 
+    gt_sys_employee e, gt_sys_roledefine r,gt_sys_rolemembers m WHERE d.departmentId = e.departmentId
+    and e.employeeId = m.userId and r.guid = m.roleId and r.guid = #{roleId,jdbcType=VARCHAR}
+  </select>
+   <select id="getRole" resultMap="RoleMap" parameterType="java.lang.String" >
+    select guid, groupId, roleName
+    from gt_sys_workflowroledefine
+  </select>
+  <select id="getEmpNode" resultMap="EmpResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Emp_Column_List" />
+    from gt_sys_employee
+  </select>
+  <select id="getEmpNodeByRoleName" resultMap="EmpResultMap" parameterType="java.lang.String" >
+    SELECT e.employeeId,e.departmentId,e.employeeName,e.employeeLoginName from gt_sys_department d,
+    gt_sys_employee e, gt_sys_roledefine r,gt_sys_rolemembers m  WHERE d.departmentId = e.departmentId 
+    and e.employeeId = m.userId and r.guid = m.roleId and r.guid = #{roleId,jdbcType=VARCHAR}
+  </select>
+    <select id="getWorkflowrolemembers" resultMap="WorkMap" parameterType="java.lang.String" >
+    select 
+    empl.employeeId,empl.employeeName,empl.employeeLoginName,workd.roleId
+    from gt_sys_workflowrolemembers workd,gt_sys_employee empl
+    where workd.userid=empl.employeeId
+  </select>
+</mapper>

@@ -1,0 +1,2271 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.archives.dao.ArchivesInfoMapperDao" >
+  <sql id="Base_Column_List" >
+    guid, flowId, caseNo, archivesNo, year, caseProerty, caseWord, courtShortName, number, 
+    caseCategory, judgeProcedure, caseName, shortDetailsCase, parties, DATE_FORMAT(putOnRecordDate, '%Y-%m-%d %k:%i')putOnRecordDate, 
+    putOnRecordDep, approvePer, undertakeDep, undertakePer, courtClerk, chiefJudge, collegiateBench, 
+    formalDocument, counterpart, otherDoucment, formalDocPageNum, counterpartPageNum, 
+    mergeCase, settleManner,DATE_FORMAT(settleDate, '%Y-%m-%d %k:%i')settleDate , settleReason, OriginalCourt, OriginalCaseNo, 
+    firstResult, secondResult, lastResult, fullDocNo, catalogNo, evidenceBag, degreeOfSecrets, 
+    storageLife, applyPer, receivePer, placeOnPer,   DATE_FORMAT(placeOnDate, '%Y-%m-%d %k:%i')placeOnDate, registerPer, DATE_FORMAT(registerTime, '%Y-%m-%d %k:%i')registerTime, 
+    remark, status, handleStatus,updated
+  </sql>
+  <select id="findAll" parameterType="String" resultType="com.archives.pojo.ArchivesInfo">
+		 <include refid="Base_Column_List" />
+    from gt_court_arc_info
+ </select>
+ 
+ <select id="selectByCaseNo"  parameterType="java.lang.String" resultType="com.archives.pojo.ArchivesInfo">
+     select a.guid,
+    		a.caseNo,
+    		a.updated
+       from gt_court_arc_info a
+       where a.caseNo = #{caseNo}
+  </select> 
+ 
+ 
+  <select id="selectByPrimaryKey"  parameterType="java.lang.Object" resultType="com.archives.pojo.ArchivesInfo">
+    select 
+    loc.locationPath,total.content,detail.caseContent,a.guid, a.flowId, itm.itemNo as caseno,a.markType, a.archivesNo, a.year, a.caseProerty, a.caseWord, a.courtShortName, a.number, 
+    a.caseCategory, a.judgeProcedure, a.caseName, a.shortDetailsCase, a.parties, DATE_FORMAT(a.putOnRecordDate, '%Y-%m-%d %k:%i')putOnRecordDate, 
+    a.putOnRecordDep, a.approvePer, a.undertakeDep, a.undertakePer, a.courtClerk, a.chiefJudge, a.collegiateBench, 
+    a.formalDocument, a.counterpart, a.otherDoucment, a.formalDocPageNum, a.counterpartPageNum, 
+    a.mergeCase, a.settleManner,DATE_FORMAT(a.settleDate, '%Y-%m-%d %k:%i')settleDate , a.settleReason, a.OriginalCourt, a.OriginalCaseNo, 
+    a.firstResult, a.secondResult, a.lastResult, a.fullDocNo, a.catalogNo, a.evidenceBag, a.degreeOfSecrets, 
+    a.storageLife, a.applyPer, a.receivePer, a.placeOnPer,   DATE_FORMAT(a.placeOnDate, '%Y-%m-%d %k:%i')placeOnDate, a.registerPer, DATE_FORMAT(a.registerTime, '%Y-%m-%d %k:%i')registerTime, 
+    a.remark, a.status, a.handleStatus, 
+     case itm.status when '1' then '在库'
+	when '2' then '下架'
+	when '3' then '销毁'
+	when '4' then '待上架'
+	else  '未上架' end as itmStatus
+    from gt_court_arc_info a
+    left join gt_court_arc_itemstatus itm on a.guid=itm.infoid
+	left join gt_court_arc_map_total total on total.mark=a.caseproerty
+	left join gt_court_arc_map_detail detail on detail.mark=a.casecategory
+	left join gt_court_location loc on itm.location=loc.guid
+    where itm.guid = #{itemGuid,jdbcType=INTEGER}
+  </select>
+  
+  <select id="findByInfoId"  parameterType="java.lang.Integer" resultType="com.archives.pojo.ArchivesInfo">
+    select a.guid, a.flowId, a.caseno,a.markType, a.archivesNo, a.year, a.caseProerty, a.caseWord, a.courtShortName, a.number, 
+    a.caseCategory, a.judgeProcedure, a.caseName, a.shortDetailsCase, a.parties, DATE_FORMAT(a.putOnRecordDate, '%Y-%m-%d %k:%i')putOnRecordDate, 
+    a.putOnRecordDep, a.approvePer, a.undertakeDep, a.undertakePer, a.courtClerk, a.chiefJudge, a.collegiateBench, 
+    a.formalDocument, a.counterpart, a.otherDoucment, a.formalDocPageNum, a.counterpartPageNum, 
+    a.mergeCase, a.settleManner,DATE_FORMAT(a.settleDate, '%Y-%m-%d %k:%i')settleDate , a.settleReason, a.OriginalCourt, a.OriginalCaseNo, 
+    a.firstResult, a.secondResult, a.lastResult, a.fullDocNo, a.catalogNo, a.evidenceBag, a.degreeOfSecrets, 
+    a.storageLife, a.applyPer, a.receivePer, a.placeOnPer,   DATE_FORMAT(a.placeOnDate, '%Y-%m-%d %k:%i')placeOnDate, a.registerPer, DATE_FORMAT(a.registerTime, '%Y-%m-%d %k:%i')registerTime, 
+    a.remark, a.status
+   		 from gt_court_arc_info a
+    	 where a.guid = #{infoId,jdbcType=INTEGER}
+  </select> 
+   
+  <select id="countArchivesInfo" parameterType="String" resultType="int">
+      select count(*)
+      from gt_court_arc_info
+      
+  </select>
+  
+  <select id="findEmpArchiveForPage" parameterType="java.util.Map" resultType="com.archives.pojo.ArchivesInfo">
+	select a.guid, b.itemId, b.guid as itemGuid, a.caseNo,a.caseName,a.archivesNo,a.flowId,DATE_FORMAT(a.putOnRecordDate, '%Y-%m-%d')putOnRecordDate,a.undertakePer,a.parties, b.location ,b.status fjStatus
+	<!--  a.guid, a.flowId, a.caseNo, a.archivesNo, a.year, a.caseProerty, a.caseWord, a.courtShortName, a.number, 
+    a.caseCategory, a.judgeProcedure, a.caseName, a.shortDetailsCase, a.parties, DATE_FORMAT(a.putOnRecordDate, '%Y-%m-%d')putOnRecordDate, 
+    a.putOnRecordDep, a.approvePer, a.undertakeDep, a.undertakePer, a.courtClerk, a.chiefJudge, a.collegiateBench, 
+    a.formalDocument, a.counterpart, a.otherDoucment, a.formalDocPageNum, a.counterpartPageNum, 
+    a.mergeCase, a.settleManner, a.settleDate, a.settleReason, a.OriginalCourt, a.OriginalCaseNo, 
+    a.firstResult, a.secondResult, a.lastResult, a.fullDocNo, a.catalogNo, a.evidenceBag, a.degreeOfSecrets, 
+    a.storageLife, a.applyPer, a.receivePer, a.placeOnPer, a.placeOnDate, a.registerPer, a.registerTime, 
+    a.remark, a.status,a.handleStatus, b.location ,b.status fjStatus -->
+     from gt_court_arc_info a
+    inner join gt_court_arc_itemstatus b on a.guid = b.infoid
+     left join gt_court_arc_map_total d on a.caseProerty = d.mark
+		<where>
+		b.itemId='0'
+			<if test="paraMap.itemstatus =='status' and paraMap.itemstatus == 'status' ">
+			and b.status !='0'
+		</if>
+		<if test="paraMap.itemstatus != null and paraMap.itemstatus != '' and paraMap.itemstatus != 'status' ">
+			and b.status =#{paraMap.itemstatus}
+		</if>
+		 <if test="paraMap.status != null and paraMap.status != '' ">
+			and  a.status = #{paraMap.status}
+		</if> 
+		<if test="paraMap.year != null and paraMap.year != '' ">
+			and  a.year like  CONCAT('%',#{paraMap.year},'%')
+		</if>
+		<if test="paraMap.registertime != null and paraMap.registertime != '' and paraMap.registertime2 != null and paraMap.registertime2 != '' ">
+		and STR_TO_DATE(a.registertime, '%Y-%m-%d')&gt;= #{paraMap.registertime} and STR_TO_DATE(a.registertime, '%Y-%m-%d') &lt;= #{paraMap.registertime2} 
+		</if>
+		<if test="paraMap.caseproerty != null and paraMap.caseproerty != '' ">
+			and d.content like CONCAT('%',#{paraMap.caseproerty},'%') 
+		</if>
+		<if test="paraMap.putonrecorddate != null and paraMap.putonrecorddate != '' and paraMap.putonrecorddate2 != null and paraMap.putonrecorddate2 != '' ">
+		and STR_TO_DATE(a.putonrecorddate, '%Y-%m-%d')&gt;= #{paraMap.putonrecorddate} and STR_TO_DATE(a.putonrecorddate, '%Y-%m-%d') &lt;= #{paraMap.putonrecorddate2} 
+		</if>
+		<if test="paraMap.caseword != null and paraMap.caseword != '' ">
+			and a.caseword like CONCAT('%',#{paraMap.caseword},'%') 
+		</if>
+		<if test="paraMap.settledate != null and paraMap.settledate != '' and paraMap.settledate2 != null and paraMap.settledate2 != '' ">
+		and STR_TO_DATE(a.settledate, '%Y-%m-%d')&gt;= #{paraMap.settledate} and STR_TO_DATE(a.settledate, '%Y-%m-%d') &lt;= #{paraMap.settledate2} 
+		</if>
+		<if test="paraMap.undertakedep != null and paraMap.undertakedep != '' ">
+			and a.undertakedep like CONCAT('%',#{paraMap.undertakedep},'%') 
+		</if>
+		<if test="paraMap.placeondate != null and paraMap.placeondate != '' and paraMap.placeondate2 != null and paraMap.placeondate2 != '' ">
+		and STR_TO_DATE(a.placeondate, '%Y-%m-%d')&gt;= #{paraMap.placeondate} and STR_TO_DATE(a.placeondate, '%Y-%m-%d') &lt;= #{paraMap.placeondate2} 
+		</if>
+		<if test="paraMap.undertakeper != null and paraMap.undertakeper != '' ">
+			and  a.undertakePer like CONCAT('%',#{paraMap.undertakeper},'%') 
+		</if>
+		<if test="paraMap.storagelife != null and paraMap.storagelife != '' ">
+			and  a.storagelife like CONCAT('%',#{paraMap.storagelife},'%') 
+		</if>
+		
+		<if test="paraMap.caseno != null and paraMap.caseno != '' ">
+			and  b.itemNo like CONCAT('%',#{paraMap.caseno},'%') 
+		</if>
+		<if test="paraMap.parties != null and paraMap.parties != '' ">
+			and  a.parties like CONCAT('%',#{paraMap.parties},'%') 
+		</if>
+		<if test="paraMap.number1  != null and paraMap.number1 != '' and paraMap.number2  != null and paraMap.number2 != ''">
+			and  a.archivesNo &gt;= #{paraMap.number1,jdbcType=INTEGER} and a.archivesNo &lt;= #{paraMap.number2,jdbcType=INTEGER} 
+		</if> 
+		
+		<if test="paraMap.flowid != null and paraMap.flowid != '' ">
+			and a.flowId like CONCAT('%',#{paraMap.flowid},'%') 
+		</if>
+		<if test="paraMap.number != null and paraMap.number != '' ">
+			and  a.number like CONCAT('%',#{paraMap.number},'%') 
+		</if>
+		<!-- <if test="paraMap.flowId != null and paraMap.flowId != '' ">
+			and flowId like CONCAT('%',#{paraMap.flowId},'%') 
+		</if>
+		<if test="paraMap.caseNo != null and paraMap.caseNo != '' ">
+			and  caseNo like CONCAT('%',#{paraMap.caseNo},'%') 
+		</if>
+		<if test="paraMap.archivesNo != null and paraMap.archivesNo != '' ">
+			and  archivesNo like CONCAT('%',#{paraMap.archivesNo},'%') 
+		</if>
+		
+		
+		<if test="paraMap.undertakePer != null and paraMap.undertakePer != '' ">
+			and  undertakePer like CONCAT('%',#{paraMap.undertakePer},'%') 
+		</if>
+		<if test="paraMap.parties != null and paraMap.parties != '' ">
+			and  parties like CONCAT('%',#{paraMap.parties},'%') 
+		</if>
+		<if test="paraMap.putOnRecordDate != null and paraMap.putOnRecordDate != '' ">
+			and  year=#{paraMap.putOnRecordDate}
+		</if>
+		<if test="paraMap.settleDate != null and paraMap.settleDate != '' ">
+		<![CDATA[   and DATE_FORMAT(settleDate, '%Y-%m-%d')=  DATE_FORMAT(#{paraMap.settleDate}, '%Y-%m-%d')   ]]>
+			
+		</if>
+		<if test="paraMap.catalogNo != null and paraMap.catalogNo != '' ">
+			and  catalogNo like CONCAT('%',#{paraMap.catalogNo},'%') 
+		</if>
+		<if test="paraMap.fullDocNo != null and paraMap.fullDocNo != '' ">
+			and  fullDocNo like CONCAT('%',#{paraMap.fullDocNo},'%') 
+		</if>
+		
+		<if test="paraMap.number != null and paraMap.number != '' ">
+			and  number like CONCAT('%',#{paraMap.number},'%') 
+		</if>
+		<if test="paraMap.registerper != null and paraMap.registerper != '' ">
+			and  registerper like CONCAT('%',#{paraMap.registerper},'%') 
+		</if>
+		<if test="paraMap.status != null and paraMap.status != '' ">
+			and  a.status = #{paraMap.status}
+		</if>
+		 <if test="paraMap.number1  != null and paraMap.number1 != '' and paraMap.number2  != null and paraMap.number2 != ''">
+			and  a.archivesNo &gt;= #{paraMap.number1,jdbcType=INTEGER} and a.archivesNo &lt;= #{paraMap.number2,jdbcType=INTEGER} 
+		</if>  -->
+		</where>
+		order by <!-- a.placeOnDate desc--> a.number  limit #{paraMap.start}, #{paraMap.rows}
+	</select>
+	
+	<select id="findCountArchivesForPage" parameterType="java.util.Map" resultType="java.lang.Integer">
+		select count(1) from gt_court_arc_info a
+		 inner join gt_court_arc_itemstatus b on a.guid = b.infoid
+     left join gt_court_arc_map_total d on a.caseProerty = d.mark
+    <where>
+    b.itemId='0'
+     		<if test="paraMap.itemstatus =='status' and paraMap.itemstatus == 'status' ">
+			and b.status !='0'
+		</if>
+		<if test="paraMap.itemstatus != null and paraMap.itemstatus != '' and paraMap.itemstatus != 'status' ">
+			and b.status =#{paraMap.itemstatus}
+		</if>
+		 <if test="paraMap.status != null and paraMap.status != '' ">
+			and  a.status = #{paraMap.status}
+		</if> 
+		<if test="paraMap.year != null and paraMap.year != '' ">
+			and  a.year like  CONCAT('%',#{paraMap.year},'%')
+		</if>
+		<if test="paraMap.registertime != null and paraMap.registertime != '' and paraMap.registertime2 != null and paraMap.registertime2 != '' ">
+		and STR_TO_DATE(a.registertime, '%Y-%m-%d')&gt;= #{paraMap.registertime} and STR_TO_DATE(a.registertime, '%Y-%m-%d') &lt;= #{paraMap.registertime2} 
+		</if>
+		<if test="paraMap.caseproerty != null and paraMap.caseproerty != '' ">
+			and d.content like CONCAT('%',#{paraMap.caseproerty},'%') 
+		</if>
+		<if test="paraMap.putonrecorddate != null and paraMap.putonrecorddate != '' and paraMap.putonrecorddate2 != null and paraMap.putonrecorddate2 != '' ">
+		and STR_TO_DATE(a.putonrecorddate, '%Y-%m-%d')&gt;= #{paraMap.putonrecorddate} and STR_TO_DATE(a.putonrecorddate, '%Y-%m-%d') &lt;= #{paraMap.putonrecorddate2} 
+		</if>
+		<if test="paraMap.caseword != null and paraMap.caseword != '' ">
+			and a.caseword like CONCAT('%',#{paraMap.caseword},'%') 
+		</if>
+		<if test="paraMap.settledate != null and paraMap.settledate != '' and paraMap.settledate2 != null and paraMap.settledate2 != '' ">
+		and STR_TO_DATE(a.settledate, '%Y-%m-%d')&gt;= #{paraMap.settledate} and STR_TO_DATE(a.settledate, '%Y-%m-%d') &lt;= #{paraMap.settledate2} 
+		</if>
+		<if test="paraMap.undertakedep != null and paraMap.undertakedep != '' ">
+			and a.undertakedep like CONCAT('%',#{paraMap.undertakedep},'%') 
+		</if>
+		<if test="paraMap.placeondate != null and paraMap.placeondate != '' and paraMap.placeondate2 != null and paraMap.placeondate2 != '' ">
+		and STR_TO_DATE(a.placeondate, '%Y-%m-%d')&gt;= #{paraMap.placeondate} and STR_TO_DATE(a.placeondate, '%Y-%m-%d') &lt;= #{paraMap.placeondate2} 
+		</if>
+		<if test="paraMap.undertakeper != null and paraMap.undertakeper != '' ">
+			and  a.undertakePer like CONCAT('%',#{paraMap.undertakeper},'%') 
+		</if>
+		<if test="paraMap.storagelife != null and paraMap.storagelife != '' ">
+			and  a.storagelife like CONCAT('%',#{paraMap.storagelife},'%') 
+		</if>
+		
+		<if test="paraMap.caseno != null and paraMap.caseno != '' ">
+			and  b.itemNo like CONCAT('%',#{paraMap.caseno},'%') 
+		</if>
+		<if test="paraMap.parties != null and paraMap.parties != '' ">
+			and  a.parties like CONCAT('%',#{paraMap.parties},'%') 
+		</if>
+		<if test="paraMap.number1  != null and paraMap.number1 != '' and paraMap.number2  != null and paraMap.number2 != ''">
+			and  a.archivesNo &gt;= #{paraMap.number1,jdbcType=INTEGER} and a.archivesNo &lt;= #{paraMap.number2,jdbcType=INTEGER} 
+		</if> 
+		
+		<if test="paraMap.flowid != null and paraMap.flowid != '' ">
+			and a.flowId like CONCAT('%',#{paraMap.flowid},'%') 
+		</if>
+		<if test="paraMap.number != null and paraMap.number != '' ">
+			and  a.number like CONCAT('%',#{paraMap.number},'%') 
+		</if>
+		</where>
+	</select>
+	
+  <select id="findArchivesForChange" parameterType="java.util.Map" resultType="com.archives.pojo.ArchivesInfo">
+	select  a.guid, a.flowId, b.itemNo as caseNo, b.guid as itemGuid, a.archivesNo, a.year, a.caseProerty, a.caseWord, a.courtShortName, a.number, 
+    a.caseCategory, a.judgeProcedure, a.caseName, a.shortDetailsCase, a.parties, DATE_FORMAT(a.putOnRecordDate, '%Y-%m-%d')putOnRecordDate, 
+    a.putOnRecordDep, a.approvePer, a.undertakeDep, a.undertakePer, a.courtClerk, a.chiefJudge, a.collegiateBench, 
+    a.formalDocument, a.counterpart, a.otherDoucment, a.formalDocPageNum, a.counterpartPageNum, 
+    a.mergeCase, a.settleManner, a.settleDate, a.settleReason, a.OriginalCourt, a.OriginalCaseNo, 
+    a.firstResult, a.secondResult, a.lastResult, a.fullDocNo, a.catalogNo, a.evidenceBag, a.degreeOfSecrets, 
+    a.storageLife, a.applyPer, a.receivePer, a.placeOnPer, a.placeOnDate, a.registerPer, a.registerTime, 
+    a.remark, a.status,a.handleStatus, b.location from gt_court_arc_info a
+    inner join gt_court_arc_itemstatus b on a.guid = b.infoid
+    left join gt_court_arc_map_total d on a.caseProerty = d.mark
+	where 1=1
+	<if test="paraMap.year != null and paraMap.year != '' ">
+	and  a.year like  CONCAT('%',#{paraMap.year},'%')
+	</if>
+	<if test="paraMap.registertime != null and paraMap.registertime != '' and paraMap.registertime2 != null and paraMap.registertime2 != '' ">
+	and STR_TO_DATE(a.registertime, '%Y-%m-%d')&gt;= #{paraMap.registertime} and STR_TO_DATE(a.registertime, '%Y-%m-%d') &lt;= #{paraMap.registertime2} 
+	</if>
+	<if test="paraMap.caseproerty != null and paraMap.caseproerty != '' ">
+		and d.content like CONCAT('%',#{paraMap.caseproerty},'%') 
+	</if>
+	<if test="paraMap.putonrecorddate != null and paraMap.putonrecorddate != '' and paraMap.putonrecorddate2 != null and paraMap.putonrecorddate2 != '' ">
+	and STR_TO_DATE(a.putonrecorddate, '%Y-%m-%d')&gt;= #{paraMap.putonrecorddate} and STR_TO_DATE(a.putonrecorddate, '%Y-%m-%d') &lt;= #{paraMap.putonrecorddate2} 
+	</if>
+	<if test="paraMap.caseword != null and paraMap.caseword != '' ">
+		and a.caseword like CONCAT('%',#{paraMap.caseword},'%') 
+	</if>
+	<if test="paraMap.settledate != null and paraMap.settledate != '' and paraMap.settledate2 != null and paraMap.settledate2 != '' ">
+	and STR_TO_DATE(a.settledate, '%Y-%m-%d')&gt;= #{paraMap.settledate} and STR_TO_DATE(a.settledate, '%Y-%m-%d') &lt;= #{paraMap.settledate2} 
+	</if>
+	<if test="paraMap.undertakedep != null and paraMap.undertakedep != '' ">
+		and a.undertakedep like CONCAT('%',#{paraMap.undertakedep},'%') 
+	</if>
+	<if test="paraMap.placeondate != null and paraMap.placeondate != '' and paraMap.placeondate2 != null and paraMap.placeondate2 != '' ">
+	and STR_TO_DATE(a.placeondate, '%Y-%m-%d')&gt;= #{paraMap.placeondate} and STR_TO_DATE(a.placeondate, '%Y-%m-%d') &lt;= #{paraMap.placeondate2} 
+	</if>
+	<if test="paraMap.undertakeper != null and paraMap.undertakeper != '' ">
+		and  a.undertakePer like CONCAT('%',#{paraMap.undertakeper},'%') 
+	</if>
+	<if test="paraMap.storagelife != null and paraMap.storagelife != '' ">
+		and  a.storagelife like CONCAT('%',#{paraMap.storagelife},'%') 
+	</if>
+	
+	<if test="paraMap.caseno != null and paraMap.caseno != '' ">
+		and  b.itemNo like CONCAT('%',#{paraMap.caseno},'%') 
+	</if>
+	<if test="paraMap.parties != null and paraMap.parties != '' ">
+		and  a.parties like CONCAT('%',#{paraMap.parties},'%') 
+	</if>
+	<if test="paraMap.number1  != null and paraMap.number1 != '' and paraMap.number2  != null and paraMap.number2 != ''">
+		and  a.archivesNo &gt;= #{paraMap.number1,jdbcType=INTEGER} and a.archivesNo &lt;= #{paraMap.number2,jdbcType=INTEGER} 
+	</if> 
+	
+	<if test="paraMap.flowid != null and paraMap.flowid != '' ">
+		and a.flowId like CONCAT('%',#{paraMap.flowid},'%') 
+	</if>
+	<if test="paraMap.number != null and paraMap.number != '' ">
+		and  a.number like CONCAT('%',#{paraMap.number},'%') 
+	</if>
+	<!-- <if test="paraMap.flowId != null and paraMap.flowId != '' ">
+		and flowId like CONCAT('%',#{paraMap.flowId},'%') 
+	</if>
+	<if test="paraMap.caseNo != null and paraMap.caseNo != '' ">
+		and  caseNo like CONCAT('%',#{paraMap.caseNo},'%') 
+	</if>
+	<if test="paraMap.archivesNo != null and paraMap.archivesNo != '' ">
+		and  archivesNo like CONCAT('%',#{paraMap.archivesNo},'%') 
+	</if>
+	<if test="paraMap.undertakePer != null and paraMap.undertakePer != '' ">
+		and  undertakePer like CONCAT('%',#{paraMap.undertakePer},'%') 
+	</if>
+	<if test="paraMap.parties != null and paraMap.parties != '' ">
+		and  parties like CONCAT('%',#{paraMap.parties},'%') 
+	</if>
+	<if test="paraMap.putOnRecordDate != null and paraMap.putOnRecordDate != '' ">
+         and  year=#{paraMap.putOnRecordDate}
+	</if>
+	<if test="paraMap.settleDate != null and paraMap.settleDate != '' ">
+	<![CDATA[   and DATE_FORMAT(settleDate, '%Y-%m-%d')=  DATE_FORMAT(#{paraMap.settleDate}, '%Y-%m-%d')   ]]>
+		
+	</if>
+	<if test="paraMap.catalogNo != null and paraMap.catalogNo != '' ">
+		and  catalogNo like CONCAT('%',#{paraMap.catalogNo},'%') 
+	</if>
+	<if test="paraMap.fullDocNo != null and paraMap.fullDocNo != '' ">
+		and  fullDocNo like CONCAT('%',#{paraMap.fullDocNo},'%') 
+	</if>
+	
+	<if test="paraMap.number != null and paraMap.number != '' ">
+		and  number like CONCAT('%',#{paraMap.number},'%') 
+	</if>
+	<if test="paraMap.registerper != null and paraMap.registerper != '' ">
+		and  registerper like CONCAT('%',#{paraMap.registerper},'%') 
+	</if> -->
+		and  b.status = '0'
+		and  a.handleStatus = '0'
+	 limit #{paraMap.start}, #{paraMap.rows}
+	</select>
+	
+	<select id="findCountArchivesForChange" parameterType="java.util.Map" resultType="java.lang.Integer">
+	select count(1) from gt_court_arc_info a
+	 inner join gt_court_arc_itemstatus b on a.guid = b.infoid
+    left join gt_court_arc_map_total d on a.caseProerty = d.mark
+    where 1=1 
+		<if test="paraMap.year != null and paraMap.year != '' ">
+		and  a.year like  CONCAT('%',#{paraMap.year},'%')
+		</if>
+		<if test="paraMap.registertime != null and paraMap.registertime != '' and paraMap.registertime2 != null and paraMap.registertime2 != '' ">
+		and STR_TO_DATE(a.registertime, '%Y-%m-%d')&gt;= #{paraMap.registertime} and STR_TO_DATE(a.registertime, '%Y-%m-%d') &lt;= #{paraMap.registertime2} 
+		</if>
+		<if test="paraMap.caseproerty != null and paraMap.caseproerty != '' ">
+			and d.content like CONCAT('%',#{paraMap.caseproerty},'%') 
+		</if>
+		<if test="paraMap.putonrecorddate != null and paraMap.putonrecorddate != '' and paraMap.putonrecorddate2 != null and paraMap.putonrecorddate2 != '' ">
+		and STR_TO_DATE(a.putonrecorddate, '%Y-%m-%d')&gt;= #{paraMap.putonrecorddate} and STR_TO_DATE(a.putonrecorddate, '%Y-%m-%d') &lt;= #{paraMap.putonrecorddate2} 
+		</if>
+		<if test="paraMap.caseword != null and paraMap.caseword != '' ">
+			and a.caseword like CONCAT('%',#{paraMap.caseword},'%') 
+		</if>
+		<if test="paraMap.settledate != null and paraMap.settledate != '' and paraMap.settledate2 != null and paraMap.settledate2 != '' ">
+		and STR_TO_DATE(a.settledate, '%Y-%m-%d')&gt;= #{paraMap.settledate} and STR_TO_DATE(a.settledate, '%Y-%m-%d') &lt;= #{paraMap.settledate2} 
+		</if>
+		<if test="paraMap.undertakedep != null and paraMap.undertakedep != '' ">
+			and a.undertakedep like CONCAT('%',#{paraMap.undertakedep},'%') 
+		</if>
+		<if test="paraMap.placeondate != null and paraMap.placeondate != '' and paraMap.placeondate2 != null and paraMap.placeondate2 != '' ">
+		and STR_TO_DATE(a.placeondate, '%Y-%m-%d')&gt;= #{paraMap.placeondate} and STR_TO_DATE(a.placeondate, '%Y-%m-%d') &lt;= #{paraMap.placeondate2} 
+		</if>
+		<if test="paraMap.undertakeper != null and paraMap.undertakeper != '' ">
+			and  a.undertakePer like CONCAT('%',#{paraMap.undertakeper},'%') 
+		</if>
+		<if test="paraMap.storagelife != null and paraMap.storagelife != '' ">
+			and  a.storagelife like CONCAT('%',#{paraMap.storagelife},'%') 
+		</if>
+		
+		<if test="paraMap.caseno != null and paraMap.caseno != '' ">
+			and  b.itemNo like CONCAT('%',#{paraMap.caseno},'%') 
+		</if>
+		<if test="paraMap.parties != null and paraMap.parties != '' ">
+			and  a.parties like CONCAT('%',#{paraMap.parties},'%') 
+		</if>
+		<if test="paraMap.number1  != null and paraMap.number1 != '' and paraMap.number2  != null and paraMap.number2 != ''">
+			and  a.archivesNo &gt;= #{paraMap.number1,jdbcType=INTEGER} and a.archivesNo &lt;= #{paraMap.number2,jdbcType=INTEGER} 
+		</if> 
+		
+		<if test="paraMap.flowid != null and paraMap.flowid != '' ">
+			and a.flowId like CONCAT('%',#{paraMap.flowid},'%') 
+		</if>
+		<if test="paraMap.number != null and paraMap.number != '' ">
+			and  a.number like CONCAT('%',#{paraMap.number},'%') 
+		</if>
+		<!-- <if test="paraMap.flowId != null and paraMap.flowId != '' ">
+			and flowId like CONCAT('%',#{paraMap.flowId},'%') 
+		</if>
+		<if test="paraMap.caseNo != null and paraMap.caseNo != '' ">
+			and  caseNo like CONCAT('%',#{paraMap.caseNo},'%') 
+		</if>
+		<if test="paraMap.archivesNo != null and paraMap.archivesNo != '' ">
+			and  archivesNo like CONCAT('%',#{paraMap.archivesNo},'%') 
+		</if>
+		<if test="paraMap.undertakePer != null and paraMap.undertakePer != '' ">
+			and  undertakePer like CONCAT('%',#{paraMap.undertakePer},'%') 
+		</if>
+		<if test="paraMap.parties != null and paraMap.parties != '' ">
+			and  parties like CONCAT('%',#{paraMap.parties},'%') 
+		</if>
+		<if test="paraMap.putOnRecordDate != null and paraMap.putOnRecordDate != '' ">
+         and  year=#{paraMap.putOnRecordDate}
+		</if>
+		<if test="paraMap.settleDate != null and paraMap.settleDate != '' ">
+		<![CDATA[   and DATE_FORMAT(settleDate, '%Y-%m-%d')=  DATE_FORMAT(#{paraMap.settleDate}, '%Y-%m-%d')   ]]>
+			
+		</if>
+		<if test="paraMap.catalogNo != null and paraMap.catalogNo != '' ">
+			and  catalogNo like CONCAT('%',#{paraMap.catalogNo},'%') 
+		</if>
+		<if test="paraMap.fullDocNo != null and paraMap.fullDocNo != '' ">
+			and  fullDocNo like CONCAT('%',#{paraMap.fullDocNo},'%') 
+		</if>
+		
+		<if test="paraMap.number != null and paraMap.number != '' ">
+			and  number like CONCAT('%',#{paraMap.number},'%') 
+		</if>
+		<if test="paraMap.registerper != null and paraMap.registerper != '' ">
+			and  registerper like CONCAT('%',#{paraMap.registerper},'%') 
+		</if> -->
+			and  b.status = '0'
+			and  a.handleStatus = '0'
+	</select>
+	
+  <select id="findArchivesInfoForShelves" parameterType="java.util.Map" resultType="com.archives.pojo.ArchivesInfo">
+	select  a.guid, a.flowId, b.itemNo as caseNo, b.guid as itemGuid, a.archivesNo, a.year, a.caseProerty, a.caseWord, a.courtShortName, a.number, 
+    a.caseCategory, a.judgeProcedure, a.caseName, a.shortDetailsCase, a.parties, DATE_FORMAT(a.putOnRecordDate, '%Y-%m-%d')putOnRecordDate, 
+    a.putOnRecordDep, a.approvePer, a.undertakeDep, a.undertakePer, a.courtClerk, a.chiefJudge, a.collegiateBench, 
+    a.formalDocument, a.counterpart, a.otherDoucment, a.formalDocPageNum, a.counterpartPageNum, 
+    a.mergeCase, a.settleManner, a.settleDate, a.settleReason, a.OriginalCourt, a.OriginalCaseNo, 
+    a.firstResult, a.secondResult, a.lastResult, a.fullDocNo, a.catalogNo, a.evidenceBag, a.degreeOfSecrets, 
+    a.storageLife, a.applyPer, a.receivePer, a.placeOnPer, a.placeOnDate, a.registerPer, a.registerTime, 
+    a.remark, a.status,a.handleStatus, c.locationPath as location, ifnull(b.uptime,"")uptime , b.status as  fjStatus from 
+    gt_court_arc_info a inner join gt_court_arc_itemstatus b on a.guid=b.infoid
+    left join gt_court_location c  on  b.location = c.guid where 1 = 1
+	<if test="paraMap.year != null and paraMap.year != '' ">
+		and  a.year like  CONCAT('%',#{paraMap.year},'%')
+	</if>
+	<if test="paraMap.registertime != null and paraMap.registertime != '' and paraMap.registertime2 != null and paraMap.registertime2 != '' ">
+	and STR_TO_DATE(a.registertime, '%Y-%m-%d')&gt;= #{paraMap.registertime} and STR_TO_DATE(a.registertime, '%Y-%m-%d') &lt;= #{paraMap.registertime2} 
+	</if>
+	<!-- <if test="paraMap.caseproerty != null and paraMap.caseproerty != '' ">
+		and d.content like CONCAT('%',#{paraMap.caseproerty},'%') 
+	</if> -->
+	<if test="paraMap.putonrecorddate != null and paraMap.putonrecorddate != '' and paraMap.putonrecorddate2 != null and paraMap.putonrecorddate2 != '' ">
+	and STR_TO_DATE(a.putonrecorddate, '%Y-%m-%d')&gt;= #{paraMap.putonrecorddate} and STR_TO_DATE(a.putonrecorddate, '%Y-%m-%d') &lt;= #{paraMap.putonrecorddate2} 
+	</if>
+	<if test="paraMap.caseword != null and paraMap.caseword != '' ">
+		and a.caseword like CONCAT('%',#{paraMap.caseword},'%') 
+	</if>
+	<if test="paraMap.settledate != null and paraMap.settledate != '' and paraMap.settledate2 != null and paraMap.settledate2 != '' ">
+	and STR_TO_DATE(a.settledate, '%Y-%m-%d')&gt;= #{paraMap.settledate} and STR_TO_DATE(a.settledate, '%Y-%m-%d') &lt;= #{paraMap.settledate2} 
+	</if>
+	<if test="paraMap.undertakedep != null and paraMap.undertakedep != '' ">
+		and a.undertakedep like CONCAT('%',#{paraMap.undertakedep},'%') 
+	</if>
+	<if test="paraMap.placeondate != null and paraMap.placeondate != '' and paraMap.placeondate2 != null and paraMap.placeondate2 != '' ">
+	and STR_TO_DATE(a.placeondate, '%Y-%m-%d')&gt;= #{paraMap.placeondate} and STR_TO_DATE(a.placeondate, '%Y-%m-%d') &lt;= #{paraMap.placeondate2} 
+	</if>
+	<if test="paraMap.undertakeper != null and paraMap.undertakeper != '' ">
+		and  a.undertakePer like CONCAT('%',#{paraMap.undertakeper},'%') 
+	</if>
+	<if test="paraMap.storagelife != null and paraMap.storagelife != '' ">
+		and  a.storagelife like CONCAT('%',#{paraMap.storagelife},'%') 
+	</if>
+	
+	<if test="paraMap.caseno != null and paraMap.caseno != '' ">
+		and  b.itemNo like CONCAT('%',#{paraMap.caseno},'%') 
+	</if>
+	<if test="paraMap.parties != null and paraMap.parties != '' ">
+		and  a.parties like CONCAT('%',#{paraMap.parties},'%') 
+	</if>
+	<if test="paraMap.number1  != null and paraMap.number1 != '' and paraMap.number2  != null and paraMap.number2 != ''">
+		and  a.archivesNo &gt;= #{paraMap.number1,jdbcType=INTEGER} and a.archivesNo &lt;= #{paraMap.number2,jdbcType=INTEGER} 
+	</if> 
+	
+	<if test="paraMap.flowid != null and paraMap.flowid != '' ">
+		and a.flowId like CONCAT('%',#{paraMap.flowid},'%') 
+	</if>
+	<if test="paraMap.number != null and paraMap.number != '' ">
+		and  a.number like CONCAT('%',#{paraMap.number},'%') 
+	</if>
+	<!-- <if test="paraMap.flowId != null and paraMap.flowId != '' ">
+		and flowId like CONCAT('%',#{paraMap.flowId},'%') 
+	</if>
+	<if test="paraMap.caseNo != null and paraMap.caseNo != '' ">
+		and  caseNo like CONCAT('%',#{paraMap.caseNo},'%') 
+	</if>
+	<if test="paraMap.archivesNo != null and paraMap.archivesNo != '' ">
+		and  archivesNo like CONCAT('%',#{paraMap.archivesNo},'%') 
+	</if>
+	<if test="paraMap.undertakePer != null and paraMap.undertakePer != '' ">
+		and  undertakePer like CONCAT('%',#{paraMap.undertakePer},'%') 
+	</if>
+	<if test="paraMap.parties != null and paraMap.parties != '' ">
+		and  parties like CONCAT('%',#{paraMap.parties},'%') 
+	</if>
+	<if test="paraMap.year != null and paraMap.year != '' ">
+	and  year=#{paraMap.year}
+	</if>
+	<if test="paraMap.settleDate != null and paraMap.settleDate != '' ">
+		<![CDATA[   and DATE_FORMAT(settleDate, '%Y-%m-%d')=  DATE_FORMAT(#{paraMap.settleDate}, '%Y-%m-%d')   ]]>
+	</if>
+	<if test="paraMap.catalogNo != null and paraMap.catalogNo != '' ">
+		and  catalogNo like CONCAT('%',#{paraMap.catalogNo},'%') 
+	</if>
+	<if test="paraMap.fullDocNo != null and paraMap.fullDocNo != '' ">
+		and  fullDocNo like CONCAT('%',#{paraMap.fullDocNo},'%') 
+	</if>
+	<if test="paraMap.number != null and paraMap.number != '' ">
+		and  number like CONCAT('%',#{paraMap.number},'%') 
+	</if>
+	<if test="paraMap.registerper != null and paraMap.registerper != '' ">
+		and  registerper like CONCAT('%',#{paraMap.registerper},'%') 
+	</if> -->
+	 and  (b.status = '4' or (b.status = '1' and b.uptime &gt;= CONCAT(#{paraMap.nowDate},' 00:00:00') 
+	 and b.uptime &lt;= CONCAT(#{paraMap.nowDate},' 23:59:59')))
+	 order by b.status DESC
+	 limit #{paraMap.start}, #{paraMap.rows}
+	</select>
+	
+	<select id="findCountArchivesForShelves" parameterType="java.util.Map" resultType="java.lang.Integer">
+		select count(1) from gt_court_arc_info a  
+		inner join gt_court_arc_itemstatus b on a.guid = b.infoid 
+		where 1=1
+		<if test="paraMap.year != null and paraMap.year != '' ">
+		and  a.year like  CONCAT('%',#{paraMap.year},'%')
+		</if>
+		<if test="paraMap.registertime != null and paraMap.registertime != '' and paraMap.registertime2 != null and paraMap.registertime2 != '' ">
+		and STR_TO_DATE(a.registertime, '%Y-%m-%d')&gt;= #{paraMap.registertime} and STR_TO_DATE(a.registertime, '%Y-%m-%d') &lt;= #{paraMap.registertime2} 
+		</if>
+		<!-- <if test="paraMap.caseproerty != null and paraMap.caseproerty != '' ">
+			and d.content like CONCAT('%',#{paraMap.caseproerty},'%') 
+		</if> -->
+		<if test="paraMap.putonrecorddate != null and paraMap.putonrecorddate != '' and paraMap.putonrecorddate2 != null and paraMap.putonrecorddate2 != '' ">
+		and STR_TO_DATE(a.putonrecorddate, '%Y-%m-%d')&gt;= #{paraMap.putonrecorddate} and STR_TO_DATE(a.putonrecorddate, '%Y-%m-%d') &lt;= #{paraMap.putonrecorddate2} 
+		</if>
+		<if test="paraMap.caseword != null and paraMap.caseword != '' ">
+			and a.caseword like CONCAT('%',#{paraMap.caseword},'%') 
+		</if>
+		<if test="paraMap.settledate != null and paraMap.settledate != '' and paraMap.settledate2 != null and paraMap.settledate2 != '' ">
+		and STR_TO_DATE(a.settledate, '%Y-%m-%d')&gt;= #{paraMap.settledate} and STR_TO_DATE(a.settledate, '%Y-%m-%d') &lt;= #{paraMap.settledate2} 
+		</if>
+		<if test="paraMap.undertakedep != null and paraMap.undertakedep != '' ">
+			and a.undertakedep like CONCAT('%',#{paraMap.undertakedep},'%') 
+		</if>
+		<if test="paraMap.placeondate != null and paraMap.placeondate != '' and paraMap.placeondate2 != null and paraMap.placeondate2 != '' ">
+		and STR_TO_DATE(a.placeondate, '%Y-%m-%d')&gt;= #{paraMap.placeondate} and STR_TO_DATE(a.placeondate, '%Y-%m-%d') &lt;= #{paraMap.placeondate2} 
+		</if>
+		<if test="paraMap.undertakeper != null and paraMap.undertakeper != '' ">
+			and  a.undertakePer like CONCAT('%',#{paraMap.undertakeper},'%') 
+		</if>
+		<if test="paraMap.storagelife != null and paraMap.storagelife != '' ">
+			and  a.storagelife like CONCAT('%',#{paraMap.storagelife},'%') 
+		</if>
+		
+		<if test="paraMap.caseno != null and paraMap.caseno != '' ">
+			and  b.itemNo like CONCAT('%',#{paraMap.caseno},'%') 
+		</if>
+		<if test="paraMap.parties != null and paraMap.parties != '' ">
+			and  a.parties like CONCAT('%',#{paraMap.parties},'%') 
+		</if>
+		<if test="paraMap.number1  != null and paraMap.number1 != '' and paraMap.number2  != null and paraMap.number2 != ''">
+			and  a.archivesNo &gt;= #{paraMap.number1,jdbcType=INTEGER} and a.archivesNo &lt;= #{paraMap.number2,jdbcType=INTEGER} 
+		</if> 
+		
+		<if test="paraMap.flowid != null and paraMap.flowid != '' ">
+			and a.flowId like CONCAT('%',#{paraMap.flowid},'%') 
+		</if>
+		<if test="paraMap.number != null and paraMap.number != '' ">
+			and  a.number like CONCAT('%',#{paraMap.number},'%') 
+		</if>
+		<!-- <if test="paraMap.employeeName != null and paraMap.employeeName != '' ">
+			and emp.employeeName like CONCAT('%',#{paraMap.employeeName},'%') 
+		</if>
+		<if test="paraMap.employeeLoginName != null and paraMap.employeeLoginName != '' ">
+			and  emp.employeeLoginName like CONCAT('%',#{paraMap.employeeLoginName},'%') 
+		</if>
+		<if test="paraMap.undertakePer != null and paraMap.undertakePer != '' ">
+			and  undertakePer like CONCAT('%',#{paraMap.undertakePer},'%') 
+		</if>
+		<if test="paraMap.parties != null and paraMap.parties != '' ">
+			and  parties like CONCAT('%',#{paraMap.parties},'%') 
+		</if>
+		<if test="paraMap.putOnRecordDate != null and paraMap.putOnRecordDate != '' ">
+			and  year=#{paraMap.putOnRecordDate} 
+		</if>
+		<if test="paraMap.settleDate != null and paraMap.settleDate != '' ">
+			and  settleDate like CONCAT('%',#{paraMap.settleDate},'%') 
+		</if>
+		<if test="paraMap.catalogNo != null and paraMap.catalogNo != '' ">
+			and  catalogNo like CONCAT('%',#{paraMap.catalogNo},'%') 
+		</if>
+		<if test="paraMap.fullDocNo != null and paraMap.fullDocNo != '' ">
+			and  fullDocNo like CONCAT('%',#{paraMap.fullDocNo},'%') 
+		</if>
+		
+		<if test="paraMap.number != null and paraMap.number != '' ">
+			and  number like CONCAT('%',#{paraMap.number},'%') 
+		</if>
+		<if test="paraMap.registerper != null and paraMap.registerper != '' ">
+			and  registerper like CONCAT('%',#{paraMap.registerper},'%') 
+		</if> -->
+			 and  (b.status = '4' or (b.status = '1' and b.uptime &gt;= CONCAT(#{paraMap.nowDate},' 00:00:00') 
+		 	and b.uptime &lt;= CONCAT(#{paraMap.nowDate},' 23:59:59')))
+	</select>
+	
+	<select id="findUpArchivesForTodo" parameterType="String"  resultType="java.lang.Integer">
+		select count(1) from gt_court_arc_info a,gt_court_arc_itemstatus b where a.guid=b.infoid
+		and  b.status = '4' <!-- and (b.uptime &gt;= CONCAT(CURDATE(),' 00:00:00') and b.uptime &lt;= CONCAT(CURDATE(),' 23:59:59'))) -->
+	</select>
+	
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from gt_court_arc_info
+    where guid = #{guid,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.archives.pojo.ArchivesInfo" >
+    insert into gt_court_arc_info (guid, flowId, caseNo, 
+      archivesNo, year, caseProerty, 
+      caseWord, courtShortName, number, 
+      caseCategory, judgeProcedure, caseName, 
+      shortDetailsCase, parties, putOnRecordDate, 
+      putOnRecordDep, approvePer, undertakeDep, 
+      undertakePer, courtClerk, chiefJudge, 
+      collegiateBench, formalDocument, counterpart, 
+      otherDoucment, formalDocPageNum, counterpartPageNum, 
+      mergeCase, settleManner, settleDate, 
+      settleReason, OriginalCourt, OriginalCaseNo, 
+      firstResult, secondResult, lastResult, 
+      fullDocNo, catalogNo, evidenceBag, 
+      degreeOfSecrets, storageLife, applyPer, 
+      receivePer, placeOnPer, placeOnDate, 
+      registerPer, registerTime, remark, 
+      status)
+    values (#{guid,jdbcType=INTEGER}, #{flowid,jdbcType=VARCHAR}, #{caseno,jdbcType=VARCHAR}, 
+      #{archivesno,jdbcType=VARCHAR}, #{year,jdbcType=VARCHAR}, #{caseproerty,jdbcType=VARCHAR}, 
+      #{caseword,jdbcType=VARCHAR}, #{courtshortname,jdbcType=VARCHAR}, #{number,jdbcType=VARCHAR}, 
+      #{casecategory,jdbcType=VARCHAR}, #{judgeprocedure,jdbcType=VARCHAR}, #{casename,jdbcType=VARCHAR}, 
+      #{shortdetailscase,jdbcType=VARCHAR}, #{parties,jdbcType=VARCHAR}, #{putonrecorddate,jdbcType=TIMESTAMP}, 
+      #{putonrecorddep,jdbcType=VARCHAR}, #{approveper,jdbcType=VARCHAR}, #{undertakedep,jdbcType=VARCHAR}, 
+      #{undertakeper,jdbcType=VARCHAR}, #{courtclerk,jdbcType=VARCHAR}, #{chiefjudge,jdbcType=VARCHAR}, 
+      #{collegiatebench,jdbcType=VARCHAR}, #{formaldocument,jdbcType=INTEGER}, #{counterpart,jdbcType=INTEGER}, 
+      #{otherdoucment,jdbcType=INTEGER}, #{formaldocpagenum,jdbcType=INTEGER}, #{counterpartpagenum,jdbcType=INTEGER}, 
+      #{mergecase,jdbcType=VARCHAR}, #{settlemanner,jdbcType=VARCHAR}, #{settledate,jdbcType=TIMESTAMP}, 
+      #{settlereason,jdbcType=VARCHAR}, #{originalcourt,jdbcType=VARCHAR}, #{originalcaseno,jdbcType=VARCHAR}, 
+      #{firstresult,jdbcType=VARCHAR}, #{secondresult,jdbcType=VARCHAR}, #{lastresult,jdbcType=VARCHAR}, 
+      #{fulldocno,jdbcType=VARCHAR}, #{catalogno,jdbcType=VARCHAR}, #{evidencebag,jdbcType=VARCHAR}, 
+      #{degreeofsecrets,jdbcType=VARCHAR}, #{storagelife,jdbcType=VARCHAR}, #{applyper,jdbcType=VARCHAR}, 
+      #{receiveper,jdbcType=VARCHAR}, #{placeonper,jdbcType=VARCHAR}, #{placeondate,jdbcType=TIMESTAMP}, 
+      #{registerper,jdbcType=VARCHAR}, #{registertime,jdbcType=TIMESTAMP}, #{remark,jdbcType=VARCHAR}, 
+      #{status,jdbcType=CHAR})
+  </insert>
+  <!-- <insert id="insertSelective" parameterType="com.archives.pojo.ArchivesInfo" >
+    insert into gt_court_arc_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="guid != null" >
+        guid,
+      </if>
+      <if test="flowid != null" >
+        flowId,
+      </if>
+      <if test="caseno != null" >
+        caseNo,
+      </if>
+      <if test="archivesno != null" >
+        archivesNo,
+      </if>
+      <if test="year != null" >
+        year,
+      </if>
+      <if test="caseproerty != null" >
+        caseProerty,
+      </if>
+      <if test="caseword != null" >
+        caseWord,
+      </if>
+      <if test="courtshortname != null" >
+        courtShortName,
+      </if>
+      <if test="number != null" >
+        number,
+      </if>
+      <if test="casecategory != null" >
+        caseCategory,
+      </if>
+      <if test="judgeprocedure != null" >
+        judgeProcedure,
+      </if>
+      <if test="casename != null" >
+        caseName,
+      </if>
+      <if test="shortdetailscase != null" >
+        shortDetailsCase,
+      </if>
+      <if test="parties != null" >
+        parties,
+      </if>
+      <if test="putonrecorddate != null" >
+        putOnRecordDate,
+      </if>
+      <if test="putonrecorddep != null" >
+        putOnRecordDep,
+      </if>
+      <if test="approveper != null" >
+        approvePer,
+      </if>
+      <if test="undertakedep != null" >
+        undertakeDep,
+      </if>
+      <if test="undertakeper != null" >
+        undertakePer,
+      </if>
+      <if test="courtclerk != null" >
+        courtClerk,
+      </if>
+      <if test="chiefjudge != null" >
+        chiefJudge,
+      </if>
+      <if test="collegiatebench != null" >
+        collegiateBench,
+      </if>
+      <if test="formaldocument != null" >
+        formalDocument,
+      </if>
+      <if test="counterpart != null" >
+        counterpart,
+      </if>
+      <if test="otherdoucment != null" >
+        otherDoucment,
+      </if>
+      <if test="formaldocpagenum != null" >
+        formalDocPageNum,
+      </if>
+      <if test="counterpartpagenum != null" >
+        counterpartPageNum,
+      </if>
+      <if test="mergecase != null" >
+        mergeCase,
+      </if>
+      <if test="settlemanner != null" >
+        settleManner,
+      </if>
+      <if test="settledate != null" >
+        settleDate,
+      </if>
+      <if test="settlereason != null" >
+        settleReason,
+      </if>
+      <if test="originalcourt != null" >
+        OriginalCourt,
+      </if>
+      <if test="originalcaseno != null" >
+        OriginalCaseNo,
+      </if>
+      <if test="firstresult != null" >
+        firstResult,
+      </if>
+      <if test="secondresult != null" >
+        secondResult,
+      </if>
+      <if test="lastresult != null" >
+        lastResult,
+      </if>
+      <if test="fulldocno != null" >
+        fullDocNo,
+      </if>
+      <if test="catalogno != null" >
+        catalogNo,
+      </if>
+      <if test="evidencebag != null" >
+        evidenceBag,
+      </if>
+      <if test="degreeofsecrets != null" >
+        degreeOfSecrets,
+      </if>
+      <if test="storagelife != null" >
+        storageLife,
+      </if>
+      <if test="applyper != null" >
+        applyPer,
+      </if>
+      <if test="receiveper != null" >
+        receivePer,
+      </if>
+      <if test="placeonper != null" >
+        placeOnPer,
+      </if>
+      <if test="placeondate != null" >
+        placeOnDate,
+      </if>
+      <if test="registerper != null" >
+        registerPer,
+      </if>
+      <if test="registertime != null" >
+        registerTime,
+      </if>
+      <if test="remark != null" >
+        remark,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="guid != null" >
+        #{guid,jdbcType=INTEGER},
+      </if>
+      <if test="flowid != null" >
+        #{flowid,jdbcType=VARCHAR},
+      </if>
+      <if test="caseno != null" >
+        #{caseno,jdbcType=VARCHAR},
+      </if>
+      <if test="archivesno != null" >
+        #{archivesno,jdbcType=VARCHAR},
+      </if>
+      <if test="year != null" >
+        #{year,jdbcType=VARCHAR},
+      </if>
+      <if test="caseproerty != null" >
+        #{caseproerty,jdbcType=VARCHAR},
+      </if>
+      <if test="caseword != null" >
+        #{caseword,jdbcType=VARCHAR},
+      </if>
+      <if test="courtshortname != null" >
+        #{courtshortname,jdbcType=VARCHAR},
+      </if>
+      <if test="number != null" >
+        #{number,jdbcType=VARCHAR},
+      </if>
+      <if test="casecategory != null" >
+        #{casecategory,jdbcType=VARCHAR},
+      </if>
+      <if test="judgeprocedure != null" >
+        #{judgeprocedure,jdbcType=VARCHAR},
+      </if>
+      <if test="casename != null" >
+        #{casename,jdbcType=VARCHAR},
+      </if>
+      <if test="shortdetailscase != null" >
+        #{shortdetailscase,jdbcType=VARCHAR},
+      </if>
+      <if test="parties != null" >
+        #{parties,jdbcType=VARCHAR},
+      </if>
+      <if test="putonrecorddate != null" >
+        #{putonrecorddate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="putonrecorddep != null" >
+        #{putonrecorddep,jdbcType=VARCHAR},
+      </if>
+      <if test="approveper != null" >
+        #{approveper,jdbcType=VARCHAR},
+      </if>
+      <if test="undertakedep != null" >
+        #{undertakedep,jdbcType=VARCHAR},
+      </if>
+      <if test="undertakeper != null" >
+        #{undertakeper,jdbcType=VARCHAR},
+      </if>
+      <if test="courtclerk != null" >
+        #{courtclerk,jdbcType=VARCHAR},
+      </if>
+      <if test="chiefjudge != null" >
+        #{chiefjudge,jdbcType=VARCHAR},
+      </if>
+      <if test="collegiatebench != null" >
+        #{collegiatebench,jdbcType=VARCHAR},
+      </if>
+      <if test="formaldocument != null" >
+        #{formaldocument,jdbcType=INTEGER},
+      </if>
+      <if test="counterpart != null" >
+        #{counterpart,jdbcType=INTEGER},
+      </if>
+      <if test="otherdoucment != null" >
+        #{otherdoucment,jdbcType=INTEGER},
+      </if>
+      <if test="formaldocpagenum != null" >
+        #{formaldocpagenum,jdbcType=INTEGER},
+      </if>
+      <if test="counterpartpagenum != null" >
+        #{counterpartpagenum,jdbcType=INTEGER},
+      </if>
+      <if test="mergecase != null" >
+        #{mergecase,jdbcType=VARCHAR},
+      </if>
+      <if test="settlemanner != null" >
+        #{settlemanner,jdbcType=VARCHAR},
+      </if>
+      <if test="settledate != null" >
+        #{settledate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="settlereason != null" >
+        #{settlereason,jdbcType=VARCHAR},
+      </if>
+      <if test="originalcourt != null" >
+        #{originalcourt,jdbcType=VARCHAR},
+      </if>
+      <if test="originalcaseno != null" >
+        #{originalcaseno,jdbcType=VARCHAR},
+      </if>
+      <if test="firstresult != null" >
+        #{firstresult,jdbcType=VARCHAR},
+      </if>
+      <if test="secondresult != null" >
+        #{secondresult,jdbcType=VARCHAR},
+      </if>
+      <if test="lastresult != null" >
+        #{lastresult,jdbcType=VARCHAR},
+      </if>
+      <if test="fulldocno != null" >
+        #{fulldocno,jdbcType=VARCHAR},
+      </if>
+      <if test="catalogno != null" >
+        #{catalogno,jdbcType=VARCHAR},
+      </if>
+      <if test="evidencebag != null" >
+        #{evidencebag,jdbcType=VARCHAR},
+      </if>
+      <if test="degreeofsecrets != null" >
+        #{degreeofsecrets,jdbcType=VARCHAR},
+      </if>
+      <if test="storagelife != null" >
+        #{storagelife,jdbcType=VARCHAR},
+      </if>
+      <if test="applyper != null" >
+        #{applyper,jdbcType=VARCHAR},
+      </if>
+      <if test="receiveper != null" >
+        #{receiveper,jdbcType=VARCHAR},
+      </if>
+      <if test="placeonper != null" >
+        #{placeonper,jdbcType=VARCHAR},
+      </if>
+      <if test="placeondate != null" >
+        #{placeondate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="registerper != null" >
+        #{registerper,jdbcType=VARCHAR},
+      </if>
+      <if test="registertime != null" >
+        #{registertime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=CHAR},
+      </if>
+    </trim>
+  </insert> -->
+   <insert id="insertSelective" parameterType="com.archives.pojo.ArchivesInfo" >
+   <selectKey resultType="INTEGER" order="AFTER"  keyProperty="guid">
+			SELECT LAST_INSERT_ID() AS guid
+		</selectKey>
+    insert into gt_court_arc_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="guid != null" >
+        guid,
+      </if>
+      <if test="flowid != null" >
+        flowId,
+      </if>
+      <if test="caseno != null" >
+        caseNo,
+      </if>
+      <if test="archivesno != null" >
+        archivesNo,
+      </if>
+      <if test="year != null" >
+        year,
+      </if>
+      <if test="caseproerty != null" >
+        caseProerty,
+      </if>
+      <if test="caseword != null" >
+        caseWord,
+      </if>
+      <if test="courtshortname != null" >
+        courtShortName,
+      </if>
+      <if test="number != null" >
+        number,
+      </if>
+      <if test="casecategory != null" >
+        caseCategory,
+      </if>
+      <if test="judgeprocedure != null" >
+        judgeProcedure,
+      </if>
+      <if test="casename != null" >
+        caseName,
+      </if>
+      <if test="shortdetailscase != null" >
+        shortDetailsCase,
+      </if>
+      <if test="parties != null" >
+        parties,
+      </if>
+      <if test="putonrecorddate != null" >
+        putOnRecordDate,
+      </if>
+      <if test="putonrecorddep != null" >
+        putOnRecordDep,
+      </if>
+      <if test="approveper != null" >
+        approvePer,
+      </if>
+      <if test="undertakedep != null" >
+        undertakeDep,
+      </if>
+      <if test="undertakeper != null" >
+        undertakePer,
+      </if>
+      <if test="courtclerk != null" >
+        courtClerk,
+      </if>
+      <if test="chiefjudge != null" >
+        chiefJudge,
+      </if>
+      <if test="collegiatebench != null" >
+        collegiateBench,
+      </if>
+      <if test="formaldocument != null" >
+        formalDocument,
+      </if>
+      <if test="counterpart != null" >
+        counterpart,
+      </if>
+      <if test="otherdoucment != null" >
+        otherDoucment,
+      </if>
+      <if test="formaldocpagenum != null" >
+        formalDocPageNum,
+      </if>
+      <if test="counterpartpagenum != null" >
+        counterpartPageNum,
+      </if>
+      <if test="mergecase != null" >
+        mergeCase,
+      </if>
+      <if test="settlemanner != null" >
+        settleManner,
+      </if>
+      <if test="settledate != null" >
+        settleDate,
+      </if>
+      <if test="settlereason != null" >
+        settleReason,
+      </if>
+      <if test="originalcourt != null" >
+        OriginalCourt,
+      </if>
+      <if test="originalcaseno != null" >
+        OriginalCaseNo,
+      </if>
+      <if test="firstresult != null" >
+        firstResult,
+      </if>
+      <if test="secondresult != null" >
+        secondResult,
+      </if>
+      <if test="lastresult != null" >
+        lastResult,
+      </if>
+      <if test="fulldocno != null" >
+        fullDocNo,
+      </if>
+      <if test="catalogno != null" >
+        catalogNo,
+      </if>
+      <if test="evidencebag != null" >
+        evidenceBag,
+      </if>
+      <if test="degreeofsecrets != null" >
+        degreeOfSecrets,
+      </if>
+      <if test="storagelife != null" >
+        storageLife,
+      </if>
+      <if test="applyper != null" >
+        applyPer,
+      </if>
+      <if test="receiveper != null" >
+        receivePer,
+      </if>
+      <if test="placeonper != null" >
+        placeOnPer,
+      </if>
+      <if test="placeondate != null" >
+        placeOnDate,
+      </if>
+      <if test="registerper != null" >
+        registerPer,
+      </if>
+      <if test="registertime != null" >
+        registerTime,
+      </if>
+      <if test="remark != null" >
+        remark,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+     <!--  <if test="synstatus != null" >
+        synStatus,
+      </if> -->
+      <if test="reborrowlock != null" >
+        reborrowLock,
+      </if>
+      <if test="handleStatus != null" >
+        handleStatus,
+      </if>
+      <if test="markType != null" >
+        markType,
+      </if>
+      <if test="gdbz != null" >
+        gdbz,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="guid != null" >
+        #{guid,jdbcType=INTEGER},
+      </if>
+      <if test="flowid != null" >
+        #{flowid,jdbcType=VARCHAR},
+      </if>
+      <if test="caseno != null" >
+        #{caseno,jdbcType=VARCHAR},
+      </if>
+      <if test="archivesno != null" >
+        #{archivesno,jdbcType=VARCHAR},
+      </if>
+      <if test="year != null" >
+        #{year,jdbcType=VARCHAR},
+      </if>
+      <if test="caseproerty != null" >
+        #{caseproerty,jdbcType=VARCHAR},
+      </if>
+      <if test="caseword != null" >
+        #{caseword,jdbcType=VARCHAR},
+      </if>
+      <if test="courtshortname != null" >
+        #{courtshortname,jdbcType=VARCHAR},
+      </if>
+      <if test="number != null" >
+        #{number,jdbcType=VARCHAR},
+      </if>
+      <if test="casecategory != null" >
+        #{casecategory,jdbcType=VARCHAR},
+      </if>
+      <if test="judgeprocedure != null" >
+        #{judgeprocedure,jdbcType=VARCHAR},
+      </if>
+      <if test="casename != null" >
+        #{casename,jdbcType=VARCHAR},
+      </if>
+      <if test="shortdetailscase != null" >
+        #{shortdetailscase,jdbcType=VARCHAR},
+      </if>
+      <if test="parties != null" >
+        #{parties,jdbcType=VARCHAR},
+      </if>
+      <if test="putonrecorddate != null" >
+        #{putonrecorddate,jdbcType=VARCHAR},
+      </if>
+      <if test="putonrecorddep != null" >
+        #{putonrecorddep,jdbcType=VARCHAR},
+      </if>
+      <if test="approveper != null" >
+        #{approveper,jdbcType=VARCHAR},
+      </if>
+      <if test="undertakedep != null" >
+        #{undertakedep,jdbcType=VARCHAR},
+      </if>
+      <if test="undertakeper != null" >
+        #{undertakeper,jdbcType=VARCHAR},
+      </if>
+      <if test="courtclerk != null" >
+        #{courtclerk,jdbcType=VARCHAR},
+      </if>
+      <if test="chiefjudge != null" >
+        #{chiefjudge,jdbcType=VARCHAR},
+      </if>
+      <if test="collegiatebench != null" >
+        #{collegiatebench,jdbcType=VARCHAR},
+      </if>
+      <if test="formaldocument != null" >
+        #{formaldocument,jdbcType=INTEGER},
+      </if>
+      <if test="counterpart != null" >
+        #{counterpart,jdbcType=INTEGER},
+      </if>
+      <if test="otherdoucment != null" >
+        #{otherdoucment,jdbcType=INTEGER},
+      </if>
+      <if test="formaldocpagenum != null" >
+        #{formaldocpagenum,jdbcType=INTEGER},
+      </if>
+      <if test="counterpartpagenum != null" >
+        #{counterpartpagenum,jdbcType=INTEGER},
+      </if>
+      <if test="mergecase != null" >
+        #{mergecase,jdbcType=VARCHAR},
+      </if>
+      <if test="settlemanner != null" >
+        #{settlemanner,jdbcType=VARCHAR},
+      </if>
+      <if test="settledate != null" >
+        #{settledate,jdbcType=VARCHAR},
+      </if>
+      <if test="settlereason != null" >
+        #{settlereason,jdbcType=VARCHAR},
+      </if>
+      <if test="originalcourt != null" >
+        #{originalcourt,jdbcType=VARCHAR},
+      </if>
+      <if test="originalcaseno != null" >
+        #{originalcaseno,jdbcType=VARCHAR},
+      </if>
+      <if test="firstresult != null" >
+        #{firstresult,jdbcType=VARCHAR},
+      </if>
+      <if test="secondresult != null" >
+        #{secondresult,jdbcType=VARCHAR},
+      </if>
+      <if test="lastresult != null" >
+        #{lastresult,jdbcType=VARCHAR},
+      </if>
+      <if test="fulldocno != null" >
+        #{fulldocno,jdbcType=VARCHAR},
+      </if>
+      <if test="catalogno != null" >
+        #{catalogno,jdbcType=VARCHAR},
+      </if>
+      <if test="evidencebag != null" >
+        #{evidencebag,jdbcType=VARCHAR},
+      </if>
+      <if test="degreeofsecrets != null" >
+        #{degreeofsecrets,jdbcType=VARCHAR},
+      </if>
+      <if test="storagelife != null" >
+        #{storagelife,jdbcType=VARCHAR},
+      </if>
+      <if test="applyper != null" >
+        #{applyper,jdbcType=VARCHAR},
+      </if>
+      <if test="receiveper != null" >
+        #{receiveper,jdbcType=VARCHAR},
+      </if>
+      <if test="placeonper != null" >
+        #{placeonper,jdbcType=VARCHAR},
+      </if>
+      <if test="placeondate != null" >
+        #{placeondate,jdbcType=VARCHAR},
+      </if>
+      <if test="registerper != null" >
+        #{registerper,jdbcType=VARCHAR},
+      </if>
+      <if test="registertime != null" >
+        #{registertime,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=CHAR},
+      </if>
+      <!-- <if test="synstatus != null" >
+        #{synstatus,jdbcType=VARCHAR},
+      </if> -->
+      <if test="reborrowlock != null" >
+        #{reborrowlock,jdbcType=INTEGER},
+      </if>
+      <if test="handleStatus != null" >
+        #{handleStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="markType != null" >
+        #{markType,jdbcType=VARCHAR},
+      </if>
+      <if test="gdbz != null" >
+        #{gdbz,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateItemByPrimaryKey"  parameterType="java.util.Map" >
+  		update gt_court_arc_itemstatus 
+  		<set >
+    	  <if test="data.status != null" >
+      	  status = #{data.status,jdbcType=VARCHAR},
+     	 </if>
+      </set>
+      	where guid=#{data.guid,jdbcType=INTEGER}
+  </update>
+  
+  
+  <!-- <update id="updateByPrimaryKeySelective" parameterType="com.archives.pojo.ArchivesInfo" >
+    update gt_court_arc_info
+    <set >
+      <if test="flowid != null" >
+        flowId = #{flowid,jdbcType=VARCHAR},
+      </if>
+      <if test="caseno != null" >
+        caseNo = #{caseno,jdbcType=VARCHAR},
+      </if>
+      <if test="archivesno != null" >
+        archivesNo = #{archivesno,jdbcType=VARCHAR},
+      </if>
+      <if test="year != null" >
+        year = #{year,jdbcType=VARCHAR},
+      </if>
+      <if test="caseproerty != null" >
+        caseProerty = #{caseproerty,jdbcType=VARCHAR},
+      </if>
+      <if test="caseword != null" >
+        caseWord = #{caseword,jdbcType=VARCHAR},
+      </if>
+      <if test="courtshortname != null" >
+        courtShortName = #{courtshortname,jdbcType=VARCHAR},
+      </if>
+      <if test="number != null" >
+        number = #{number,jdbcType=VARCHAR},
+      </if>
+      <if test="casecategory != null" >
+        caseCategory = #{casecategory,jdbcType=VARCHAR},
+      </if>
+      <if test="judgeprocedure != null" >
+        judgeProcedure = #{judgeprocedure,jdbcType=VARCHAR},
+      </if>
+      <if test="casename != null" >
+        caseName = #{casename,jdbcType=VARCHAR},
+      </if>
+      <if test="shortdetailscase != null" >
+        shortDetailsCase = #{shortdetailscase,jdbcType=VARCHAR},
+      </if>
+      <if test="parties != null" >
+        parties = #{parties,jdbcType=VARCHAR},
+      </if>
+      <if test="putonrecorddate != null" >
+        putOnRecordDate = #{putonrecorddate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="putonrecorddep != null" >
+        putOnRecordDep = #{putonrecorddep,jdbcType=VARCHAR},
+      </if>
+      <if test="approveper != null" >
+        approvePer = #{approveper,jdbcType=VARCHAR},
+      </if>
+      <if test="undertakedep != null" >
+        undertakeDep = #{undertakedep,jdbcType=VARCHAR},
+      </if>
+      <if test="undertakeper != null" >
+        undertakePer = #{undertakeper,jdbcType=VARCHAR},
+      </if>
+      <if test="courtclerk != null" >
+        courtClerk = #{courtclerk,jdbcType=VARCHAR},
+      </if>
+      <if test="chiefjudge != null" >
+        chiefJudge = #{chiefjudge,jdbcType=VARCHAR},
+      </if>
+      <if test="collegiatebench != null" >
+        collegiateBench = #{collegiatebench,jdbcType=VARCHAR},
+      </if>
+      <if test="formaldocument != null" >
+        formalDocument = #{formaldocument,jdbcType=INTEGER},
+      </if>
+      <if test="counterpart != null" >
+        counterpart = #{counterpart,jdbcType=INTEGER},
+      </if>
+      <if test="otherdoucment != null" >
+        otherDoucment = #{otherdoucment,jdbcType=INTEGER},
+      </if>
+      <if test="formaldocpagenum != null" >
+        formalDocPageNum = #{formaldocpagenum,jdbcType=INTEGER},
+      </if>
+      <if test="counterpartpagenum != null" >
+        counterpartPageNum = #{counterpartpagenum,jdbcType=INTEGER},
+      </if>
+      <if test="mergecase != null" >
+        mergeCase = #{mergecase,jdbcType=VARCHAR},
+      </if>
+      <if test="settlemanner != null" >
+        settleManner = #{settlemanner,jdbcType=VARCHAR},
+      </if>
+      <if test="settledate != null" >
+        settleDate = #{settledate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="settlereason != null" >
+        settleReason = #{settlereason,jdbcType=VARCHAR},
+      </if>
+      <if test="originalcourt != null" >
+        OriginalCourt = #{originalcourt,jdbcType=VARCHAR},
+      </if>
+      <if test="originalcaseno != null" >
+        OriginalCaseNo = #{originalcaseno,jdbcType=VARCHAR},
+      </if>
+      <if test="firstresult != null" >
+        firstResult = #{firstresult,jdbcType=VARCHAR},
+      </if>
+      <if test="secondresult != null" >
+        secondResult = #{secondresult,jdbcType=VARCHAR},
+      </if>
+      <if test="lastresult != null" >
+        lastResult = #{lastresult,jdbcType=VARCHAR},
+      </if>
+      <if test="fulldocno != null" >
+        fullDocNo = #{fulldocno,jdbcType=VARCHAR},
+      </if>
+      <if test="catalogno != null" >
+        catalogNo = #{catalogno,jdbcType=VARCHAR},
+      </if>
+      <if test="evidencebag != null" >
+        evidenceBag = #{evidencebag,jdbcType=VARCHAR},
+      </if>
+      <if test="degreeofsecrets != null" >
+        degreeOfSecrets = #{degreeofsecrets,jdbcType=VARCHAR},
+      </if>
+      <if test="storagelife != null" >
+        storageLife = #{storagelife,jdbcType=VARCHAR},
+      </if>
+      <if test="applyper != null" >
+        applyPer = #{applyper,jdbcType=VARCHAR},
+      </if>
+      <if test="receiveper != null" >
+        receivePer = #{receiveper,jdbcType=VARCHAR},
+      </if>
+      <if test="placeonper != null" >
+        placeOnPer = #{placeonper,jdbcType=VARCHAR},
+      </if>
+      <if test="placeondate != null" >
+        placeOnDate = #{placeondate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="registerper != null" >
+        registerPer = #{registerper,jdbcType=VARCHAR},
+      </if>
+      <if test="registertime != null" >
+        registerTime = #{registertime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="remark != null" >
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=CHAR},
+      </if>
+    </set>
+    where guid = #{guid,jdbcType=INTEGER}
+  </update>
+   -->
+   <update id="updateByPrimaryKeySelective" parameterType="com.archives.pojo.ArchivesInfo" >
+    update gt_court_arc_info
+    <set >
+      <if test="flowid != null" >
+        flowId = #{flowid,jdbcType=VARCHAR},
+      </if>
+      <if test="caseno != null" >
+        caseNo = #{caseno,jdbcType=VARCHAR},
+      </if>
+      <if test="archivesno != null" >
+        archivesNo = #{archivesno,jdbcType=VARCHAR},
+      </if>
+      <if test="year != null" >
+        year = #{year,jdbcType=VARCHAR},
+      </if>
+      <if test="caseproerty != null" >
+        caseProerty = #{caseproerty,jdbcType=VARCHAR},
+      </if>
+      <if test="caseword != null" >
+        caseWord = #{caseword,jdbcType=VARCHAR},
+      </if>
+      <if test="courtshortname != null" >
+        courtShortName = #{courtshortname,jdbcType=VARCHAR},
+      </if>
+      <if test="number != null" >
+        number = #{number,jdbcType=VARCHAR},
+      </if>
+      <if test="casecategory != null" >
+        caseCategory = #{casecategory,jdbcType=VARCHAR},
+      </if>
+      <if test="judgeprocedure != null" >
+        judgeProcedure = #{judgeprocedure,jdbcType=VARCHAR},
+      </if>
+      <if test="casename != null" >
+        caseName = #{casename,jdbcType=VARCHAR},
+      </if>
+      <if test="shortdetailscase != null" >
+        shortDetailsCase = #{shortdetailscase,jdbcType=VARCHAR},
+      </if>
+      <if test="parties != null" >
+        parties = #{parties,jdbcType=VARCHAR},
+      </if>
+      <if test="putonrecorddate != null" >
+        putOnRecordDate = #{putonrecorddate,jdbcType=VARCHAR},
+      </if>
+      <if test="putonrecorddep != null" >
+        putOnRecordDep = #{putonrecorddep,jdbcType=VARCHAR},
+      </if>
+      <if test="approveper != null" >
+        approvePer = #{approveper,jdbcType=VARCHAR},
+      </if>
+      <if test="undertakedep != null" >
+        undertakeDep = #{undertakedep,jdbcType=VARCHAR},
+      </if>
+      <if test="undertakeper != null" >
+        undertakePer = #{undertakeper,jdbcType=VARCHAR},
+      </if>
+      <if test="courtclerk != null" >
+        courtClerk = #{courtclerk,jdbcType=VARCHAR},
+      </if>
+      <if test="chiefjudge != null" >
+        chiefJudge = #{chiefjudge,jdbcType=VARCHAR},
+      </if>
+      <if test="collegiatebench != null" >
+        collegiateBench = #{collegiatebench,jdbcType=VARCHAR},
+      </if>
+      <if test="formaldocument != null" >
+        formalDocument = #{formaldocument,jdbcType=INTEGER},
+      </if>
+      <if test="counterpart != null" >
+        counterpart = #{counterpart,jdbcType=INTEGER},
+      </if>
+      <if test="otherdoucment != null" >
+        otherDoucment = #{otherdoucment,jdbcType=INTEGER},
+      </if>
+      <if test="formaldocpagenum != null" >
+        formalDocPageNum = #{formaldocpagenum,jdbcType=INTEGER},
+      </if>
+      <if test="counterpartpagenum != null" >
+        counterpartPageNum = #{counterpartpagenum,jdbcType=INTEGER},
+      </if>
+      <if test="mergecase != null" >
+        mergeCase = #{mergecase,jdbcType=VARCHAR},
+      </if>
+      <if test="settlemanner != null" >
+        settleManner = #{settlemanner,jdbcType=VARCHAR},
+      </if>
+      <if test="settledate != null" >
+        settleDate = #{settledate,jdbcType=VARCHAR},
+      </if>
+      <if test="settlereason != null" >
+        settleReason = #{settlereason,jdbcType=VARCHAR},
+      </if>
+      <if test="originalcourt != null" >
+        OriginalCourt = #{originalcourt,jdbcType=VARCHAR},
+      </if>
+      <if test="originalcaseno != null" >
+        OriginalCaseNo = #{originalcaseno,jdbcType=VARCHAR},
+      </if>
+      <if test="firstresult != null" >
+        firstResult = #{firstresult,jdbcType=VARCHAR},
+      </if>
+      <if test="secondresult != null" >
+        secondResult = #{secondresult,jdbcType=VARCHAR},
+      </if>
+      <if test="lastresult != null" >
+        lastResult = #{lastresult,jdbcType=VARCHAR},
+      </if>
+      <if test="fulldocno != null" >
+        fullDocNo = #{fulldocno,jdbcType=VARCHAR},
+      </if>
+      <if test="catalogno != null" >
+        catalogNo = #{catalogno,jdbcType=VARCHAR},
+      </if>
+      <if test="evidencebag != null" >
+        evidenceBag = #{evidencebag,jdbcType=VARCHAR},
+      </if>
+      <if test="degreeofsecrets != null" >
+        degreeOfSecrets = #{degreeofsecrets,jdbcType=VARCHAR},
+      </if>
+      <if test="storagelife != null" >
+        storageLife = #{storagelife,jdbcType=VARCHAR},
+      </if>
+      <if test="applyper != null" >
+        applyPer = #{applyper,jdbcType=VARCHAR},
+      </if>
+      <if test="receiveper != null" >
+        receivePer = #{receiveper,jdbcType=VARCHAR},
+      </if>
+      <if test="placeonper != null" >
+        placeOnPer = #{placeonper,jdbcType=VARCHAR},
+      </if>
+      <if test="placeondate != null" >
+        placeOnDate = #{placeondate,jdbcType=VARCHAR},
+      </if>
+      <if test="registerper != null" >
+        registerPer = #{registerper,jdbcType=VARCHAR},
+      </if>
+      <if test="registertime != null" >
+        registerTime = #{registertime,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=CHAR},
+      </if>
+      <!-- <if test="synstatus != null" >
+        synStatus = #{synstatus,jdbcType=VARCHAR},
+      </if> -->
+      <if test="reborrowlock != null" >
+        reborrowLock = #{reborrowlock,jdbcType=INTEGER},
+      </if>
+      <if test="handleStatus != null" >
+        handleStatus = #{handleStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="markType != null" >
+        markType = #{markType,jdbcType=VARCHAR},
+      </if>
+      <if test="gdbz != null" >
+        gdbz = #{gdbz,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where guid = #{guid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.archives.pojo.ArchivesInfo" >
+    update gt_court_arc_info
+    set flowId = #{flowid,jdbcType=VARCHAR},
+      caseNo = #{caseno,jdbcType=VARCHAR},
+      archivesNo = #{archivesno,jdbcType=VARCHAR},
+      year = #{year,jdbcType=VARCHAR},
+      caseProerty = #{caseproerty,jdbcType=VARCHAR},
+      caseWord = #{caseword,jdbcType=VARCHAR},
+      courtShortName = #{courtshortname,jdbcType=VARCHAR},
+      number = #{number,jdbcType=VARCHAR},
+      caseCategory = #{casecategory,jdbcType=VARCHAR},
+      judgeProcedure = #{judgeprocedure,jdbcType=VARCHAR},
+      caseName = #{casename,jdbcType=VARCHAR},
+      shortDetailsCase = #{shortdetailscase,jdbcType=VARCHAR},
+      parties = #{parties,jdbcType=VARCHAR},
+      putOnRecordDate = #{putonrecorddate,jdbcType=TIMESTAMP},
+      putOnRecordDep = #{putonrecorddep,jdbcType=VARCHAR},
+      approvePer = #{approveper,jdbcType=VARCHAR},
+      undertakeDep = #{undertakedep,jdbcType=VARCHAR},
+      undertakePer = #{undertakeper,jdbcType=VARCHAR},
+      courtClerk = #{courtclerk,jdbcType=VARCHAR},
+      chiefJudge = #{chiefjudge,jdbcType=VARCHAR},
+      collegiateBench = #{collegiatebench,jdbcType=VARCHAR},
+      formalDocument = #{formaldocument,jdbcType=INTEGER},
+      counterpart = #{counterpart,jdbcType=INTEGER},
+      otherDoucment = #{otherdoucment,jdbcType=INTEGER},
+      formalDocPageNum = #{formaldocpagenum,jdbcType=INTEGER},
+      counterpartPageNum = #{counterpartpagenum,jdbcType=INTEGER},
+      mergeCase = #{mergecase,jdbcType=VARCHAR},
+      settleManner = #{settlemanner,jdbcType=VARCHAR},
+      settleDate = #{settledate,jdbcType=TIMESTAMP},
+      settleReason = #{settlereason,jdbcType=VARCHAR},
+      OriginalCourt = #{originalcourt,jdbcType=VARCHAR},
+      OriginalCaseNo = #{originalcaseno,jdbcType=VARCHAR},
+      firstResult = #{firstresult,jdbcType=VARCHAR},
+      secondResult = #{secondresult,jdbcType=VARCHAR},
+      lastResult = #{lastresult,jdbcType=VARCHAR},
+      fullDocNo = #{fulldocno,jdbcType=VARCHAR},
+      catalogNo = #{catalogno,jdbcType=VARCHAR},
+      evidenceBag = #{evidencebag,jdbcType=VARCHAR},
+      degreeOfSecrets = #{degreeofsecrets,jdbcType=VARCHAR},
+      storageLife = #{storagelife,jdbcType=VARCHAR},
+      applyPer = #{applyper,jdbcType=VARCHAR},
+      receivePer = #{receiveper,jdbcType=VARCHAR},
+      placeOnPer = #{placeonper,jdbcType=VARCHAR},
+      placeOnDate = #{placeondate,jdbcType=TIMESTAMP},
+      registerPer = #{registerper,jdbcType=VARCHAR},
+      registerTime = #{registertime,jdbcType=TIMESTAMP},
+      remark = #{remark,jdbcType=VARCHAR},
+      status = #{status,jdbcType=CHAR}
+    where guid = #{guid,jdbcType=INTEGER}
+  </update>
+  <select id="findLocationByArchiveForPage" parameterType="java.util.Map" resultType="com.archives.pojo.ArchivesInfo">
+	select  a.guid, flowId, b.itemNo caseNo, b.guid itemGuid, archivesNo, year, caseProerty, caseWord, courtShortName, number, 
+    caseCategory, judgeProcedure, caseName, shortDetailsCase, parties, DATE_FORMAT(putOnRecordDate, '%Y-%m-%d')putOnRecordDate, 
+    putOnRecordDep, approvePer, undertakeDep, undertakePer, courtClerk, chiefJudge, collegiateBench, 
+    formalDocument, counterpart, otherDoucment, formalDocPageNum, counterpartPageNum, 
+    mergeCase, settleManner, settleDate, settleReason, OriginalCourt, OriginalCaseNo, 
+    firstResult, secondResult, lastResult, fullDocNo, catalogNo, evidenceBag, degreeOfSecrets, 
+    storageLife, applyPer, receivePer, placeOnPer, placeOnDate, registerPer, registerTime, 
+    remark, A.status,C.locationPath location, B.status fjstatus from gt_court_arc_info A 
+    inner join gt_court_arc_itemstatus B on a.guid = B.infoid
+    left join gt_court_location C on B.location = C.guid
+    left join gt_court_arc_map_total d on a.caseProerty = d.mark
+	where 1=1 and B.itemId='0'
+	<if test="paraMap.year != null and paraMap.year != ''">
+	and  a.year like CONCAT('%',#{paraMap.year},'%') 
+	</if>
+	<if test="paraMap.registertime != null and paraMap.registertime != '' and paraMap.registertime2 != null and paraMap.registertime2 != '' ">
+	and STR_TO_DATE(a.registertime, '%Y-%m-%d')&gt;= #{paraMap.registertime} and STR_TO_DATE(a.registertime, '%Y-%m-%d') &lt;= #{paraMap.registertime2} 
+	</if>
+	<if test="paraMap.caseproerty != null and paraMap.caseproerty != '' ">
+		and d.content like CONCAT('%',#{paraMap.caseproerty},'%') 
+	</if>
+	<if test="paraMap.putonrecorddate != null and paraMap.putonrecorddate != '' and paraMap.putonrecorddate2 != null and paraMap.putonrecorddate2 != '' ">
+	and STR_TO_DATE(a.putonrecorddate, '%Y-%m-%d')&gt;= #{paraMap.putonrecorddate} and STR_TO_DATE(a.putonrecorddate, '%Y-%m-%d') &lt;= #{paraMap.putonrecorddate2} 
+	</if>
+	<if test="paraMap.caseword != null and paraMap.caseword != '' ">
+		and a.caseword like CONCAT('%',#{paraMap.caseword},'%') 
+	</if>
+	<if test="paraMap.settledate != null and paraMap.settledate != '' and paraMap.settledate2 != null and paraMap.settledate2 != '' ">
+	and STR_TO_DATE(a.settledate, '%Y-%m-%d')&gt;= #{paraMap.settledate} and STR_TO_DATE(a.settledate, '%Y-%m-%d') &lt;= #{paraMap.settledate2} 
+	</if>
+	<if test="paraMap.undertakedep != null and paraMap.undertakedep != '' ">
+		and a.undertakedep like CONCAT('%',#{paraMap.undertakedep},'%') 
+	</if>
+	<if test="paraMap.placeondate != null and paraMap.placeondate != '' and paraMap.placeondate2 != null and paraMap.placeondate2 != '' ">
+	and STR_TO_DATE(a.placeondate, '%Y-%m-%d')&gt;= #{paraMap.placeondate} and STR_TO_DATE(a.placeondate, '%Y-%m-%d') &lt;= #{paraMap.placeondate2} 
+	</if>
+	<if test="paraMap.undertakeper != null and paraMap.undertakeper != '' ">
+		and  a.undertakePer like CONCAT('%',#{paraMap.undertakeper},'%') 
+	</if>
+	<if test="paraMap.storagelife != null and paraMap.storagelife != '' ">
+		and  a.storagelife like CONCAT('%',#{paraMap.storagelife},'%') 
+	</if>
+	
+	<if test="paraMap.caseno != null and paraMap.caseno != '' ">
+		and  B.itemNo like CONCAT('%',#{paraMap.caseno},'%') 
+	</if>
+	<if test="paraMap.parties != null and paraMap.parties != '' ">
+		and  a.parties like CONCAT('%',#{paraMap.parties},'%') 
+	</if>
+	<if test="paraMap.number1  != null and paraMap.number1 != '' and paraMap.number2  != null and paraMap.number2 != ''">
+		and  a.archivesNo &gt;= #{paraMap.number1,jdbcType=INTEGER} and a.archivesNo &lt;= #{paraMap.number2,jdbcType=INTEGER} 
+	</if> 
+	
+	<if test="paraMap.flowid != null and paraMap.flowid != '' ">
+		and a.flowId like CONCAT('%',#{paraMap.flowid},'%') 
+	</if>
+	<if test="paraMap.number != null and paraMap.number != '' ">
+		and  a.number like CONCAT('%',#{paraMap.number},'%') 
+	</if>
+    <if test="paraMap.status != null and paraMap.status != '' ">
+		and  B.status like CONCAT('%',#{paraMap.status},'%') 
+	</if>
+	<if test="paraMap.serialNoPath != null and paraMap.serialNoPath != '' ">
+		and  C.serialNoPath like CONCAT(#{paraMap.serialNoPath},'%') 
+	</if>
+	<!-- <if test="paraMap.flowId != null and paraMap.flowId != '' ">
+		and A.flowId like CONCAT('%',#{paraMap.flowId},'%') 
+	</if>
+	<if test="paraMap.caseNo != null and paraMap.caseNo != '' ">
+		and A.caseNo like CONCAT('%',#{paraMap.caseNo},'%') 
+	</if>
+	<if test="paraMap.archivesNo != null and paraMap.archivesNo != '' ">
+		and A.archivesNo like CONCAT('%',#{paraMap.archivesNo},'%') 
+	</if>
+	<if test="paraMap.undertakePer != null and paraMap.undertakePer != '' ">
+		and A.undertakePer like CONCAT('%',#{paraMap.undertakePer},'%') 
+	</if>
+	<if test="paraMap.parties != null and paraMap.parties != '' ">
+		and A.parties like CONCAT('%',#{paraMap.parties},'%') 
+	</if>
+	<if test="paraMap.putOnRecordDate != null and paraMap.putOnRecordDate != '' ">
+         and  A.year=#{paraMap.putOnRecordDate}
+	</if>
+	<if test="paraMap.settleDate != null and paraMap.settleDate != '' ">
+	<![CDATA[   and DATE_FORMAT(A.settleDate, '%Y-%m-%d')=  DATE_FORMAT(#{paraMap.settleDate}, '%Y-%m-%d')   ]]>
+		
+	</if>
+	<if test="paraMap.catalogNo != null and paraMap.catalogNo != '' ">
+		and A.catalogNo like CONCAT('%',#{paraMap.catalogNo},'%') 
+	</if>
+	<if test="paraMap.fullDocNo != null and paraMap.fullDocNo != '' ">
+		and A.fullDocNo like CONCAT('%',#{paraMap.fullDocNo},'%') 
+	</if>
+	<if test="paraMap.number != null and paraMap.number != '' ">
+		and A.number like CONCAT('%',#{paraMap.number},'%') 
+	</if>
+	<if test="paraMap.registerper != null and paraMap.registerper != '' ">
+		and A.registerper like CONCAT('%',#{paraMap.registerper},'%') 
+	</if>
+	<if test="paraMap.number1  != null and paraMap.number1 != '' and paraMap.number2  != null and paraMap.number2 != ''">
+		and  a.archivesNo &gt;= #{paraMap.number1,jdbcType=INTEGER} and a.archivesNo &lt;= #{paraMap.number2,jdbcType=INTEGER} 
+	</if> -->
+	 limit #{paraMap.start}, #{paraMap.rows}
+	</select>
+  <select id="findCountLocationArchivesForPage" parameterType="java.util.Map" resultType="java.lang.Integer">
+	select count(1) from gt_court_arc_info a 
+	inner join gt_court_arc_itemstatus B on a.guid = B.infoid
+	left join gt_court_location C on B.location = C.guid
+	left join gt_court_arc_map_total d on a.caseProerty = d.mark
+	where 1=1 and B.itemId='0'
+	<if test="paraMap.year != null and paraMap.year != '' ">
+	and  a.year like CONCAT('%',#{paraMap.year}, '%')
+	</if>
+	<if test="paraMap.registertime != null and paraMap.registertime != '' and paraMap.registertime2 != null and paraMap.registertime2 != '' ">
+	and STR_TO_DATE(a.registertime, '%Y-%m-%d')&gt;= #{paraMap.registertime} and STR_TO_DATE(a.registertime, '%Y-%m-%d') &lt;= #{paraMap.registertime2} 
+	</if>
+	<if test="paraMap.caseproerty != null and paraMap.caseproerty != '' ">
+		and d.content like CONCAT('%',#{paraMap.caseproerty},'%') 
+	</if>
+	<if test="paraMap.putonrecorddate != null and paraMap.putonrecorddate != '' and paraMap.putonrecorddate2 != null and paraMap.putonrecorddate2 != '' ">
+	and STR_TO_DATE(a.putonrecorddate, '%Y-%m-%d')&gt;= #{paraMap.putonrecorddate} and STR_TO_DATE(a.putonrecorddate, '%Y-%m-%d') &lt;= #{paraMap.putonrecorddate2} 
+	</if>
+	<if test="paraMap.caseword != null and paraMap.caseword != '' ">
+		and a.caseword like CONCAT('%',#{paraMap.caseword},'%') 
+	</if>
+	<if test="paraMap.settledate != null and paraMap.settledate != '' and paraMap.settledate2 != null and paraMap.settledate2 != '' ">
+	and STR_TO_DATE(a.settledate, '%Y-%m-%d')&gt;= #{paraMap.settledate} and STR_TO_DATE(a.settledate, '%Y-%m-%d') &lt;= #{paraMap.settledate2} 
+	</if>
+	<if test="paraMap.undertakedep != null and paraMap.undertakedep != '' ">
+		and a.undertakedep like CONCAT('%',#{paraMap.undertakedep},'%') 
+	</if>
+	<if test="paraMap.placeondate != null and paraMap.placeondate != '' and paraMap.placeondate2 != null and paraMap.placeondate2 != '' ">
+	and STR_TO_DATE(a.placeondate, '%Y-%m-%d')&gt;= #{paraMap.placeondate} and STR_TO_DATE(a.placeondate, '%Y-%m-%d') &lt;= #{paraMap.placeondate2} 
+	</if>
+	<if test="paraMap.undertakeper != null and paraMap.undertakeper != '' ">
+		and  a.undertakePer like CONCAT('%',#{paraMap.undertakeper},'%') 
+	</if>
+	<if test="paraMap.storagelife != null and paraMap.storagelife != '' ">
+		and  a.storagelife like CONCAT('%',#{paraMap.storagelife},'%') 
+	</if>
+	
+	<if test="paraMap.caseno != null and paraMap.caseno != '' ">
+		and  B.itemNo like CONCAT('%',#{paraMap.caseno},'%') 
+	</if>
+	<if test="paraMap.parties != null and paraMap.parties != '' ">
+		and  a.parties like CONCAT('%',#{paraMap.parties},'%') 
+	</if>
+	<if test="paraMap.number1  != null and paraMap.number1 != '' and paraMap.number2  != null and paraMap.number2 != ''">
+		and  a.archivesNo &gt;= #{paraMap.number1,jdbcType=INTEGER} and a.archivesNo &lt;= #{paraMap.number2,jdbcType=INTEGER} 
+	</if> 
+	
+	<if test="paraMap.flowid != null and paraMap.flowid != '' ">
+		and a.flowId like CONCAT('%',#{paraMap.flowid},'%') 
+	</if>
+	<if test="paraMap.number != null and paraMap.number != '' ">
+		and  a.number like CONCAT('%',#{paraMap.number},'%') 
+	</if>
+	 <if test="paraMap.status != null and paraMap.status != '' ">
+		and  B.status like CONCAT('%',#{paraMap.status},'%') 
+	</if>
+	<if test="paraMap.serialNoPath != null and paraMap.serialNoPath != '' ">
+		and  C.serialNoPath like CONCAT(#{paraMap.serialNoPath},'%') 
+	</if>
+	<!-- <if test="paraMap.flowId != null and paraMap.flowId != '' ">
+		and A.flowId like CONCAT('%',#{paraMap.flowId},'%') 
+	</if>
+	<if test="paraMap.caseNo != null and paraMap.caseNo != '' ">
+		and A.caseNo like CONCAT('%',#{paraMap.caseNo},'%') 
+	</if>
+	<if test="paraMap.archivesNo != null and paraMap.archivesNo != '' ">
+		and A.archivesNo like CONCAT('%',#{paraMap.archivesNo},'%') 
+	</if>
+	<if test="paraMap.undertakePer != null and paraMap.undertakePer != '' ">
+		and A.undertakePer like CONCAT('%',#{paraMap.undertakePer},'%') 
+	</if>
+	<if test="paraMap.parties != null and paraMap.parties != '' ">
+		and A.parties like CONCAT('%',#{paraMap.parties},'%') 
+	</if>
+	<if test="paraMap.putOnRecordDate != null and paraMap.putOnRecordDate != '' ">
+		and  A.year=#{paraMap.putOnRecordDate}
+	</if>
+	<if test="paraMap.settleDate != null and paraMap.settleDate != '' ">
+	<![CDATA[   and DATE_FORMAT(A.settleDate, '%Y-%m-%d')=  DATE_FORMAT(#{paraMap.settleDate}, '%Y-%m-%d')   ]]>
+	</if>
+	<if test="paraMap.catalogNo != null and paraMap.catalogNo != '' ">
+		and A.catalogNo like CONCAT('%',#{paraMap.catalogNo},'%') 
+	</if>
+	<if test="paraMap.fullDocNo != null and paraMap.fullDocNo != '' ">
+		and A.fullDocNo like CONCAT('%',#{paraMap.fullDocNo},'%') 
+	</if>
+	<if test="paraMap.number != null and paraMap.number != '' ">
+		and A.number like CONCAT('%',#{paraMap.number},'%') 
+	</if>
+	<if test="paraMap.registerper != null and paraMap.registerper != '' ">
+		and A.registerper like CONCAT('%',#{paraMap.registerper},'%') 
+	</if>
+		<if test="paraMap.number1  != null and paraMap.number1 != '' and paraMap.number2  != null and paraMap.number2 != ''">
+		and  A.archivesNo &gt;= #{paraMap.number1,jdbcType=INTEGER} and A.archivesNo &lt;= #{paraMap.number2,jdbcType=INTEGER} 
+	</if> -->
+	</select>
+
+	<select id="findAllByIds" parameterType="java.lang.String" resultType="com.archives.pojo.ArchivesInfo">
+	select A.guid, flowId, caseNo, archivesNo, year, caseProerty, caseWord, courtShortName, number, 
+		caseCategory, judgeProcedure, caseName, shortDetailsCase, parties, DATE_FORMAT(putOnRecordDate, '%Y-%m-%d')putOnRecordDate, 
+		putOnRecordDep, approvePer, undertakeDep, undertakePer, courtClerk, chiefJudge, collegiateBench, 
+		formalDocument, counterpart, otherDoucment, formalDocPageNum, counterpartPageNum, 
+		mergeCase, settleManner, settleDate, settleReason, OriginalCourt, OriginalCaseNo, 
+		firstResult, secondResult, lastResult, fullDocNo, catalogNo, evidenceBag, degreeOfSecrets, 
+		storageLife, applyPer, receivePer, placeOnPer, placeOnDate, registerPer, registerTime, 
+		remark, A.status,C.locationPath location, B.status fjstatus from gt_court_arc_info A 
+		inner join gt_court_arc_itemstatus B on A.guid = B.infoid
+		left join gt_court_location C on B.location = C.guid
+	where A.guid in
+	<foreach collection="idList" item="item" index="index" open="(" separator="," close=")">
+		#{item}
+	</foreach>
+	order by C.guid asc
+ </select>
+    <select id="findBorrowArchiveForPage" parameterType="java.util.Map" resultType="com.archives.pojo.ArchivesInfo">
+	select  a.guid, a.flowId, b.itemNo as caseNo, b.guid as itemGuid, a.archivesNo, a.year, a.caseProerty, a.caseWord, a.courtShortName, a.number, 
+    a.caseCategory, a.judgeProcedure, a.caseName, a.shortDetailsCase, a.parties, DATE_FORMAT(a.putOnRecordDate, '%Y-%m-%d')putOnRecordDate, 
+    a.putOnRecordDep, a.approvePer, a.undertakeDep, a.undertakePer, a.courtClerk, a.chiefJudge, a.collegiateBench, 
+    a.formalDocument, a.counterpart, a.otherDoucment, a.formalDocPageNum, a.counterpartPageNum, 
+    a.mergeCase, a.settleManner, a.settleDate, a.settleReason, a.OriginalCourt, a.OriginalCaseNo, 
+    a.firstResult, a.secondResult, a.lastResult, a.fullDocNo, a.catalogNo, a.evidenceBag, a.degreeOfSecrets, 
+    a.storageLife, a.applyPer, a.receivePer, a.placeOnPer, a.placeOnDate, a.registerPer, a.registerTime, 
+    a.remark, a.status,a.handleStatus, C.locationPath location ,b.status fjStatus from gt_court_arc_info a, gt_court_arc_itemstatus b,gt_court_location c
+	where a.guid=b.infoid and  b.status ='1'
+	and b.location = c.guid
+	<if test="paraMap.year != null and paraMap.year != '' ">
+	and  a.year like  CONCAT('%',#{paraMap.year},'%')
+	</if>
+	<if test="paraMap.registertime != null and paraMap.registertime != '' and paraMap.registertime2 != null and paraMap.registertime2 != '' ">
+	and STR_TO_DATE(a.registertime, '%Y-%m-%d')&gt;= #{paraMap.registertime} and STR_TO_DATE(a.registertime, '%Y-%m-%d') &lt;= #{paraMap.registertime2} 
+	</if>
+	<if test="paraMap.caseproerty != null and paraMap.caseproerty != '' ">
+		and d.content like CONCAT('%',#{paraMap.caseproerty},'%') 
+	</if>
+	<if test="paraMap.putonrecorddate != null and paraMap.putonrecorddate != '' and paraMap.putonrecorddate2 != null and paraMap.putonrecorddate2 != '' ">
+	and STR_TO_DATE(a.putonrecorddate, '%Y-%m-%d')&gt;= #{paraMap.putonrecorddate} and STR_TO_DATE(a.putonrecorddate, '%Y-%m-%d') &lt;= #{paraMap.putonrecorddate2} 
+	</if>
+	<if test="paraMap.caseword != null and paraMap.caseword != '' ">
+		and a.caseword like CONCAT('%',#{paraMap.caseword},'%') 
+	</if>
+	<if test="paraMap.settledate != null and paraMap.settledate != '' and paraMap.settledate2 != null and paraMap.settledate2 != '' ">
+	and STR_TO_DATE(a.settledate, '%Y-%m-%d')&gt;= #{paraMap.settledate} and STR_TO_DATE(a.settledate, '%Y-%m-%d') &lt;= #{paraMap.settledate2} 
+	</if>
+	<if test="paraMap.undertakedep != null and paraMap.undertakedep != '' ">
+		and a.undertakedep like CONCAT('%',#{paraMap.undertakedep},'%') 
+	</if>
+	<if test="paraMap.placeondate != null and paraMap.placeondate != '' and paraMap.placeondate2 != null and paraMap.placeondate2 != '' ">
+	and STR_TO_DATE(a.placeondate, '%Y-%m-%d')&gt;= #{paraMap.placeondate} and STR_TO_DATE(a.placeondate, '%Y-%m-%d') &lt;= #{paraMap.placeondate2} 
+	</if>
+	<if test="paraMap.undertakeper != null and paraMap.undertakeper != '' ">
+		and  a.undertakePer like CONCAT('%',#{paraMap.undertakeper},'%') 
+	</if>
+	<if test="paraMap.storagelife != null and paraMap.storagelife != '' ">
+		and  a.storagelife like CONCAT('%',#{paraMap.storagelife},'%') 
+	</if>
+	
+	<if test="paraMap.caseno != null and paraMap.caseno != '' ">
+		and  a.caseNo like CONCAT('%',#{paraMap.caseno},'%') 
+	</if>
+	<if test="paraMap.parties != null and paraMap.parties != '' ">
+		and  a.parties like CONCAT('%',#{paraMap.parties},'%') 
+	</if>
+	<if test="paraMap.number1  != null and paraMap.number1 != '' and paraMap.number2  != null and paraMap.number2 != ''">
+		and  a.archivesNo &gt;= #{paraMap.number1,jdbcType=INTEGER} and a.archivesNo &lt;= #{paraMap.number2,jdbcType=INTEGER} 
+	</if> 
+	
+	<if test="paraMap.flowid != null and paraMap.flowid != '' ">
+		and a.flowId like CONCAT('%',#{paraMap.flowid},'%') 
+	</if>
+	<if test="paraMap.number != null and paraMap.number != '' ">
+		and  a.number like CONCAT('%',#{paraMap.number},'%') 
+	</if>
+	<!-- <if test="paraMap.flowId != null and paraMap.flowId != '' ">
+		and flowId like CONCAT('%',#{paraMap.flowId},'%') 
+	</if>
+	<if test="paraMap.caseNo != null and paraMap.caseNo != '' ">
+		and  caseNo like CONCAT('%',#{paraMap.caseNo},'%') 
+	</if>
+	<if test="paraMap.archivesNo != null and paraMap.archivesNo != '' ">
+		and  archivesNo like CONCAT('%',#{paraMap.archivesNo},'%') 
+	</if>
+	
+	
+	<if test="paraMap.undertakePer != null and paraMap.undertakePer != '' ">
+		and  undertakePer like CONCAT('%',#{paraMap.undertakePer},'%') 
+	</if>
+	<if test="paraMap.parties != null and paraMap.parties != '' ">
+		and  parties like CONCAT('%',#{paraMap.parties},'%') 
+	</if>
+	<if test="paraMap.putOnRecordDate != null and paraMap.putOnRecordDate != '' ">
+		
+            and  A.year=#{paraMap.putOnRecordDate}			
+	</if>
+	<if test="paraMap.settleDate != null and paraMap.settleDate != '' ">
+	<![CDATA[   and DATE_FORMAT(settleDate, '%Y-%m-%d')=  DATE_FORMAT(#{paraMap.settleDate}, '%Y-%m-%d')   ]]>
+		
+	</if>
+	<if test="paraMap.catalogNo != null and paraMap.catalogNo != '' ">
+		and  catalogNo like CONCAT('%',#{paraMap.catalogNo},'%') 
+	</if>
+	<if test="paraMap.fullDocNo != null and paraMap.fullDocNo != '' ">
+		and  fullDocNo like CONCAT('%',#{paraMap.fullDocNo},'%') 
+	</if>
+	
+	<if test="paraMap.number != null and paraMap.number != '' ">
+		and  number like CONCAT('%',#{paraMap.number},'%') 
+	</if>
+	<if test="paraMap.registerper != null and paraMap.registerper != '' ">
+		and  registerper like CONCAT('%',#{paraMap.registerper},'%') 
+	</if> -->
+	<if test="paraMap.status != null and paraMap.status != '' ">
+		and  a.status = #{paraMap.status}
+	</if>
+		 order by a.guid asc
+		 limit #{paraMap.start}, #{paraMap.rows}
+	</select>
+	
+	<select id="findCountBorrowArchivesForPage" parameterType="java.util.Map" resultType="java.lang.Integer">
+		select count(1) from gt_court_arc_info a,gt_court_arc_itemstatus b,gt_court_location c where a.guid=b.infoid
+		and  b.location = c.guid
+		and  b.status ='1' 
+		<if test="paraMap.year != null and paraMap.year != '' ">
+		and  a.year like  CONCAT('%',#{paraMap.year},'%')
+		</if>
+		<if test="paraMap.registertime != null and paraMap.registertime != '' and paraMap.registertime2 != null and paraMap.registertime2 != '' ">
+		and STR_TO_DATE(a.registertime, '%Y-%m-%d')&gt;= #{paraMap.registertime} and STR_TO_DATE(a.registertime, '%Y-%m-%d') &lt;= #{paraMap.registertime2} 
+		</if>
+		<if test="paraMap.caseproerty != null and paraMap.caseproerty != '' ">
+			and d.content like CONCAT('%',#{paraMap.caseproerty},'%') 
+		</if>
+		<if test="paraMap.putonrecorddate != null and paraMap.putonrecorddate != '' and paraMap.putonrecorddate2 != null and paraMap.putonrecorddate2 != '' ">
+		and STR_TO_DATE(a.putonrecorddate, '%Y-%m-%d')&gt;= #{paraMap.putonrecorddate} and STR_TO_DATE(a.putonrecorddate, '%Y-%m-%d') &lt;= #{paraMap.putonrecorddate2} 
+		</if>
+		<if test="paraMap.caseword != null and paraMap.caseword != '' ">
+			and a.caseword like CONCAT('%',#{paraMap.caseword},'%') 
+		</if>
+		<if test="paraMap.settledate != null and paraMap.settledate != '' and paraMap.settledate2 != null and paraMap.settledate2 != '' ">
+		and STR_TO_DATE(a.settledate, '%Y-%m-%d')&gt;= #{paraMap.settledate} and STR_TO_DATE(a.settledate, '%Y-%m-%d') &lt;= #{paraMap.settledate2} 
+		</if>
+		<if test="paraMap.undertakedep != null and paraMap.undertakedep != '' ">
+			and a.undertakedep like CONCAT('%',#{paraMap.undertakedep},'%') 
+		</if>
+		<if test="paraMap.placeondate != null and paraMap.placeondate != '' and paraMap.placeondate2 != null and paraMap.placeondate2 != '' ">
+		and STR_TO_DATE(a.placeondate, '%Y-%m-%d')&gt;= #{paraMap.placeondate} and STR_TO_DATE(a.placeondate, '%Y-%m-%d') &lt;= #{paraMap.placeondate2} 
+		</if>
+		<if test="paraMap.undertakeper != null and paraMap.undertakeper != '' ">
+			and  a.undertakePer like CONCAT('%',#{paraMap.undertakeper},'%') 
+		</if>
+		<if test="paraMap.storagelife != null and paraMap.storagelife != '' ">
+			and  a.storagelife like CONCAT('%',#{paraMap.storagelife},'%') 
+		</if>
+		
+		<if test="paraMap.caseno != null and paraMap.caseno != '' ">
+			and  a.caseNo like CONCAT('%',#{paraMap.caseno},'%') 
+		</if>
+		<if test="paraMap.parties != null and paraMap.parties != '' ">
+			and  a.parties like CONCAT('%',#{paraMap.parties},'%') 
+		</if>
+		<if test="paraMap.number1  != null and paraMap.number1 != '' and paraMap.number2  != null and paraMap.number2 != ''">
+			and  a.archivesNo &gt;= #{paraMap.number1,jdbcType=INTEGER} and a.archivesNo &lt;= #{paraMap.number2,jdbcType=INTEGER} 
+		</if> 
+		
+		<if test="paraMap.flowid != null and paraMap.flowid != '' ">
+			and a.flowId like CONCAT('%',#{paraMap.flowid},'%') 
+		</if>
+		<if test="paraMap.number != null and paraMap.number != '' ">
+			and  a.number like CONCAT('%',#{paraMap.number},'%') 
+		</if>
+		<!-- <if test="paraMap.flowId != null and paraMap.flowId != '' ">
+			and flowId like CONCAT('%',#{paraMap.flowId},'%') 
+		</if>
+		<if test="paraMap.caseNo != null and paraMap.caseNo != '' ">
+			and  caseNo like CONCAT('%',#{paraMap.caseNo},'%') 
+		</if>
+		<if test="paraMap.archivesNo != null and paraMap.archivesNo != '' ">
+			and  archivesNo like CONCAT('%',#{paraMap.archivesNo},'%') 
+		</if>
+		
+		
+		<if test="paraMap.undertakePer != null and paraMap.undertakePer != '' ">
+			and  undertakePer like CONCAT('%',#{paraMap.undertakePer},'%') 
+		</if>
+		<if test="paraMap.parties != null and paraMap.parties != '' ">
+			and  parties like CONCAT('%',#{paraMap.parties},'%') 
+		</if>
+		<if test="paraMap.putOnRecordDate != null and paraMap.putOnRecordDate != '' ">
+			
+       and  A.year=#{paraMap.putOnRecordDate}			
+		</if>
+		<if test="paraMap.settleDate != null and paraMap.settleDate != '' ">
+		<![CDATA[   and DATE_FORMAT(settleDate, '%Y-%m-%d')=  DATE_FORMAT(#{paraMap.settleDate}, '%Y-%m-%d')   ]]>
+			
+		</if>
+		<if test="paraMap.catalogNo != null and paraMap.catalogNo != '' ">
+			and  catalogNo like CONCAT('%',#{paraMap.catalogNo},'%') 
+		</if>
+		<if test="paraMap.fullDocNo != null and paraMap.fullDocNo != '' ">
+			and  fullDocNo like CONCAT('%',#{paraMap.fullDocNo},'%') 
+		</if>
+		
+		<if test="paraMap.number != null and paraMap.number != '' ">
+			and  number like CONCAT('%',#{paraMap.number},'%') 
+		</if>
+		<if test="paraMap.registerper != null and paraMap.registerper != '' ">
+			and  registerper like CONCAT('%',#{paraMap.registerper},'%') 
+		</if> -->
+		<if test="paraMap.status != null and paraMap.status != '' ">
+			and  a.status = #{paraMap.status}
+		</if>
+	</select>
+	
+	<update id="destroyByIds" parameterType="java.lang.Integer" >
+    update gt_court_arc_itemstatus set status='3'
+   where infoid in
+	<foreach collection="idList" item="item" index="index" open="(" separator="," close=")">
+		#{item}
+	</foreach>
+  </update>
+ <update id="updateItemStatus"  parameterType="java.util.Map" >
+  		update gt_court_arc_itemstatus 
+  		<set >
+    	  <if test="data.status != null" >
+      	  status = #{data.status,jdbcType=VARCHAR},
+     	 </if>
+      </set>
+      	where infoid=#{data.guid,jdbcType=INTEGER}
+  </update>
+  
+  <select id="findArchivesByEmptyFlowId" parameterType="java.lang.String" resultType="com.archives.pojo.ArchivesInfo">
+	select a.guid, a.year, a.marktype, a.caseNo,a.caseName,a.number,a.archivesNo,a.flowId,DATE_FORMAT(a.putOnRecordDate, '%Y-%m-%d')putOnRecordDate,a.undertakePer,a.parties, b.location ,b.status fjStatus
+     from gt_court_arc_info a ,gt_court_arc_itemstatus b WHERE a.guid = b.infoid and (b.`status` = '4' or b.`status` = '1')  AND a.flowId = ''
+  </select>
+    <delete id="delInfoByIds" parameterType="java.lang.Integer" >
+    delete from gt_court_arc_info
+    where guid in
+	<if test="idList != null" >
+		<foreach collection="idList" item="item" index="index" open="(" separator="," close=")">
+	       #{item}
+	  	</foreach>
+    </if>
+  </delete>
+  
+  
+   <select id="synLocationByArchiveForPage" parameterType="java.util.Map" resultType="com.archives.pojo.ArchivesInfo">
+   select  a.guid, flowId, caseNo, archivesNo, year, caseProerty, caseWord, courtShortName, number, 
+    caseCategory, judgeProcedure, caseName, shortDetailsCase, parties, DATE_FORMAT(putOnRecordDate, '%Y-%m-%d')putOnRecordDate, 
+    putOnRecordDep, approvePer, undertakeDep, undertakePer, courtClerk, chiefJudge, collegiateBench, 
+    formalDocument, counterpart, otherDoucment, formalDocPageNum, counterpartPageNum, 
+    mergeCase, settleManner, settleDate, settleReason, OriginalCourt, OriginalCaseNo, 
+    firstResult, secondResult, lastResult, fullDocNo, catalogNo, evidenceBag, degreeOfSecrets, 
+    storageLife, applyPer, receivePer, placeOnPer, placeOnDate, registerPer, registerTime, 
+    remark, A.status,C.locationPath location, B.status fjstatus,
+    E.status as synStatus,DATE_FORMAT(E.syndate, '%Y-%m-%d')syndate from gt_court_arc_info A 
+    inner join gt_court_arc_itemstatus B on a.guid = B.infoid
+    left join gt_court_location C on B.location = C.guid
+    left join gt_court_arc_map_total d on a.caseProerty = d.mark
+    inner join gt_court_syn E on E.infoid = A.guid
+	where 1=1 
+	<if test="paraMap.year != null and paraMap.year != ''">
+	and  a.year like CONCAT('%',#{paraMap.year},'%') 
+	</if>
+	<if test="paraMap.registertime != null and paraMap.registertime != '' and paraMap.registertime2 != null and paraMap.registertime2 != '' ">
+	and STR_TO_DATE(a.registertime, '%Y-%m-%d')&gt;= #{paraMap.registertime} and STR_TO_DATE(a.registertime, '%Y-%m-%d') &lt;= #{paraMap.registertime2} 
+	</if>
+	<if test="paraMap.caseproerty != null and paraMap.caseproerty != '' ">
+		and d.content like CONCAT('%',#{paraMap.caseproerty},'%') 
+	</if>
+	<if test="paraMap.putonrecorddate != null and paraMap.putonrecorddate != '' and paraMap.putonrecorddate2 != null and paraMap.putonrecorddate2 != '' ">
+	and STR_TO_DATE(a.putonrecorddate, '%Y-%m-%d')&gt;= #{paraMap.putonrecorddate} and STR_TO_DATE(a.putonrecorddate, '%Y-%m-%d') &lt;= #{paraMap.putonrecorddate2} 
+	</if>
+	<if test="paraMap.caseword != null and paraMap.caseword != '' ">
+		and a.caseword like CONCAT('%',#{paraMap.caseword},'%') 
+	</if>
+	<if test="paraMap.settledate != null and paraMap.settledate != '' and paraMap.settledate2 != null and paraMap.settledate2 != '' ">
+	and STR_TO_DATE(a.settledate, '%Y-%m-%d')&gt;= #{paraMap.settledate} and STR_TO_DATE(a.settledate, '%Y-%m-%d') &lt;= #{paraMap.settledate2} 
+	</if>
+	<if test="paraMap.undertakedep != null and paraMap.undertakedep != '' ">
+		and a.undertakedep like CONCAT('%',#{paraMap.undertakedep},'%') 
+	</if>
+	<if test="paraMap.placeondate != null and paraMap.placeondate != '' and paraMap.placeondate2 != null and paraMap.placeondate2 != '' ">
+	and STR_TO_DATE(a.placeondate, '%Y-%m-%d')&gt;= #{paraMap.placeondate} and STR_TO_DATE(a.placeondate, '%Y-%m-%d') &lt;= #{paraMap.placeondate2} 
+	</if>
+	<if test="paraMap.undertakeper != null and paraMap.undertakeper != '' ">
+		and  a.undertakePer like CONCAT('%',#{paraMap.undertakeper},'%') 
+	</if>
+	<if test="paraMap.storagelife != null and paraMap.storagelife != '' ">
+		and  a.storagelife like CONCAT('%',#{paraMap.storagelife},'%') 
+	</if>
+	
+	<if test="paraMap.caseno != null and paraMap.caseno != '' ">
+		and  a.caseNo like CONCAT('%',#{paraMap.caseno},'%') 
+	</if>
+	<if test="paraMap.parties != null and paraMap.parties != '' ">
+		and  a.parties like CONCAT('%',#{paraMap.parties},'%') 
+	</if>
+	<if test="paraMap.number1  != null and paraMap.number1 != '' and paraMap.number2  != null and paraMap.number2 != ''">
+		and  a.archivesNo &gt;= #{paraMap.number1,jdbcType=INTEGER} and a.archivesNo &lt;= #{paraMap.number2,jdbcType=INTEGER} 
+	</if> 
+	
+	<if test="paraMap.flowid != null and paraMap.flowid != '' ">
+		and a.flowId like CONCAT('%',#{paraMap.flowid},'%') 
+	</if>
+	<if test="paraMap.number != null and paraMap.number != '' ">
+		and  a.number like CONCAT('%',#{paraMap.number},'%') 
+	</if>
+    <if test="paraMap.status != null and paraMap.status != '' ">
+		and  B.status like CONCAT('%',#{paraMap.status},'%') 
+	</if>
+	<if test="paraMap.serialNoPath != null and paraMap.serialNoPath != '' ">
+		and  C.serialNoPath like CONCAT(#{paraMap.serialNoPath},'%') 
+	</if>
+	<if test="paraMap.synStatus != null and paraMap.synStatus != '' ">
+		and  E.status=#{paraMap.synStatus}
+	</if>
+	 limit #{paraMap.start}, #{paraMap.rows}
+	</select>
+  <select id="synCountLocationArchivesForPage" parameterType="java.util.Map" resultType="java.lang.Integer">
+	select  count(1) from gt_court_arc_info A 
+    inner join gt_court_arc_itemstatus B on a.guid = B.infoid
+    left join gt_court_location C on B.location = C.guid
+    left join gt_court_arc_map_total d on a.caseProerty = d.mark
+    inner join gt_court_syn E on E.infoid = A.guid
+	where 1=1 
+	<if test="paraMap.year != null and paraMap.year != '' ">
+	and  a.year like CONCAT('%',#{paraMap.year}, '%')
+	</if>
+	<if test="paraMap.registertime != null and paraMap.registertime != '' and paraMap.registertime2 != null and paraMap.registertime2 != '' ">
+	and STR_TO_DATE(a.registertime, '%Y-%m-%d')&gt;= #{paraMap.registertime} and STR_TO_DATE(a.registertime, '%Y-%m-%d') &lt;= #{paraMap.registertime2} 
+	</if>
+	<if test="paraMap.caseproerty != null and paraMap.caseproerty != '' ">
+		and d.content like CONCAT('%',#{paraMap.caseproerty},'%') 
+	</if>
+	<if test="paraMap.putonrecorddate != null and paraMap.putonrecorddate != '' and paraMap.putonrecorddate2 != null and paraMap.putonrecorddate2 != '' ">
+	and STR_TO_DATE(a.putonrecorddate, '%Y-%m-%d')&gt;= #{paraMap.putonrecorddate} and STR_TO_DATE(a.putonrecorddate, '%Y-%m-%d') &lt;= #{paraMap.putonrecorddate2} 
+	</if>
+	<if test="paraMap.caseword != null and paraMap.caseword != '' ">
+		and a.caseword like CONCAT('%',#{paraMap.caseword},'%') 
+	</if>
+	<if test="paraMap.settledate != null and paraMap.settledate != '' and paraMap.settledate2 != null and paraMap.settledate2 != '' ">
+	and STR_TO_DATE(a.settledate, '%Y-%m-%d')&gt;= #{paraMap.settledate} and STR_TO_DATE(a.settledate, '%Y-%m-%d') &lt;= #{paraMap.settledate2} 
+	</if>
+	<if test="paraMap.undertakedep != null and paraMap.undertakedep != '' ">
+		and a.undertakedep like CONCAT('%',#{paraMap.undertakedep},'%') 
+	</if>
+	<if test="paraMap.placeondate != null and paraMap.placeondate != '' and paraMap.placeondate2 != null and paraMap.placeondate2 != '' ">
+	and STR_TO_DATE(a.placeondate, '%Y-%m-%d')&gt;= #{paraMap.placeondate} and STR_TO_DATE(a.placeondate, '%Y-%m-%d') &lt;= #{paraMap.placeondate2} 
+	</if>
+	<if test="paraMap.undertakeper != null and paraMap.undertakeper != '' ">
+		and  a.undertakePer like CONCAT('%',#{paraMap.undertakeper},'%') 
+	</if>
+	<if test="paraMap.storagelife != null and paraMap.storagelife != '' ">
+		and  a.storagelife like CONCAT('%',#{paraMap.storagelife},'%') 
+	</if>
+	
+	<if test="paraMap.caseno != null and paraMap.caseno != '' ">
+		and  a.caseNo like CONCAT('%',#{paraMap.caseno},'%') 
+	</if>
+	<if test="paraMap.parties != null and paraMap.parties != '' ">
+		and  a.parties like CONCAT('%',#{paraMap.parties},'%') 
+	</if>
+	<if test="paraMap.number1  != null and paraMap.number1 != '' and paraMap.number2  != null and paraMap.number2 != ''">
+		and  a.archivesNo &gt;= #{paraMap.number1,jdbcType=INTEGER} and a.archivesNo &lt;= #{paraMap.number2,jdbcType=INTEGER} 
+	</if> 
+	
+	<if test="paraMap.flowid != null and paraMap.flowid != '' ">
+		and a.flowId like CONCAT('%',#{paraMap.flowid},'%') 
+	</if>
+	<if test="paraMap.number != null and paraMap.number != '' ">
+		and  a.number like CONCAT('%',#{paraMap.number},'%') 
+	</if>
+	 <if test="paraMap.status != null and paraMap.status != '' ">
+		and  B.status like CONCAT('%',#{paraMap.status},'%') 
+	</if>
+	<if test="paraMap.serialNoPath != null and paraMap.serialNoPath != '' ">
+		and  C.serialNoPath like CONCAT(#{paraMap.serialNoPath},'%') 
+	</if>
+	<if test="paraMap.synStatus != null and paraMap.synStatus != '' ">
+		and  E.status=#{paraMap.synStatus}
+	</if>
+	</select>
+</mapper>

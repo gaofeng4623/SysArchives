@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.archives.dao.BoxStatusDao" >
+  <resultMap id="BaseResultMap" type="com.archives.pojo.BoxStatus" >
+    <id column="guid" property="guid" jdbcType="INTEGER" />
+    <result column="boxid" property="boxid" jdbcType="INTEGER" />
+    <result column="status" property="status" jdbcType="CHAR" />
+    <result column="rfid" property="rfid" jdbcType="VARCHAR" />
+    <result column="location" property="location" jdbcType="VARCHAR" />
+    <result column="uptime" property="uptime" jdbcType="DATE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    guid, boxid, status, rfid, location, uptime
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from gt_court_arc_boxstatus
+    where guid = #{guid,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from gt_court_arc_boxstatus
+    where guid = #{guid,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.archives.pojo.BoxStatus" >
+    insert into gt_court_arc_boxstatus (guid, boxid, status, 
+      rfid, location, uptime
+      )
+    values (#{guid,jdbcType=INTEGER}, #{boxid,jdbcType=INTEGER}, #{status,jdbcType=CHAR}, 
+      #{rfid,jdbcType=VARCHAR}, #{location,jdbcType=VARCHAR}, #{uptime,jdbcType=DATE}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.archives.pojo.BoxStatus" >
+    insert into gt_court_arc_boxstatus
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="guid != null" >
+        guid,
+      </if>
+      <if test="boxid != null" >
+        boxid,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="rfid != null" >
+        rfid,
+      </if>
+      <if test="location != null" >
+        location,
+      </if>
+      <if test="uptime != null" >
+        uptime,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="guid != null" >
+        #{guid,jdbcType=INTEGER},
+      </if>
+      <if test="boxid != null" >
+        #{boxid,jdbcType=INTEGER},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=CHAR},
+      </if>
+      <if test="rfid != null" >
+        #{rfid,jdbcType=VARCHAR},
+      </if>
+      <if test="location != null" >
+        #{location,jdbcType=VARCHAR},
+      </if>
+      <if test="uptime != null" >
+        #{uptime,jdbcType=DATE},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.archives.pojo.BoxStatus" >
+    update gt_court_arc_boxstatus
+    <set >
+      <if test="boxid != null" >
+        boxid = #{boxid,jdbcType=INTEGER},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=CHAR},
+      </if>
+      <if test="rfid != null" >
+        rfid = #{rfid,jdbcType=VARCHAR},
+      </if>
+      <if test="location != null" >
+        location = #{location,jdbcType=VARCHAR},
+      </if>
+      <if test="uptime != null" >
+        uptime = #{uptime,jdbcType=DATE},
+      </if>
+    </set>
+    where guid = #{guid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.archives.pojo.BoxStatus" >
+    update gt_court_arc_boxstatus
+    set boxid = #{boxid,jdbcType=INTEGER},
+      status = #{status,jdbcType=CHAR},
+      rfid = #{rfid,jdbcType=VARCHAR},
+      location = #{location,jdbcType=VARCHAR},
+      uptime = #{uptime,jdbcType=DATE}
+    where guid = #{guid,jdbcType=INTEGER}
+  </update>
+   <select id="findByBoxNo"  parameterType="Integer"  resultType="com.archives.pojo.BoxStatus">
+    select 
+    <include refid="Base_Column_List" />
+    from gt_court_arc_boxstatus
+    where boxid = #{boxid,jdbcType=INTEGER}
+  </select>
+   <update id="updateRfidByPrimaryKey" parameterType="java.util.Map">
+    update gt_court_arc_boxstatus
+    set 
+    	<if test="paraMap.rfid != null" >
+	      rfid = #{paraMap.rfid,jdbcType=VARCHAR},
+	    </if>
+    	<if test="paraMap.uptime != null" >
+	      uptime = #{paraMap.uptime,jdbcType=TIMESTAMP},
+	    </if>
+	    <if test="paraMap.status != null" >
+	      status = #{paraMap.status,jdbcType=TIMESTAMP}
+	    </if>
+    	where guid = #{paraMap.guid,jdbcType=INTEGER}
+  </update>
+  <select id="selectInfoIdByPrimaryKey" parameterType="java.lang.Integer"  resultType="java.lang.Integer">
+  	select boxid from gt_court_arc_boxstatus where guid = #{guid, jdbcType=INTEGER}
+  </select>
+  
+   <select id="countArchive"  parameterType="java.lang.String"  resultType="java.lang.Integer">
+    select count(1) from gt_court_location location, gt_court_arc_boxstatus item 
+		    where item.location = location.guid
+		      and location.locationPath like CONCAT(#{locationPath},'%') 
+  </select>
+  
+</mapper>

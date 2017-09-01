@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://www.mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.system.dao.database.WorkflowRoleDao">
+ <sql id="Base_Column_List" >
+     guid, groupId, roleName
+  </sql>
+    <!-- 查询所有流程角色 -->
+	<select id="findAllRoles" parameterType="String" resultType="com.system.base.pojo.WorkflowRoleDefine">
+		 select 
+		 <include refid="Base_Column_List" /> 
+		 from gt_sys_workflowroledefine
+	</select>
+	<!-- 根据主键查询角色 -->
+  <select id="selectByPrimaryKey" resultType="com.system.base.pojo.WorkflowRoleDefine" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from gt_sys_workflowroledefine
+    where guid = #{guid,jdbcType=CHAR}
+  </select>
+   <!-- 根据角色名称查询角色 -->
+  <select id="selectByName" resultType="com.system.base.pojo.WorkflowRoleDefine" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from gt_sys_workflowroledefine
+    where roleName = #{roleName,jdbcType=VARCHAR}
+  </select>
+ <!--  保存流程角色 -->
+  <insert id="saveRole" parameterType="com.system.base.pojo.WorkflowRoleDefine" >
+      insert into gt_sys_workflowroledefine (guid, groupId, roleName
+      )
+    values (#{guid,jdbcType=CHAR}, #{groupId,jdbcType=CHAR}, #{roleName,jdbcType=VARCHAR}
+      )
+  </insert>
+  <!-- 根据id删除角色 -->
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from gt_sys_workflowroledefine
+     where guid = #{guid,jdbcType=CHAR}
+  </delete>
+  <!-- 根据id删除映射 -->
+  <delete id="deleteWorkflowRoleMembers" parameterType="java.lang.String" >
+    delete from gt_sys_workflowrolemembers
+     where roleId = #{guid,jdbcType=CHAR}
+  </delete>
+  <!-- 查询用户id等于传值的id -->
+  <select id="findRoleId" parameterType="String"  resultType="com.system.base.pojo.Employee">
+    select * from gt_sys_employee where employeeId not in(select userId from gt_sys_workflowrolemembers where  roleId=#{roleId})	
+   </select>
+   <!-- 根据角色id查询角色人员关联数据 -->
+   <select id="selectRoleId" parameterType="String"  resultType="com.system.base.pojo.Rolemembers">
+  	select
+		*
+    from gt_sys_workflowrolemembers where roleId=#{roleId}
+	</select>
+	<!-- 根据人员id组查询人员信息 -->
+	<select id="findEmployeeId"  resultType="com.system.base.pojo.Employee">
+		select 
+			emp.employeeId,
+			emp.employeeName,
+			emp.departmentId,
+			emp.employeeLoginName,
+			emp.password,
+			emp.useremail,
+			dpt.departmentName
+		 from gt_sys_employee emp left join gt_sys_department dpt on dpt.departmentId=emp.departmentId
+		where  
+			
+			 emp.employeeId in 
+		<foreach collection="list" item="userIdList" index="index" open="(" separator="," close=")">
+       	 	#{userIdList}
+  		</foreach>
+	</select>
+	<!-- 根据角色id查询角色人员关联数据 -->
+   <select id="queryEmpByDepId" parameterType="String"  resultType="com.system.base.pojo.Employee">
+  	select
+		*
+    from gt_sys_employee where departmentId=#{deptIds}
+	</select>
+	<!-- 保存人员角色关联表 -->
+	<insert id="saveWorkflowRoleMember" parameterType="com.system.base.pojo.WorkflowRoleMember" >
+    insert into gt_sys_workflowrolemembers (
+    	guid, roleId, userId)
+    values (
+	    #{guid,jdbcType=INTEGER}, 
+	    #{roleId,jdbcType=CHAR}, 
+	    #{userId,jdbcType=INTEGER}
+      )
+  </insert>
+  
+  <delete id="deleteEmpByPrimaryKey" parameterType="java.lang.String" >
+    delete from gt_sys_workflowrolemembers
+    where userId = #{employeeId,jdbcType=CHAR}
+  </delete>
+  
+  <delete id="deleteRoleByEmpIdList" parameterType="java.lang.String" >
+    delete from gt_sys_workflowrolemembers
+    where userId in
+    <if test="idList != null" >
+		<foreach collection="idList" item="item" index="index" open="(" separator="," close=")">
+        #{item}
+  		</foreach>
+     </if>
+  </delete>
+</mapper>

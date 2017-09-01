@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.archives.dao.DocHistoryDao" >
+  <resultMap id="BaseResultMap" type="com.archives.pojo.DocHistory" >
+    <id column="guid" property="guid" jdbcType="INTEGER" />
+    <result column="infoId" property="infoid" jdbcType="INTEGER" />
+    <result column="event" property="event" jdbcType="VARCHAR" />
+    <result column="location" property="location" jdbcType="VARCHAR" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <result column="changeDate" property="changedate" jdbcType="TIMESTAMP" />
+    <result column="changeMan" property="changeman" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    guid, infoId, event, location, remark, changeDate, changeMan
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from gt_court_arc_dochistory
+    where guid = #{guid,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from gt_court_arc_dochistory
+    where guid = #{guid,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.archives.pojo.DocHistory" >
+    insert into gt_court_arc_dochistory (guid, infoId, event, 
+      location, remark, changeDate, 
+      changeMan)
+    values (#{guid,jdbcType=INTEGER}, #{infoid,jdbcType=INTEGER}, #{event,jdbcType=VARCHAR}, 
+      #{location,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR}, #{changedate,jdbcType=TIMESTAMP}, 
+      #{changeman,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.archives.pojo.DocHistory" >
+    insert into gt_court_arc_dochistory
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="guid != null" >
+        guid,
+      </if>
+      <if test="infoid != null" >
+        infoId,
+      </if>
+      <if test="event != null" >
+        event,
+      </if>
+      <if test="location != null" >
+        location,
+      </if>
+      <if test="remark != null" >
+        remark,
+      </if>
+      <if test="changedate != null" >
+        changeDate,
+      </if>
+      <if test="changeman != null" >
+        changeMan,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="guid != null" >
+        #{guid,jdbcType=INTEGER},
+      </if>
+      <if test="infoid != null" >
+        #{infoid,jdbcType=INTEGER},
+      </if>
+      <if test="event != null" >
+        #{event,jdbcType=VARCHAR},
+      </if>
+      <if test="location != null" >
+        #{location,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="changedate != null" >
+        #{changedate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="changeman != null" >
+        #{changeman,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.archives.pojo.DocHistory" >
+    update gt_court_arc_dochistory
+    <set >
+      <if test="infoid != null" >
+        infoId = #{infoid,jdbcType=INTEGER},
+      </if>
+      <if test="event != null" >
+        event = #{event,jdbcType=VARCHAR},
+      </if>
+      <if test="location != null" >
+        location = #{location,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="changedate != null" >
+        changeDate = #{changedate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="changeman != null" >
+        changeMan = #{changeman,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where guid = #{guid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.archives.pojo.DocHistory" >
+    update gt_court_arc_dochistory
+    set infoId = #{infoid,jdbcType=INTEGER},
+      event = #{event,jdbcType=VARCHAR},
+      location = #{location,jdbcType=VARCHAR},
+      remark = #{remark,jdbcType=VARCHAR},
+      changeDate = #{changedate,jdbcType=TIMESTAMP},
+      changeMan = #{changeman,jdbcType=VARCHAR}
+    where guid = #{guid,jdbcType=INTEGER}
+  </update>
+</mapper>

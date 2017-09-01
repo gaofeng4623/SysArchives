@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.archives.dao.InsertDetailDao" >
+  <resultMap id="BaseResultMap" type="com.archives.pojo.InsertDetail" >
+    <id column="guid" property="guid" jdbcType="INTEGER" />
+    <result column="formid" property="formid" jdbcType="CHAR" />
+    <result column="infoid" property="infoid" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    guid, formid, infoid
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from gt_court_insertdetail
+    where guid = #{guid,jdbcType=INTEGER}
+  </select>
+  <insert id="insertSelective" parameterType="com.archives.pojo.InsertDetail" >
+    insert into gt_court_insertdetail
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="guid != null" >
+        guid,
+      </if>
+      <if test="formid != null" >
+        formid,
+      </if>
+      <if test="infoid != null" >
+        infoid,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="guid != null" >
+        #{guid,jdbcType=INTEGER},
+      </if>
+      <if test="formid != null" >
+        #{formid,jdbcType=CHAR},
+      </if>
+      <if test="infoid != null" >
+        #{infoid,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.archives.pojo.InsertDetail" >
+    update gt_court_insertdetail
+    <set >
+      <if test="formid != null" >
+        formid = #{formid,jdbcType=CHAR},
+      </if>
+      <if test="infoid != null" >
+        infoid = #{infoid,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where guid = #{guid,jdbcType=INTEGER}
+  </update>
+  <select id="findInsertformDetailForPage" parameterType="java.util.Map" resultType="com.archives.pojo.InsertDetail">
+    select C.guid as itemGuid,A.guid,A.formid,A.infoid,B.caseno,B.archivesno,B.putonrecorddate,B.undertakeper,B.parties,B.storagelife,
+        B.flowid, B.casename, B.undertakedep, D.locationPath location, C.status fjStatus, B.guid arcguid
+     from gt_court_insertdetail A 
+       inner join gt_court_arc_info B on A.infoid = B.guid
+       inner join gt_court_arc_itemstatus C on B.guid = C.infoid
+       inner join gt_court_location D on C.location = D.guid
+     where A.formid = #{paraMap.formid,jdbcType=VARCHAR}
+     order by D.guid asc
+     limit #{paraMap.start}, #{paraMap.rows}
+  </select>
+  <select id="findCountInsertformDetailForPage" parameterType="java.util.Map" resultType="java.lang.Integer">
+    select count(1)
+     from gt_court_insertdetail A 
+       inner join gt_court_arc_info B on A.infoid = B.guid
+       inner join gt_court_arc_itemstatus C on B.guid = C.infoid
+       inner join gt_court_location D on C.location = D.guid
+     where A.formid = #{paraMap.formid,jdbcType=VARCHAR}
+  </select>
+  <select id="findInsertformDetail" parameterType="java.util.Map" resultType="com.archives.pojo.InsertDetail">
+    select A.guid,A.formid,A.infoid,B.caseno,B.archivesno,B.putonrecorddate,B.undertakeper,B.parties,B.storagelife,
+    B.flowid, B.casename,B.undertakedep,D.locationPath location, C.status fjStatus, B.guid arcguid
+     from gt_court_insertdetail A 
+       inner join gt_court_arc_info B on A.infoid = B.guid
+       inner join gt_court_arc_itemstatus C on B.guid = C.infoid
+       inner join gt_court_location D on C.location = D.guid
+     where A.formid = #{paraMap.formid,jdbcType=VARCHAR}
+     order by D.guid asc
+  </select>
+</mapper>

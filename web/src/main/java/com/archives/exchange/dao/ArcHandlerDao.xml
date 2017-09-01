@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.archives.exchange.dao.ArcHandlerDao" >
+<resultMap id="ArcResultMap" type="com.archives.pojo.ArchivesInfo" >
+    <id column="AJBS" property="ajbs" jdbcType="VARCHAR" />
+    <result column="AH" property="caseno" jdbcType="VARCHAR" /><!--  案号-->
+    <result column="DABH" property="archivesno" jdbcType="VARCHAR" /><!--  档案编号-->
+    <result column="ND" property="year" jdbcType="VARCHAR" /><!--年度-->
+    <result column="AJXZ" property="caseproerty" jdbcType="VARCHAR" /><!--案件性质-->
+    <result column="CASEWORD" property="caseword" jdbcType="VARCHAR" /><!--案字-->
+    <result column="COURT_ABBRNAME" property="courtshortname" jdbcType="VARCHAR" /><!--法院简称-->
+    <result column="BH" property="number" jdbcType="VARCHAR" /><!--编号-->
+    <result column="AJLB" property="casecategory" jdbcType="VARCHAR" /><!--案件类别-->
+    <result column="SPCX" property="judgeprocedure" jdbcType="VARCHAR" /><!--审判程序-->
+    <result column="CASENAME" property="casename" jdbcType="VARCHAR" /><!--案名-->
+    <result column="JYAQ" property="shortdetailscase" jdbcType="VARCHAR" /><!--简要案情-->
+    <result column="DSR" property="parties" jdbcType="VARCHAR" /><!--当事人-->
+    <result column="LABM" property="putonrecorddep" jdbcType="VARCHAR" /><!--立案部门-->
+    <result column="CBSPT" property="undertakedep" jdbcType="VARCHAR" /><!--承办部门-->
+    <result column="SJY" property="courtclerk" jdbcType="VARCHAR" /><!-- 书记员 -->
+    <result column="SPZ" property="chiefjudge" jdbcType="VARCHAR" /><!--审判长-->
+    <result column="HYT" property="collegiatebench" jdbcType="VARCHAR" /><!--合议庭-->
+    <result column="ZJCS" property="formaldocument" jdbcType="VARCHAR" /><!--正卷册数-->
+    <result column="FJCS" property="counterpart" jdbcType="VARCHAR" /><!--副卷册数-->
+    <result column="QTJC" property="otherdoucment" jdbcType="VARCHAR" /><!--副卷册数-->
+    <result column="ZJYS" property="formaldocpagenum" jdbcType="VARCHAR" /><!--正卷页数-->
+    <result column="FJYS" property="counterpartpagenum" jdbcType="VARCHAR" /><!--副卷页数-->
+    <result column="BJQK" property="mergecase" jdbcType="VARCHAR" /><!--并卷情况-->
+    <result column="JARQ" property="settledate" jdbcType="VARCHAR" /><!--结案日期-->
+    <result column="JAFS" property="settlemanner" jdbcType="VARCHAR" /><!--结案方式-->
+    <result column="YSFY" property="originalcourt" jdbcType="VARCHAR" /><!--原审法院-->
+    <result column="YSAH" property="originalcaseno" jdbcType="VARCHAR" /><!--原审案号-->
+    <result column="YSJG" property="firstresult" jdbcType="VARCHAR" /><!--一审结果-->
+    <result column="ESJG" property="secondresult" jdbcType="VARCHAR" /><!--二审结果-->
+    <result column="ZSJG" property="lastresult" jdbcType="VARCHAR" /><!--再审结果-->
+    <result column="QZH" property="fulldocno" jdbcType="VARCHAR" /><!--全宗号-->
+    <result column="MLH" property="catalogno" jdbcType="VARCHAR" /><!--目录号-->
+    <result column="ZWD" property="evidencebag" jdbcType="VARCHAR" /><!--证物袋-->
+    <result column="MJ" property="degreeofsecrets" jdbcType="VARCHAR" /><!--密级-->
+    <result column="BGQX" property="storagelife" jdbcType="VARCHAR" /><!--保存期限-->
+    <result column="GDSQR" property="applyper" jdbcType="VARCHAR" /><!--申请档案人-->
+    <result column="JSR" property="receiveper" jdbcType="VARCHAR" /><!--档案接收人-->
+    <result column="GDR" property="placeonper" jdbcType="VARCHAR" /><!--归档人-->
+    <result column="GDRQ" property="placeondate" jdbcType="VARCHAR" /><!--归档日期-->
+    <result column="GDBZ" property="gdbz" jdbcType="VARCHAR" /><!--归档标志-->
+   <result column="DJR" property="registerper" jdbcType="VARCHAR" /><!--登记人-->
+   <result column="DJSJ" property="registertime" jdbcType="VARCHAR" /><!--登记时间-->
+   <result column="NOTE" property="remark" jdbcType="VARCHAR" /><!--备注-->
+   <result column="SPR" property="approveper" jdbcType="VARCHAR" /><!--审批人-->
+   <result column="LARQ" property="putonrecorddate" jdbcType="VARCHAR" /><!--立案日期-->
+   <result column="JAAY" property="settlereason" jdbcType="VARCHAR" /><!--结案案由-->
+   <result column="CBR" property="undertakeper" jdbcType="VARCHAR" /><!--承办人-->
+   <result column="AZBM" property="azbm" jdbcType="VARCHAR" /><!--案件编码-->
+   
+  </resultMap>
+
+  <sql id="Base_Column_List" >
+    a.AH,a.DABH,a.ND,a.AJXZ,a.CASEWORD,a.COURT_ABBRNAME,a.BH,a.AJLB,a.SPCX,a.CASENAME,
+    a.JYAQ,a.DSR,a.LABM,a.CBSPT,a.SJY,a.SPZ,a.HYT,a.ZJCS,a.FJCS,a.QTJC,a.ZJYS,a.FJYS,a.BJQK,
+    a.JARQ,a.JAFS,a.YSFY,a.YSAH,a.YSJG,a.ESJG,a.ZSJG,a.QZH,a.MLH,a.ZWD,a.MJ,a.BGQX,a.GDSQR,a.JSR,a.GDR,
+    a.GDRQ,a.DJR,a.DJSJ,a.NOTE,a.SPR,a.LARQ,a.JAAY,a.CBR,w.AZBM,a.GDBZ
+  </sql>
+  
+  <select id="queryInfo" resultMap="ArcResultMap" parameterType="java.lang.String" >
+  	  select
+  	   <include refid="Base_Column_List" />
+  	    from VIEW_CASES_AJXXQJ a left join (select min(AZBM) as AZBM,AZ from VIEW_CASEWORD t group by AZ) w on a.CASEWORD = w.AZ
+  </select>
+  
+   <select id="queryInfoCount" resultType="java.lang.Integer" parameterType="java.lang.String" >
+  	  select count(*) from VIEW_CASES_AJXXQJ
+  </select>
+  
+  <select id="queryIntervalInfo" resultMap="ArcResultMap" parameterType="java.lang.Object" >
+  	  select
+  	   <include refid="Base_Column_List" />
+  	    from VIEW_CASES_AJXXQJ a left join (select min(AZBM) as AZBM,AZ from VIEW_CASEWORD t group by AZ) w on a.CASEWORD = w.AZ
+  	    where (JARQ &gt;= #{targetDate} and JARQ &lt;= #{now}) OR (GDRQ &gt;= #{targetDate} and GDRQ &lt;= #{now})
+  </select>
+  
+   <select id="queryIntervalInfoCount" resultType="java.lang.Integer" parameterType="java.lang.Object" >
+  	  select count(*) from VIEW_CASES_AJXXQJ where (JARQ &gt;= #{targetDate} and JARQ &lt;= #{now}) 
+  	  OR (GDRQ &gt;= #{targetDate} and GDRQ &lt;= #{now})
+  </select>
+  
+  <select id="queryIntervalAddInfoCount" resultType="java.lang.Integer" parameterType="java.lang.Object" >
+  	  select count(*) from VIEW_CASES_AJXXQJ where JARQ &gt;= #{targetDate} and JARQ &lt;= #{now}
+  </select>
+  
+</mapper>

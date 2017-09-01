@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.system.dao.database.RolemembersDao">
+	<resultMap id="BaseResultMap" type="com.system.base.pojo.Rolemembers">
+		<id column="guid" property="guid" jdbcType="INTEGER" />
+		<result column="roleid" property="roleid" jdbcType="CHAR" />
+		<result column="userId" property="userid" jdbcType="INTEGER" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		guid, roleId, userId
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from gt_sys_rolemembers
+		where guid = #{guid,jdbcType=INTEGER}
+	</select>
+	<select id="selectRoleId" parameterType="String"
+		resultType="com.system.base.pojo.Rolemembers">
+		select
+		<include refid="Base_Column_List" />
+		from gt_sys_rolemembers where roleId=#{troleId}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+		delete from gt_sys_rolemembers
+		where guid = #{guid,jdbcType=INTEGER}
+	</delete>
+	<delete id="deleteByEmpIdList" parameterType="java.lang.String">
+		delete from gt_sys_rolemembers
+		where userId in
+		<if test="idList != null">
+			<foreach collection="idList" item="item" index="index" open="("
+				separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+	</delete>
+	<insert id="save" parameterType="com.system.base.pojo.Rolemembers">
+		insert into gt_sys_rolemembers (guid, roleId, userId)
+		values (#{guid,jdbcType=INTEGER}, #{roleid,jdbcType=CHAR},
+		#{userid,jdbcType=INTEGER})
+	</insert>
+	<insert id="insertSelective" parameterType="com.system.base.pojo.Rolemembers">
+		insert into gt_sys_rolemembers
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="guid != null">
+				guid,
+			</if>
+			<if test="roleid != null">
+				roleId,
+			</if>
+			<if test="userid != null">
+				userId,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="rolerelateid != null">
+				#{guid,jdbcType=CHAR},
+			</if>
+			<if test="roleid != null">
+				#{roleid,jdbcType=CHAR},
+			</if>
+			<if test="userid != null">
+				#{userid,jdbcType=INTEGER},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.system.base.pojo.Rolemembers">
+		update gt_sys_rolemembers
+		<set>
+			<if test="roleid != null">
+				roleId = #{roleid,jdbcType=CHAR},
+			</if>
+			<if test="userid != null">
+				userId = #{userid,jdbcType=INTEGER},
+			</if>
+		</set>
+		where guid = #{guid,jdbcType=CHAR}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.system.base.pojo.Rolemembers">
+		update gt_sys_rolemembers
+		set roleId = #{roleid,jdbcType=CHAR},
+		userId = #{userid,jdbcType=INTEGER}
+		where guid = #{guid,jdbcType=CHAR}
+	</update>
+
+	<delete id="deleteByEmpId" parameterType="java.lang.String">
+		delete from gt_sys_rolemembers
+		where userId = #{employeeId,jdbcType=CHAR}
+	</delete>
+	<delete id="deleteByRoleId" parameterType="java.lang.String">
+		delete from gt_sys_rolemembers
+		where roleid = #{RoleId,jdbcType=CHAR}
+	</delete>
+</mapper>

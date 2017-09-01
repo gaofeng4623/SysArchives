@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.system.dao.database.DepartmentDao" >
+  <resultMap id="BaseResultMap" type="com.system.base.pojo.Department" >
+    <id column="departmentId" property="departmentid" jdbcType="VARCHAR" />
+    <result column="superiorId" property="superiorid" jdbcType="VARCHAR" />
+    <result column="departmentName" property="departmentname" jdbcType="VARCHAR" />
+    <result column="tabIndex" property="tabindex" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    departmentId, superiorId, departmentName, tabIndex
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from gt_sys_department
+    where departmentId = #{departmentid,jdbcType=VARCHAR}
+  </select>
+  <select id="selectBySuperId" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from gt_sys_department
+    where superiorId = #{superiorid,jdbcType=VARCHAR}
+  </select>
+  <select id="selectByName" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from gt_sys_department
+    where departmentName = #{departmentname,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from gt_sys_department
+    where departmentId = #{departmentid,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.system.base.pojo.Department" >
+    insert into gt_sys_department (departmentId, superiorId, departmentName, 
+      tabIndex)
+    values (#{departmentid,jdbcType=INTEGER}, #{superiorid,jdbcType=INTEGER}, #{departmentname,jdbcType=VARCHAR}, 
+      #{tabindex,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.system.base.pojo.Department" >
+    insert into gt_sys_department
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="departmentid != null" >
+        departmentId,
+      </if>
+      <if test="superiorid != null" >
+        superiorId,
+      </if>
+      <if test="departmentname != null" >
+        departmentName,
+      </if>
+      <if test="tabindex != null" >
+        tabIndex,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="departmentid != null" >
+        #{departmentid,jdbcType=INTEGER},
+      </if>
+      <if test="superiorid != null" >
+        #{superiorid,jdbcType=INTEGER},
+      </if>
+      <if test="departmentname != null" >
+        #{departmentname,jdbcType=VARCHAR},
+      </if>
+      <if test="tabindex != null" >
+        #{tabindex,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.system.base.pojo.Department" >
+    update gt_sys_department
+    <set >
+      <if test="superiorid != null" >
+        superiorId = #{superiorid,jdbcType=VARCHAR},
+      </if>
+      <if test="departmentname != null" >
+        departmentName = #{departmentname,jdbcType=VARCHAR},
+      </if>
+      <if test="tabindex != null" >
+        tabIndex = #{tabindex,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where departmentId = #{departmentid,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.system.base.pojo.Department" >
+    update gt_sys_department
+    set superiorId = #{superiorid,jdbcType=VARCHAR},
+      departmentName = #{departmentname,jdbcType=VARCHAR},
+      tabIndex = #{tabindex,jdbcType=VARCHAR}
+    where departmentId = #{departmentid,jdbcType=VARCHAR}
+  </update>
+  <select id="selectAllDepratments" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from gt_sys_department order by tabIndex
+  </select>
+</mapper>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.archives.dao.ArcStatisticsDao" >
+	<select id="queryPlaceOnCount" parameterType="java.util.Map" resultType="com.archives.pojo.ArcStatistics">
+		SELECT
+			count(1) AS placeOnCount,
+			T.placeOnMonth
+		FROM
+			(
+				SELECT
+					DATE_FORMAT(placeOnDate, '%m') AS placeOnMonth
+				FROM
+					gt_court_arc_info A
+				WHERE
+					DATE_FORMAT(A.placeOnDate, '%Y') = DATE_FORMAT(CURDATE(), '%Y')
+			) T
+		GROUP BY
+			placeOnMonth
+	</select>
+	<select id="queryBorrowCount" parameterType="java.util.Map" resultType="com.archives.pojo.ArcStatistics">
+		SELECT
+			count(1) AS borrowCount,
+			T.borrowMonth
+		FROM
+			(
+				SELECT
+					DATE_FORMAT(B.borrowTime, '%m') AS borrowMonth
+				FROM
+					gt_court_arc_borrowdetail A
+				INNER JOIN gt_court_arc_borrow B ON A.borrowId = B.borrowId
+				WHERE
+					DATE_FORMAT(B.borrowTime, '%Y') = DATE_FORMAT(CURDATE(), '%Y')
+			) T
+		GROUP BY
+			borrowMonth
+	</select>
+</mapper>

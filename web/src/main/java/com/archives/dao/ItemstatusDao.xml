@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.archives.dao.ItemstatusDao" >
+  <resultMap id="BaseResultMap" type="com.archives.pojo.Itemstatus" >
+    <id column="guid" property="guid" jdbcType="INTEGER" />
+    <result column="itemId" property="itemid" jdbcType="INTEGER" />
+    <result column="itemNo" property="itemNo" jdbcType="VARCHAR" />
+    <result column="infoid" property="infoid" jdbcType="INTEGER" />
+    <result column="status" property="status" jdbcType="CHAR" />
+    <result column="rfid" property="rfid" jdbcType="VARCHAR" />
+    <result column="location" property="location" jdbcType="VARCHAR" />
+    <result column="flowid" property="flowid" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    guid, itemId,itemNo, itemType, infoid, status, rfid, location
+  </sql>
+  <select id="selectItemWithFlowId" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+  	 item.guid, item.itemId, item.itemNo, item.infoid, item.status, item.rfid, item.location, info.flowid
+    from gt_court_arc_itemstatus item, gt_court_arc_info info 
+    where item.infoid = info.guid and  item.guid = #{guid,jdbcType=INTEGER}
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from gt_court_arc_itemstatus
+    where guid = #{guid,jdbcType=INTEGER}
+  </select>
+   <select id="findByArchivesNo"  parameterType="Integer"  resultType="com.archives.pojo.Itemstatus">
+    select 
+    <include refid="Base_Column_List" />
+    from gt_court_arc_itemstatus
+    where infoid = #{infoid,jdbcType=INTEGER}
+  </select>
+  <select id="findByItemstatusNo"  parameterType="Integer"  resultType="com.archives.pojo.Itemstatus">
+    select loc.locationPath,
+     ite.guid, ite.itemId,ite.itemNo, ite.itemType, ite.infoid, ite.status, ite.rfid, ite.location
+    from gt_court_arc_itemstatus ite
+    LEFT join gt_court_location loc   on ite.location=loc.guid 
+    where infoid = #{infoid,jdbcType=INTEGER} and itemId &lt;&gt;0
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from gt_court_arc_itemstatus
+    where guid = #{guid,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.archives.pojo.Itemstatus" >
+    insert into gt_court_arc_itemstatus (guid, itemId, itemNo, infoid, 
+      status, rfid, location
+      )
+    values (#{guid,jdbcType=INTEGER}, #{itemid,jdbcType=INTEGER}, #{itemNo,jdbcType=VARCHAR},  #{infoid,jdbcType=INTEGER}, 
+      #{status,jdbcType=CHAR}, #{rfid,jdbcType=VARCHAR}, #{location,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.archives.pojo.Itemstatus" useGeneratedKeys="true" keyProperty="guid">
+    insert into gt_court_arc_itemstatus
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="guid != null" >
+        guid,
+      </if>
+      <if test="itemid != null" >
+        itemId,
+      </if>
+      <if test="itemNo != null" >
+        itemNo,
+      </if>
+      <if test="itemType != null" >
+        itemType,
+      </if>
+      <if test="infoid != null" >
+        infoid,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="rfid != null" >
+        rfid,
+      </if>
+      <if test="location != null" >
+        location,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="guid != null" >
+        #{guid,jdbcType=INTEGER},
+      </if>
+      <if test="itemid != null" >
+        #{itemid,jdbcType=INTEGER},
+      </if>
+      <if test="itemNo != null" >
+        #{itemNo,jdbcType=VARCHAR},
+      </if>
+      <if test="itemType != null" >
+        #{itemType,jdbcType=INTEGER},
+      </if>
+      <if test="infoid != null" >
+        #{infoid,jdbcType=INTEGER},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=CHAR},
+      </if>
+      <if test="rfid != null" >
+        #{rfid,jdbcType=VARCHAR},
+      </if>
+      <if test="location != null" >
+        #{location,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.archives.pojo.Itemstatus" >
+    update gt_court_arc_itemstatus
+    <set >
+      <if test="itemid != null" >
+        itemId = #{itemid,jdbcType=INTEGER},
+      </if>
+      <if test="itemNo != null" >
+        itemNo = #{itemNo,jdbcType=VARCHAR},
+      </if>
+      <if test="infoid != null" >
+        infoid = #{infoid,jdbcType=INTEGER},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=CHAR},
+      </if>
+      <if test="rfid != null" >
+        rfid = #{rfid,jdbcType=VARCHAR},
+      </if>
+      <if test="location != null" >
+        location = #{location,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where guid = #{guid,jdbcType=INTEGER}
+  </update>
+  <update id="updateRfidByPrimaryKey" parameterType="java.util.Map">
+    update gt_court_arc_itemstatus
+    set 
+    	<if test="paraMap.rfid != null" >
+	      rfid = #{paraMap.rfid,jdbcType=VARCHAR},
+	    </if>
+    	<if test="paraMap.uptime != null" >
+	      uptime = #{paraMap.uptime,jdbcType=TIMESTAMP}
+	    </if>
+    	where guid = #{paraMap.guid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.archives.pojo.Itemstatus" >
+    update gt_court_arc_itemstatus
+    set itemId = #{itemid,jdbcType=INTEGER},
+      itemNo = #{itemNo,jdbcType=VARCHAR},
+      infoid = #{infoid,jdbcType=INTEGER},
+      status = #{status,jdbcType=CHAR},
+      rfid = #{rfid,jdbcType=VARCHAR},
+      location = #{location,jdbcType=VARCHAR}
+    where guid = #{guid,jdbcType=INTEGER}
+  </update>
+  <select id="countArchive"  parameterType="java.lang.String"  resultType="java.lang.Integer">
+    select count(1) from gt_court_location location, gt_court_arc_itemstatus item 
+		    where item.location = location.guid
+		      and location.locationPath like CONCAT(#{locationPath},'%') 
+  </select>
+  
+  <select id="selectInfoIdByPrimaryKey" parameterType="java.lang.Integer"  resultType="java.lang.Integer">
+  	select infoId from gt_court_arc_itemstatus where guid = #{guid, jdbcType=INTEGER}
+  </select>
+  <delete id="delItemsByIds" parameterType="java.lang.Integer" >
+   delete from gt_court_arc_itemstatus
+   where infoid in
+	<if test="idList != null" >
+	<foreach collection="idList" item="item" index="index" open="(" separator="," close=")">
+       #{item}
+  	</foreach>
+   </if>
+  </delete>
+  
+  <delete id="delItemById" parameterType="java.lang.Integer" >
+   delete from gt_court_arc_itemstatus
+   where guid = #{guid, jdbcType=INTEGER}
+  </delete>
+  
+  <select id="findMaxIdByItemType" parameterType="java.lang.Object"  resultType="java.lang.Integer">
+  	select max(itemId) as itemId from gt_court_arc_itemstatus where infoid = #{infoid, jdbcType=INTEGER}
+  	 and itemType = #{itemType, jdbcType=INTEGER}
+  </select>
+  
+</mapper>

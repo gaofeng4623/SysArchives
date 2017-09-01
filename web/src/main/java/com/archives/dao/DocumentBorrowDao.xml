@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.archives.dao.DocumentBorrowDao" >
+  <resultMap id="BaseResultMap" type="com.archives.pojo.DocumentBorrow" >
+    <id column="guid" property="guid" jdbcType="INTEGER" />
+    <result column="borrowDate" property="borrowDate" jdbcType="VARCHAR" />
+    <result column="borrowCompany" property="borrowCompany" jdbcType="VARCHAR" />
+    <result column="utilizationEffect" property="utilizationEffect" jdbcType="VARCHAR" />
+    <result column="borrowingPerson" property="borrowingPerson" jdbcType="VARCHAR" />
+    <result column="personCharge" property="personCharge" jdbcType="VARCHAR" />
+    <result column="rturnDate" property="rturnDate" jdbcType="VARCHAR" />
+     <result column="borrowContent" property="borrowContent" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    guid, borrowDate, borrowCompany, utilizationEffect, borrowingPerson, personCharge, 
+    rturnDate,borrowContent,documentGuids,telephone,formNo,expireDate
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from gt_court_arc_documentborrow
+    where guid = #{guid,jdbcType=INTEGER}
+  </select>
+   <select id="findDocumentBorrowByformNo" resultMap="BaseResultMap" parameterType="String" >
+    select 
+    <include refid="Base_Column_List" />
+    from gt_court_arc_documentborrow
+    where formNo = #{formNo,jdbcType=INTEGER} 
+  </select>
+   <select id="findByformNo" resultMap="BaseResultMap" parameterType="String" >
+    select 
+    <include refid="Base_Column_List" />
+    from gt_court_arc_documentborrow
+    where formNo = #{formNo,jdbcType=INTEGER} and (status='1'or status='-2')
+  </select>
+   <select id="findDocumentBorrowForPage" parameterType="java.util.Map" resultType="com.archives.pojo.DocumentBorrow">
+
+	select   
+  <include refid="Base_Column_List" />
+      from gt_court_arc_documentborrow
+   where 1=1
+		<if test="paraMap.borrowDate != null and paraMap.borrowDate != '' ">
+			and borrowDate like CONCAT('%',#{paraMap.borrowDate},'%') 
+		</if>
+		<if test="paraMap.borrowContent != null and paraMap.borrowContent != '' ">
+			and borrowContent like CONCAT('%',#{paraMap.borrowContent},'%') 
+		</if>
+		<if test="paraMap.borrowingPerson != null and paraMap.borrowingPerson != '' ">
+			and borrowingPerson like CONCAT('%',#{paraMap.borrowingPerson},'%') 
+		</if>
+		<if test="paraMap.dayNum != null and paraMap.dayNum != ''">
+				and DATEDIFF(expireDate,CURRENT_DATE) &lt;= #{paraMap.dayNum}
+		</if>
+			<if test="paraMap.status != null and paraMap.status != '' and paraMap.status != 'status'">
+			and status =#{paraMap.status} 
+		</if>
+		<if test="paraMap.status = 'status' ">
+			and (status ='1' or status='-2')
+		</if>
+		order by formNo desc
+		 limit #{paraMap.start}, #{paraMap.rows} 
+	</select>
+	
+	<select id="findCountDocumentBorrowForPage" parameterType="java.util.Map" resultType="java.lang.Integer">
+	select   
+	count(1)
+	 from gt_court_arc_documentborrow a
+  
+		where 1=1
+		<if test="paraMap.borrowDate != null and paraMap.borrowDate != '' ">
+			and borrowDate like CONCAT('%',#{paraMap.borrowDate},'%') 
+		</if>
+		<if test="paraMap.borrowContent != null and paraMap.borrowContent != '' ">
+			and borrowContent like CONCAT('%',#{paraMap.borrowContent},'%') 
+		</if>
+		<if test="paraMap.borrowingPerson != null and paraMap.borrowingPerson != '' ">
+			and borrowingPerson like CONCAT('%',#{paraMap.borrowingPerson},'%') 
+		</if>
+		<if test="paraMap.dayNum != null and paraMap.dayNum != ''">
+				and DATEDIFF(CURRENT_DATE,expireDate) &lt;= #{paraMap.dayNum}
+			</if>
+			<if test="paraMap.status = 'status' ">
+			and (status ='1' or status='-2')
+		  </if>
+			<if test="paraMap.status != null and paraMap.status != '' and paraMap.status != 'status'">
+			and status =#{paraMap.status} 
+		</if>
+	</select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from gt_court_arc_documentborrow
+    where guid = #{guid,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.archives.pojo.DocumentBorrow" >
+    insert into gt_court_arc_documentborrow (guid, borrowDate, borrowCompany, 
+      utilizationEffect, borrowingPerson, personCharge, 
+      rturnDate,borrowContent)
+    values (#{guid,jdbcType=INTEGER}, #{borrowDate,jdbcType=VARCHAR}, #{borrowcompany,jdbcType=VARCHAR}, 
+      #{utilizationeffect,jdbcType=VARCHAR}, #{borrowingperson,jdbcType=VARCHAR}, #{personcharge,jdbcType=VARCHAR}, 
+      #{rturndate,jdbcType=VARCHAR},#{borrowContent,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.archives.pojo.DocumentBorrow" >
+  <selectKey resultType="INTEGER" order="AFTER" keyProperty="guid">
+			SELECT LAST_INSERT_ID() AS guid
+		</selectKey>
+    insert into gt_court_arc_documentborrow
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="guid != null" >
+        guid,
+      </if>
+      <if test="borrowDate != null" >
+        borrowDate,
+      </if>
+      <if test="borrowCompany != null" >
+        borrowCompany,
+      </if>
+      <if test="utilizationEffect != null" >
+        utilizationEffect,
+      </if>
+      <if test="borrowingPerson != null" >
+        borrowingPerson,
+      </if>
+      <if test="personCharge != null" >
+        personCharge,
+      </if>
+      <if test="expireDate != null" >
+        expireDate,
+      </if>
+      <if test="borrowContent != null" >
+        borrowContent,
+      </if>
+       <if test="documentGuids != null" >
+        documentGuids,
+      </if>
+      <if test="telephone != null" >
+        telephone,
+      </if>
+       <if test="formNo != null" >
+        formNo,
+      </if>
+       <if test="status != null" >
+        status,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="guid != null" >
+        #{guid,jdbcType=INTEGER},
+      </if>
+      <if test="borrowDate != null" >
+        #{borrowDate,jdbcType=VARCHAR},
+      </if>
+      <if test="borrowCompany != null" >
+        #{borrowCompany,jdbcType=VARCHAR},
+      </if>
+      <if test="utilizationEffect != null" >
+        #{utilizationEffect,jdbcType=VARCHAR},
+      </if>
+      <if test="borrowingPerson != null" >
+        #{borrowingPerson,jdbcType=VARCHAR},
+      </if>
+      <if test="personCharge != null" >
+        #{personCharge,jdbcType=VARCHAR},
+      </if>
+      <if test="expireDate != null" >
+        #{expireDate,jdbcType=VARCHAR},
+      </if>
+        <if test="borrowContent != null" >
+        #{borrowContent,jdbcType=VARCHAR},
+      </if>
+      
+       <if test="documentGuids != null" >
+        #{documentGuids,jdbcType=VARCHAR},
+      </if>
+       <if test="telephone != null" >
+        #{telephone,jdbcType=VARCHAR},
+      </if>
+      <if test="formNo != null" >
+        #{formNo,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.archives.pojo.DocumentBorrow" >
+    update gt_court_arc_documentborrow
+    <set >
+      <if test="borrowDate != null" >
+        borrowDate = #{borrowDate,jdbcType=VARCHAR},
+      </if>
+      <if test="borrowCompany != null" >
+        borrowCompany = #{borrowCompany,jdbcType=VARCHAR},
+      </if>
+      <if test="utilizationEffect != null" >
+        utilizationEffect = #{utilizationEffect,jdbcType=VARCHAR},
+      </if>
+      <if test="borrowingPerson != null" >
+        borrowingPerson = #{borrowingPerson,jdbcType=VARCHAR},
+      </if>
+      <if test="personCharge != null" >
+        personCharge = #{personCharge,jdbcType=VARCHAR},
+      </if>
+      <if test="rturnDate != null" >
+        rturnDate = #{rturnDate,jdbcType=VARCHAR},
+      </if>
+        <if test="borrowContent != null" >
+        borrowContent = #{borrowContent,jdbcType=VARCHAR},
+      </if>
+       <if test="status != null" >
+        status = #{status,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where guid = #{guid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.archives.pojo.DocumentBorrow" >
+    update gt_court_arc_documentborrow
+    set borrowDate = #{borrowdate,jdbcType=VARCHAR},
+      borrowCompany = #{borrowcompany,jdbcType=VARCHAR},
+      utilizationEffect = #{utilizationeffect,jdbcType=VARCHAR},
+      borrowingPerson = #{borrowingperson,jdbcType=VARCHAR},
+      personCharge = #{personCharge,jdbcType=VARCHAR},
+      rturnDate = #{rturndate,jdbcType=VARCHAR},
+       borrowContent = #{borrowContent,jdbcType=VARCHAR}
+    where guid = #{guid,jdbcType=INTEGER}
+  </update>
+  
+</mapper>

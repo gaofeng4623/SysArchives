@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.archives.dao.ArcSeqDao" >
+  <resultMap id="BaseResultMap" type="com.archives.pojo.ArcSeq" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="seqName" property="seqname" jdbcType="VARCHAR" />
+    <result column="seqValue" property="seqvalue" jdbcType="INTEGER" />
+    <result column="seqYear" property="seqyear" jdbcType="VARCHAR" />
+    <result column="seqGroup" property="seqgroup" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, seqName, seqValue, seqYear, seqGroup
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from gt_court_arc_seq
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectByCondition" resultMap="BaseResultMap" parameterType="com.archives.pojo.ArcSeq" >
+    select 
+    <include refid="Base_Column_List" />
+    from gt_court_arc_seq
+    where 1=1
+    <if test="id != null" >
+      and id = #{id,jdbcType=INTEGER}
+    </if>
+    <if test="seqname != null" >
+      and seqName = #{seqname,jdbcType=VARCHAR}
+    </if>
+    <if test="seqvalue != null" >
+      and seqValue = #{seqvalue,jdbcType=INTEGER}
+    </if>
+    <if test="seqyear != null" >
+      and seqYear = #{seqyear,jdbcType=VARCHAR}
+    </if>
+    <if test="seqgroup != null" >
+      and seqGroup = #{seqgroup,jdbcType=VARCHAR}
+    </if>
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from gt_court_arc_seq
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.archives.pojo.ArcSeq" >
+    insert into gt_court_arc_seq (id, seqName, seqValue, 
+      seqYear, seqGroup)
+    values (#{id,jdbcType=INTEGER}, #{seqname,jdbcType=VARCHAR}, #{seqvalue,jdbcType=INTEGER}, 
+      #{seqyear,jdbcType=VARCHAR}, #{seqgroup,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.archives.pojo.ArcSeq" >
+    insert into gt_court_arc_seq
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="seqname != null" >
+        seqName,
+      </if>
+      <if test="seqvalue != null" >
+        seqValue,
+      </if>
+      <if test="seqyear != null" >
+        seqYear,
+      </if>
+      <if test="seqgroup != null" >
+        seqGroup,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="seqname != null" >
+        #{seqname,jdbcType=VARCHAR},
+      </if>
+      <if test="seqvalue != null" >
+        #{seqvalue,jdbcType=INTEGER},
+      </if>
+      <if test="seqyear != null" >
+        #{seqyear,jdbcType=VARCHAR},
+      </if>
+      <if test="seqgroup != null" >
+        #{seqgroup,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.archives.pojo.ArcSeq" >
+    update gt_court_arc_seq
+    <set >
+      <if test="seqname != null" >
+        seqName = #{seqname,jdbcType=VARCHAR},
+      </if>
+      <if test="seqvalue != null" >
+        seqValue = #{seqvalue,jdbcType=INTEGER},
+      </if>
+      <if test="seqyear != null" >
+        seqYear = #{seqyear,jdbcType=VARCHAR},
+      </if>
+      <if test="seqgroup != null" >
+        seqGroup = #{seqgroup,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.archives.pojo.ArcSeq" >
+    update gt_court_arc_seq
+    set seqName = #{seqname,jdbcType=VARCHAR},
+      seqValue = #{seqvalue,jdbcType=INTEGER},
+      seqYear = #{seqyear,jdbcType=VARCHAR},
+      seqGroup = #{seqgroup,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

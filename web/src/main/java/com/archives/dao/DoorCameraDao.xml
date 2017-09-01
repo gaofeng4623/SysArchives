@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.archives.dao.DoorCameraDao" >
+  <resultMap id="BaseResultMap" type="com.archives.pojo.DoorCamera" >
+    <id column="guid" property="guid" jdbcType="INTEGER" />
+    <result column="cameraName" property="cameraname" jdbcType="VARCHAR" />
+    <result column="loginName" property="loginname" jdbcType="VARCHAR" />
+    <result column="loginPassword" property="loginpassword" jdbcType="VARCHAR" />
+    <result column="ipAddress" property="ipaddress" jdbcType="VARCHAR" />
+    <result column="port" property="port" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    guid, cameraName as cameraNamecf, loginName as loginNamecf, loginPassword, ipAddress, port
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from gt_court_door_camera
+    where guid = #{guid,jdbcType=INTEGER}
+  </select>
+  <select id="findDoorCameraForPage" parameterType="java.util.Map" resultType="com.archives.pojo.DoorCamera">
+	select 
+	<include refid="Base_Column_List" />
+	from gt_court_door_camera	where 1=1 
+		
+		<if test="paraMap.cameraName != null and paraMap.cameraName != '' ">
+			and cameraName like CONCAT('%',#{paraMap.cameraName},'%') 
+		</if>
+		<if test="paraMap.loginName != null and paraMap.loginName != '' ">
+			and  loginName like CONCAT('%',#{paraMap.loginName},'%') 
+		</if>
+		
+		 limit #{paraMap.start}, #{paraMap.rows}
+	</select>
+	
+	<select id="findCountDoorCameraForPage" parameterType="java.util.Map" resultType="java.lang.Integer">
+	select count(1) from gt_court_door_camera  where 1=1
+		
+			<if test="paraMap.cameraName != null and paraMap.cameraName != '' ">
+			and cameraName like CONCAT('%',#{paraMap.cameraName},'%') 
+		</if>
+		<if test="paraMap.loginName != null and paraMap.loginName != '' ">
+			and  loginName like CONCAT('%',#{paraMap.loginName},'%') 
+		</if>
+		
+	</select>
+	<select id="querydoorCameraAll"  resultType="com.archives.pojo.DoorCamera" parameterType="String" >
+    select 
+    <include refid="Base_Column_List" />
+    from gt_court_door_camera
+   
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from gt_court_door_camera
+    where guid = #{guid,jdbcType=INTEGER}
+  </delete>
+   <delete id="deleteDoorByIds" parameterType="java.lang.Integer">
+    delete from gt_court_door_camera
+    where guid in
+     <if test="idList != null" >
+		<foreach collection="idList" item="item" index="index" open="(" separator="," close=")">
+        #{item}
+  		</foreach>
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.archives.pojo.DoorCamera" >
+    insert into gt_court_door_camera (guid, cameraName, loginName, 
+      loginPassword, ipAddress, port
+      )
+    values (#{guid,jdbcType=INTEGER}, #{cameraname,jdbcType=VARCHAR}, #{loginname,jdbcType=VARCHAR}, 
+      #{loginpassword,jdbcType=VARCHAR}, #{ipaddress,jdbcType=VARCHAR}, #{port,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.archives.pojo.DoorCamera" >
+    insert into gt_court_door_camera
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="guid != null" >
+        guid,
+      </if>
+      <if test="cameraname != null" >
+        cameraName,
+      </if>
+      <if test="loginname != null" >
+        loginName,
+      </if>
+      <if test="loginpassword != null" >
+        loginPassword,
+      </if>
+      <if test="ipaddress != null" >
+        ipAddress,
+      </if>
+      <if test="port != null" >
+        port,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="guid != null" >
+        #{guid,jdbcType=INTEGER},
+      </if>
+      <if test="cameraname != null" >
+        #{cameraname,jdbcType=VARCHAR},
+      </if>
+      <if test="loginname != null" >
+        #{loginname,jdbcType=VARCHAR},
+      </if>
+      <if test="loginpassword != null" >
+        #{loginpassword,jdbcType=VARCHAR},
+      </if>
+      <if test="ipaddress != null" >
+        #{ipaddress,jdbcType=VARCHAR},
+      </if>
+      <if test="port != null" >
+        #{port,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.archives.pojo.DoorCamera" >
+    update gt_court_door_camera
+    <set >
+      <if test="cameraname != null" >
+        cameraName = #{cameraname,jdbcType=VARCHAR},
+      </if>
+      <if test="loginname != null" >
+        loginName = #{loginname,jdbcType=VARCHAR},
+      </if>
+      <if test="loginpassword != null" >
+        loginPassword = #{loginpassword,jdbcType=VARCHAR},
+      </if>
+      <if test="ipaddress != null" >
+        ipAddress = #{ipaddress,jdbcType=VARCHAR},
+      </if>
+      <if test="port != null" >
+        port = #{port,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where guid = #{guid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.archives.pojo.DoorCamera" >
+    update gt_court_door_camera
+    set cameraName = #{cameraname,jdbcType=VARCHAR},
+      loginName = #{loginname,jdbcType=VARCHAR},
+      loginPassword = #{loginpassword,jdbcType=VARCHAR},
+      ipAddress = #{ipaddress,jdbcType=VARCHAR},
+      port = #{port,jdbcType=VARCHAR}
+    where guid = #{guid,jdbcType=INTEGER}
+  </update>
+</mapper>

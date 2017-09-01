@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.archives.dao.BorrowReminderDao">
+
+<select id="findBorrowSheet" parameterType="java.util.Map"   resultType="com.archives.pojo.Borrow">
+		SELECT
+			b.*,b.userName as employeeName
+		FROM gt_court_arc_borrow b 
+		left join gt_court_arc_borrowstatus bs on bs.borrowId = b.borrowId 
+		<where>
+			bs.status = '1' 
+			and b.active = 1 and (b.status = '1' || b.status = '-1'|| b.status = '-2')
+			<if test="paraMap.userName != null and paraMap.userName != ''">
+				and b.userName like CONCAT('%',#{paraMap.userName},'%')
+			</if>
+			<if test="paraMap.depName != null and paraMap.depName != ''">
+				and b.depName  like CONCAT('%',#{paraMap.depName},'%')
+			</if>
+			<if test="paraMap.dayNum != null and paraMap.dayNum != ''">
+				and DATEDIFF(b.expireDate,CURRENT_DATE) &lt;= #{paraMap.dayNum}
+			</if>
+			
+		</where>
+		 limit #{paraMap.start}, #{paraMap.rows}
+</select>
+<select id="findBorrowSheetCountList" parameterType="java.util.Map" resultType="java.lang.Integer">
+	SELECT
+			count(b.borrowId)
+		FROM gt_court_arc_borrow b 
+		left join gt_court_arc_borrowstatus bs on bs.borrowId = b.borrowId 
+		<where>
+			bs.status = '1' 
+			and b.active = 1 and (b.status = '1' || b.status = '-1'|| b.status = '-2')
+			<if test="paraMap.userName != null and paraMap.userName != ''">
+				and b.userName like CONCAT('%',#{paraMap.userName},'%')
+			</if>
+			<if test="paraMap.depName != null and paraMap.depName != ''">
+				and b.depName  like CONCAT('%',#{paraMap.depName},'%')
+			</if>
+			<if test="paraMap.dayNum != null and paraMap.dayNum != ''">
+				and DATEDIFF(b.expireDate,CURRENT_DATE) &lt;= #{paraMap.dayNum}
+			</if>
+		</where>
+</select>
+
+<insert id="saveBorrowReminder" parameterType="com.archives.pojo.BorrowReminder" >
+	insert into gt_count_arc_borrowreminder
+	<trim prefix="(" suffix=")" suffixOverrides="," >
+	<if test="borrowId != null" >
+		borrowId,
+	</if>
+	<if test="empId != null" >
+		empId,
+	</if>
+	<if test="sendEmpId != null" >
+		sendEmpId,
+	</if>
+	<if test="sendEmpName != null" >
+		sendEmpName,
+	</if>
+	<if test="sendDate != null" >
+		sendDate
+	</if>
+	</trim>
+	<trim prefix="values (" suffix=")" suffixOverrides="," >
+	<if test="borrowId != null" >
+		#{borrowId,jdbcType=VARCHAR},
+	</if>
+	<if test="empId != null" >
+		#{empId,jdbcType=VARCHAR},
+	</if>
+	<if test="sendEmpId != null" >
+		#{sendEmpId,jdbcType=VARCHAR},
+	</if>
+	<if test="sendEmpName != null" >
+		#{sendEmpName,jdbcType=VARCHAR},
+	</if>
+	<if test="sendDate != null" >
+		#{sendDate,jdbcType=DATE}
+	</if>
+	</trim>
+</insert>
+
+<select id="queryBorrow" parameterType="java.util.Map"   resultType="com.archives.pojo.Borrow">
+		SELECT
+			b.*,e.employeeName
+		FROM gt_count_arc_borrowreminder br 
+		LEFT JOIN gt_court_arc_borrow b ON br.borrowId = b.borrowId
+		left join gt_sys_employee e on e.employeeId = br.empId
+		<where>
+			<if test="paraMap.borrowId != null and paraMap.borrowId != ''">
+				b.borrowId = #{paraMap.borrowId}
+			</if>
+			<if test="paraMap.userId != null and paraMap.userId != ''">
+				and b.userid = #{paraMap.userId}
+			</if>
+			
+		</where>
+</select>
+
+
+<select id="findBorrowNotice" parameterType="java.util.Map"   resultType="com.archives.pojo.BorrowReminder">
+		SELECT
+			br.*,b.depName,b.status,b.expireDate,b.borrowId,b.userName as employeeName,b.formNo
+		FROM gt_count_arc_borrowreminder br 
+		INNER JOIN gt_court_arc_borrow b ON br.borrowId = b.borrowId and (b.status = '1' || b.status = '-1'|| b.status = '-2')
+		<where>
+			<if test="m.sendBeginDate != null and m.sendBeginDate != ''">
+				br.sendDate &gt; #{m.sendBeginDate}
+			</if>
+			<if test="m.sendEndDate != null and m.sendEndDate != ''">
+				and br.sendDate &lt; #{m.sendEndDate}
+			</if>
+			<if test="m.param == 'notice'">
+				and br.empId =  #{m.empId}
+			</if>
+			
+		</where>
+		 limit #{m.start}, #{m.rows}
+</select>
+<select id="findBorrowNoticeCountList" parameterType="java.util.Map" resultType="java.lang.Integer">
+	SELECT
+			count(br.id)
+		FROM gt_count_arc_borrowreminder br 
+		INNER JOIN gt_court_arc_borrow b ON br.borrowId = b.borrowId and (b.status = '1' || b.status = '-1'|| b.status = '-2')
+		<where>
+			<if test="m.sendBeginDate != null and m.sendBeginDate != ''">
+				br.sendDate &gt; #{m.sendBeginDate}
+			</if>
+			<if test="m.sendEndDate != null and m.sendEndDate != ''">
+				and br.sendDate &lt; #{m.sendEndDate}
+			</if>
+			<if test="m.param == 'notice'">
+				and br.empId =  #{m.empId}
+			</if>
+		</where>
+</select>
+<!-- <select id="findBorrowListById" parameterType="Object"  resultType="com.archives.pojo.MiddleBorrow">
+		SELECT
+		<include refid="borrowColumns"/>
+		FROM gt_court_arc_middleborrow mb 
+		LEFT JOIN gt_court_arc_info i 
+			ON i.guid = mb.archivesId
+		<where>
+			<if test="archivesId != null and archivesId != ''">
+				mb.archivesId = #{archivesId}
+			</if>
+		</where>
+</select>
+<select id="findBorrowCountList" resultType="java.lang.Integer">
+	select count(mb.id) from gt_court_arc_middleborrow mb 
+		LEFT JOIN gt_court_arc_info i 
+			ON i.guid = mb.archivesId
+</select>
+  <insert id="addMiddleBorrow" parameterType="com.archives.pojo.MiddleBorrow">
+    insert into gt_court_arc_middleborrow (
+    	id,
+		archivesId,
+		empId
+		)
+    values (
+    	#{id,jdbcType=INTEGER},
+     	#{archivesId,jdbcType=VARCHAR}, 
+     	#{empId,jdbcType=VARCHAR})
+  </insert>
+  
+  <delete id="deleteBorrow" parameterType="java.lang.String">
+    delete from gt_court_arc_middleborrow
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+<insert id="addBorrow" parameterType="com.archives.pojo.Borrow" >
+	<selectKey resultType="INTEGER" order="AFTER" keyProperty="borrowId">
+	SELECT LAST_INSERT_ID() AS borrowId
+	</selectKey>
+	insert into gt_court_arc_borrow
+	<trim prefix="(" suffix=")" suffixOverrides="," >
+	<if test="userName != null" >
+		userName,
+	</if>
+	<if test="borrowTime != null" >
+		borrowTime,
+	</if>
+	<if test="expireDate != null" >
+		expireDate,
+	</if>
+	<if test="returnTime != null" >
+		returnTime,
+	</if>
+	<if test="returnPerson != null" >
+		returnPerson,
+	</if>
+	<if test="status != null" >
+		status,
+	</if>
+	</trim>
+	<trim prefix="values (" suffix=")" suffixOverrides="," >
+	<if test="userName != null" >
+		#{userName,jdbcType=VARCHAR},
+	</if>
+	<if test="borrowTime != null" >
+		#{borrowTime,jdbcType=VARCHAR},
+	</if>
+	<if test="expireDate != null" >
+		#{expireDate,jdbcType=VARCHAR},
+	</if>
+	<if test="returnTime != null" >
+		#{returnTime,jdbcType=VARCHAR},
+	</if>
+	<if test="returnPerson != null" >
+		#{returnPerson,jdbcType=VARCHAR},
+	</if>
+	<if test="status != null" >
+		#{status,jdbcType=VARCHAR},
+	</if>
+	</trim>
+</insert>
+<select id="findMidBorrowInfoByPrimaryKey" parameterType="Object" resultType="com.archives.pojo.MiddleBorrow">
+		select id,B.archivesNo archivesno,empId
+		from gt_court_arc_middleborrow A
+		INNER JOIN gt_court_arc_info B ON B.guid = A.archivesId
+		where 1=1
+			<if test="id != null and id != ''">
+				and id = #{id,jdbcType=INTEGER}
+			</if>
+</select>
+
+<select id="queryBorrowInfoTable" parameterType="java.util.Map" resultType="com.archives.pojo.Borrow">
+		SELECT
+			A.borrowId borrowId,
+			D.archivesNo archivesNo,
+			C.caseName caseName,
+			A.expireDate expireDate
+		FROM gt_court_arc_borrow A 
+		INNER JOIN gt_court_arc_borrowdetail B ON B.borrowId = A.borrowId
+		INNER JOIN gt_court_arc_info C ON C.archivesNo = B.archivesNo
+		INNER JOIN gt_court_arc_info D ON D.guid = B.archivesId
+		WHERE
+				A.borrowId in(#{borrowId,jdbcType=INTEGER})
+		limit #{paraMap.start}, #{paraMap.rows}
+</select>
+<select id="queryBorrowInfoTableCount" parameterType="java.util.Map" resultType="java.lang.Integer">
+		SELECT
+			count(1)
+		FROM gt_court_arc_borrow A 
+		INNER JOIN gt_court_arc_borrowdetail B ON B.borrowId = A.borrowId
+		INNER JOIN gt_court_arc_info C ON C.archivesNo = B.archivesNo
+		WHERE A.borrowId IN
+	<if test="borrowIdArr != null" >
+		<foreach collection="borrowIdArr" item="borrowId" index="index" open="(" separator="," close=")">
+		#{borrowId,jdbcType=INTEGER}
+		</foreach>
+	</if>
+		limit #{start}, #{rows}
+</select> -->
+</mapper>

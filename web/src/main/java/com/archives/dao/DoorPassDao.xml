@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.archives.dao.DoorPassDao" >
+  <resultMap id="BaseResultMap" type="com.archives.pojo.DoorPass" >
+    <id column="guid" property="guid" jdbcType="INTEGER" />
+    <result column="rfid" property="rfid" jdbcType="VARCHAR" />
+    <result column="locatdoorNo" property="locatdoorNo" jdbcType="VARCHAR" />
+    <result column="passDate" property="passDate" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    guid, rfid, locatdoorNo, passDate
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+   guid, rfid, locatdoorNo locatdoorNocf, passDate passDatecf
+    from gt_court_door_pass
+    where guid = #{guid,jdbcType=INTEGER}
+  </select>
+  
+  <select id="findDoorPassForPage" parameterType="java.util.Map" resultType="com.archives.pojo.DoorPass">
+
+	select   
+	 a.guid, a.rfid , a.locatdoorNo locatdoorNocf,DATE_FORMAT(a.passDate, '%Y-%m-%d %H:%i:%s')   passDatecf,c.guid as infoGuid,c.caseNo,d.note
+	 from gt_court_door_pass a
+left join gt_court_arc_itemstatus b on a.rfid=b.rfid
+left join gt_court_arc_info c on b.infoid=c.guid
+left join gt_court_door_mangage d on a.locatdoorNo=d.doorId
+   where 1=1
+		
+		<if test="paraMap.CaseNo != null and paraMap.CaseNo != '' ">
+			and c.CaseNo like CONCAT('%',#{paraMap.CaseNo},'%') 
+		</if>
+		<if test="paraMap.locatdoorNo != null and paraMap.locatdoorNo != '' ">
+			and  a.locatdoorNo like CONCAT('%',#{paraMap.locatdoorNo},'%') 
+		</if>
+		<if test="paraMap.passDate != null and paraMap.passDate != '' ">
+		<![CDATA[   and DATE_FORMAT(a.passDate, '%Y-%m-%d')=  DATE_FORMAT(#{paraMap.passDate}, '%Y-%m-%d')   ]]>
+		</if>
+		 limit #{paraMap.start}, #{paraMap.rows}
+	</select>
+	
+	<select id="findCountDoorPassForPage" parameterType="java.util.Map" resultType="java.lang.Integer">
+	select   
+	count(1)
+	 from gt_court_door_pass a
+  left join gt_court_arc_itemstatus b on a.rfid=b.rfid
+  left join gt_court_arc_info c on b.infoid=c.guid
+  left join gt_court_door_mangage d on a.locatdoorNo=d.doorId
+		where 1=1
+	<if test="paraMap.CaseNo != null and paraMap.CaseNo != '' ">
+			and c.CaseNo like CONCAT('%',#{paraMap.CaseNo},'%') 
+		</if>
+		<if test="paraMap.locatdoorNo != null and paraMap.locatdoorNo != '' ">
+			and  a.locatdoorNo like CONCAT('%',#{paraMap.locatdoorNo},'%') 
+		</if>
+		<if test="paraMap.passDate != null and paraMap.passDate != '' ">
+		<![CDATA[   and DATE_FORMAT(a.passDate, '%Y-%m-%d')=  DATE_FORMAT(#{paraMap.passDate}, '%Y-%m-%d')   ]]>
+		</if>
+	</select>
+  
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from gt_court_door_pass
+    where guid = #{guid,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.archives.pojo.DoorPass" >
+    insert into gt_court_door_pass (guid, rfid, locatdoorNo, 
+      passDate)
+    values (#{guid,jdbcType=INTEGER}, #{rfid,jdbcType=VARCHAR}, #{locatdoorno,jdbcType=VARCHAR}, 
+      #{passdate,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.archives.pojo.DoorPass" >
+    insert into gt_court_door_pass
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="guid != null" >
+        guid,
+      </if>
+      <if test="rfid != null" >
+        rfid,
+      </if>
+      <if test="locatdoorno != null" >
+        locatdoorNo,
+      </if>
+      <if test="passdate != null" >
+        passDate,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="guid != null" >
+        #{guid,jdbcType=INTEGER},
+      </if>
+      <if test="rfid != null" >
+        #{rfid,jdbcType=VARCHAR},
+      </if>
+      <if test="locatdoorno != null" >
+        #{locatdoorno,jdbcType=VARCHAR},
+      </if>
+      <if test="passdate != null" >
+        #{passdate,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.archives.pojo.DoorPass" >
+    update gt_court_door_pass
+    <set >
+      <if test="rfid != null" >
+        rfid = #{rfid,jdbcType=VARCHAR},
+      </if>
+      <if test="locatdoorno != null" >
+        locatdoorNo = #{locatdoorno,jdbcType=VARCHAR},
+      </if>
+      <if test="passdate != null" >
+        passDate = #{passdate,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where guid = #{guid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.archives.pojo.DoorPass" >
+    update gt_court_door_pass
+    set rfid = #{rfid,jdbcType=VARCHAR},
+      locatdoorNo = #{locatdoorno,jdbcType=VARCHAR},
+      passDate = #{passdate,jdbcType=TIMESTAMP}
+    where guid = #{guid,jdbcType=INTEGER}
+  </update>
+</mapper>

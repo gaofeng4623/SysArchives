@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.archives.exchange.dao.OrgHandlerDao" >
+<resultMap id="EmpResultMap" type="com.system.base.pojo.Employee" >
+    <id column="RYBS" property="employeeId" jdbcType="VARCHAR" />
+    <result column="LOGID" property="employeeLoginName" jdbcType="VARCHAR" />
+    <result column="BMBS" property="departmentId" jdbcType="VARCHAR" />
+    <result column="USERNAME" property="employeeName" jdbcType="VARCHAR" />
+    <result column="XB" property="sex"  jdbcType="VARCHAR" />
+    <result column="POSITION" property="post" jdbcType="VARCHAR" />
+    <result column="MAILACCOUNT" property="userEmail" jdbcType="VARCHAR" />
+    <result column="LXFS" property="mobile" jdbcType="VARCHAR" />
+    <result column="LOGPASS" property="password" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <resultMap id="DeptResultMap" type="com.system.base.pojo.Department" >
+    <id column="BMBS" property="departmentid" jdbcType="VARCHAR" />
+    <result column="SHORTNAME" property="departmentname" jdbcType="VARCHAR" />
+    <result column="OFLEVEL" property="tabindex" jdbcType="INTEGER" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    RYBS, LOGID, BMBS,USERNAME ,XB,POSITION,MAILACCOUNT,LXFS,LOGPASS
+  </sql>
+  
+  <select id="queryDepartments" resultMap="DeptResultMap" parameterType="java.lang.String" >
+  	  select BMBS,SHORTNAME,OFLEVEL from VIEW_BM
+  </select>
+  
+  <select id="queryEmployees"  resultMap="EmpResultMap" parameterType="java.lang.String" >
+	   select 
+	   	<include refid="Base_Column_List" />
+	   	from VIEW_RY
+  </select>
+</mapper>

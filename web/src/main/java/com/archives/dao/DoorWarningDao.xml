@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.archives.dao.DoorWarningDao" >
+  <resultMap id="BaseResultMap" type="com.archives.pojo.DoorWarning" >
+    <id column="guid" property="guid" jdbcType="INTEGER" />
+    <result column="rfid" property="rfid" jdbcType="VARCHAR" />
+    <result column="doorId" property="doorid" jdbcType="VARCHAR" />
+    <result column="warnDate" property="warndate" jdbcType="TIMESTAMP" />
+    <result column="warnReason" property="warnreason" jdbcType="VARCHAR" />
+    <result column="handler" property="handler" jdbcType="VARCHAR" />
+    <result column="handlerResult" property="handlerresult" jdbcType="VARCHAR" />
+    <result column="handlerDate" property="handlerdate" jdbcType="TIMESTAMP" />
+    <result column="handlerUrl" property="handlerurl" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    guid, rfid, doorId, warnDate, warnReason, handler, handlerResult, handlerDate, handlerUrl
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from gt_court_door_warning
+    where guid = #{guid,jdbcType=INTEGER}
+  </select>
+  
+   <select id="findDoorWarningForPage" parameterType="java.util.Map" resultType="com.archives.pojo.DoorWarning">
+	   
+SELECT    b.guid as itemGuid, c.guid as infoGuid, d.note,d.doorId as mangaerDoorId,c.caseNo,a.guid, a.rfid, a.doorId,DATE_FORMAT(a.warnDate, '%Y-%m-%d %H:%i:%s') warnDate, a.warnReason, a.handler, a.handlerResult,DATE_FORMAT(a.handlerDate, '%Y-%m-%d %H:%i:%s') handlerDate, a.handlerUrl from gt_court_door_warning a,gt_court_arc_itemstatus b,gt_court_arc_info c
+,gt_court_door_mangage d
+where a.rfid=b.rfid and b.infoid=c.guid and a.doorId=d.guid
+
+
+		
+		
+		<if test="paraMap.doorid != null and paraMap.doorid != '' ">
+			and d.doorId like CONCAT('%',#{paraMap.doorid},'%') 
+		</if>
+		<if test="paraMap.warnreason != null and paraMap.warnreason != '' ">
+			and  c.caseNo like CONCAT('%',#{paraMap.warnreason},'%') 
+		</if>
+		<if test="paraMap.handler != null and paraMap.handler != '' ">
+			and  a.handler like CONCAT('%',#{paraMap.handler},'%') 
+		</if>
+		<if test="paraMap.handlerresult != null and paraMap.handlerresult != '' ">
+			and  a.handlerresult like CONCAT('%',#{paraMap.handlerresult},'%') 
+		</if>
+		order by warndate desc
+		 limit #{paraMap.start}, #{paraMap.rows}
+	</select>
+	
+	<select id="findCountDoorWarningForPage" parameterType="java.util.Map" resultType="java.lang.Integer">
+SELECT     count(*) from gt_court_door_warning a,gt_court_arc_itemstatus b,gt_court_arc_info c
+,gt_court_door_mangage d
+where a.rfid=b.rfid and b.infoid=c.guid and a.doorId=d.guid
+
+
+		
+		<if test="paraMap.doorid != null and paraMap.doorid != '' ">
+			and d.doorId like CONCAT('%',#{paraMap.doorid},'%') 
+		</if>
+		<if test="paraMap.warnreason != null and paraMap.warnreason != '' ">
+			and  c.caseNo like CONCAT('%',#{paraMap.warnreason},'%') 
+		</if>
+		<if test="paraMap.handler != null and paraMap.handler != '' ">
+			and  a.handler like CONCAT('%',#{paraMap.handler},'%') 
+		</if>
+		<if test="paraMap.handlerresult != null and paraMap.handlerresult != '' ">
+			and  a.handlerresult like CONCAT('%',#{paraMap.handlerresult},'%') 
+		</if>
+		
+		
+	</select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from gt_court_door_warning
+    where guid = #{guid,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.archives.pojo.DoorWarning" >
+    insert into gt_court_door_warning (guid, rfid, doorId, 
+      warnDate, warnReason, handler, 
+      handlerResult, handlerDate, handlerUrl
+      )
+    values (#{guid,jdbcType=INTEGER}, #{rfid,jdbcType=VARCHAR}, #{doorid,jdbcType=VARCHAR}, 
+      #{warndate,jdbcType=TIMESTAMP}, #{warnreason,jdbcType=VARCHAR}, #{handler,jdbcType=VARCHAR}, 
+      #{handlerresult,jdbcType=VARCHAR}, #{handlerdate,jdbcType=TIMESTAMP}, #{handlerurl,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.archives.pojo.DoorWarning" >
+    insert into gt_court_door_warning
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="guid != null" >
+        guid,
+      </if>
+      <if test="rfid != null" >
+        rfid,
+      </if>
+      <if test="doorid != null" >
+        doorId,
+      </if>
+      <if test="warndate != null" >
+        warnDate,
+      </if>
+      <if test="warnreason != null" >
+        warnReason,
+      </if>
+      <if test="handler != null" >
+        handler,
+      </if>
+      <if test="handlerresult != null" >
+        handlerResult,
+      </if>
+      <if test="handlerdate != null" >
+        handlerDate,
+      </if>
+      <if test="handlerurl != null" >
+        handlerUrl,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="guid != null" >
+        #{guid,jdbcType=INTEGER},
+      </if>
+      <if test="rfid != null" >
+        #{rfid,jdbcType=VARCHAR},
+      </if>
+      <if test="doorid != null" >
+        #{doorid,jdbcType=VARCHAR},
+      </if>
+      <if test="warndate != null" >
+        #{warndate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="warnreason != null" >
+        #{warnreason,jdbcType=VARCHAR},
+      </if>
+      <if test="handler != null" >
+        #{handler,jdbcType=VARCHAR},
+      </if>
+      <if test="handlerresult != null" >
+        #{handlerresult,jdbcType=VARCHAR},
+      </if>
+      <if test="handlerdate != null" >
+        #{handlerdate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="handlerurl != null" >
+        #{handlerurl,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.archives.pojo.DoorWarning" >
+    update gt_court_door_warning
+    <set >
+      <if test="rfid != null" >
+        rfid = #{rfid,jdbcType=VARCHAR},
+      </if>
+      <if test="doorid != null" >
+        doorId = #{doorid,jdbcType=VARCHAR},
+      </if>
+      <if test="warndate != null" >
+        warnDate = #{warndate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="warnreason != null" >
+        warnReason = #{warnreason,jdbcType=VARCHAR},
+      </if>
+      <if test="handler != null" >
+        handler = #{handler,jdbcType=VARCHAR},
+      </if>
+      <if test="handlerresult != null" >
+        handlerResult = #{handlerresult,jdbcType=VARCHAR},
+      </if>
+      <if test="handlerdate != null" >
+        handlerDate = #{handlerdate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="handlerurl != null" >
+        handlerUrl = #{handlerurl,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where guid = #{guid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.archives.pojo.DoorWarning" >
+    update gt_court_door_warning
+    set rfid = #{rfid,jdbcType=VARCHAR},
+      doorId = #{doorid,jdbcType=VARCHAR},
+      warnDate = #{warndate,jdbcType=TIMESTAMP},
+      warnReason = #{warnreason,jdbcType=VARCHAR},
+      handler = #{handler,jdbcType=VARCHAR},
+      handlerResult = #{handlerresult,jdbcType=VARCHAR},
+      handlerDate = #{handlerdate,jdbcType=TIMESTAMP},
+      handlerUrl = #{handlerurl,jdbcType=VARCHAR}
+    where guid = #{guid,jdbcType=INTEGER}
+  </update>
+  
+  	<select id="findAllByIds"  parameterType="java.util.Map" resultType="com.archives.pojo.DoorWarning">
+	SELECT     c.guid as infoGuid, d.note,d.doorId as mangaerDoorId,c.caseNo,a.guid, a.rfid, a.doorId,DATE_FORMAT(a.warnDate, '%Y-%m-%d %H:%i:%s') warnDate, a.warnReason, a.handler, a.handlerResult,DATE_FORMAT(a.handlerDate, '%Y-%m-%d %H:%i:%s') handlerDate, a.handlerUrl from gt_court_door_warning a,gt_court_arc_itemstatus b,gt_court_arc_info c
+,gt_court_door_mangage d
+where a.rfid=b.rfid and b.infoid=c.guid and a.doorId=d.guid
+		<if test="paraMap.doorid != null and paraMap.doorid != '' ">
+			and d.doorId like CONCAT('%',#{paraMap.doorid},'%') 
+		</if>
+		<if test="paraMap.warnreason != null and paraMap.warnreason != '' ">
+			and  c.caseNo like CONCAT('%',#{paraMap.warnreason},'%') 
+		</if>
+		<if test="paraMap.handler != null and paraMap.handler != '' ">
+			and  a.handler like CONCAT('%',#{paraMap.handler},'%') 
+		</if>
+		<if test="paraMap.handlerresult != null and paraMap.handlerresult != '' ">
+			and  a.handlerresult like CONCAT('%',#{paraMap.handlerresult},'%') 
+		</if>
+ </select>
+ 
+</mapper>

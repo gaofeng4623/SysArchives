@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.archives.dao.MapDetailDao" >
+  <resultMap id="BaseResultMap" type="com.archives.pojo.MapDetail" >
+    <id column="priorId" property="priorId" jdbcType="VARCHAR" />
+    <result column="subId" property="subId" jdbcType="VARCHAR" />
+    <result column="caseContent" property="caseContent" jdbcType="VARCHAR" />
+    <result column="remark1" property="remark1" jdbcType="VARCHAR" />
+    <result column="remark2" property="remark2" jdbcType="VARCHAR" />
+    <result column="mark" property="mark" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    priorId, subId, caseContent, remark1, remark2,mark
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from gt_court_arc_map_detail
+    where subId = #{subId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from gt_court_arc_map_detail
+    where subId = #{subId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.archives.pojo.MapDetail" >
+    insert into gt_court_arc_map_detail (priorId, subId, caseContent, 
+      remark1, remark2,mark)
+    values (#{priorId,jdbcType=VARCHAR}, #{subId,jdbcType=VARCHAR}, #{caseContent,jdbcType=VARCHAR}, 
+      #{remark1,jdbcType=VARCHAR}, #{remark2,jdbcType=VARCHAR}, #{mark,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSubItem" parameterType="com.archives.pojo.MapDetail" >
+    insert into gt_court_arc_map_detail
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="priorId != null" >
+        priorId,
+      </if>
+      <if test="subId != null" >
+        subId,
+      </if>
+      <if test="caseContent != null" >
+        caseContent,
+      </if>
+      <if test="remark1 != null" >
+        remark1,
+      </if>
+      <if test="remark2 != null" >
+        remark2,
+      </if>
+       <if test="mark != null" >
+        mark,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="priorId != null" >
+        #{priorId,jdbcType=VARCHAR},
+      </if>
+      <if test="subId != null" >
+        #{subId,jdbcType=VARCHAR},
+      </if>
+      <if test="caseContent != null" >
+        #{caseContent,jdbcType=VARCHAR},
+      </if>
+      <if test="remark1 != null" >
+        #{remark1,jdbcType=VARCHAR},
+      </if>
+      <if test="remark2 != null" >
+        #{remark2,jdbcType=VARCHAR},
+      </if>
+       <if test="mark != null" >
+        #{mark,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateSubItemSelective" parameterType="com.archives.pojo.MapDetail" >
+    update gt_court_arc_map_detail
+    <set >
+      <if test="subId != null" >
+        subId = #{subId,jdbcType=VARCHAR},
+      </if>
+      <if test="caseContent != null" >
+        caseContent = #{caseContent,jdbcType=VARCHAR},
+      </if>
+      <if test="remark1 != null" >
+        remark1 = #{remark1,jdbcType=VARCHAR},
+      </if>
+      <if test="remark2 != null" >
+        remark2 = #{remark2,jdbcType=VARCHAR},
+      </if>
+       <if test="mark != null" >
+        mark = #{mark,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where subId = #{subId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.archives.pojo.MapDetail" >
+    update gt_court_arc_map_detail
+    set subId = #{subId,jdbcType=VARCHAR},
+      caseContent = #{caseContent,jdbcType=VARCHAR},
+      remark1 = #{remark1,jdbcType=VARCHAR},
+      remark2 = #{remark2,jdbcType=VARCHAR},
+      mark = #{mark,jdbcType=VARCHAR}
+    where subId = #{subId,jdbcType=VARCHAR}
+  </update>
+  <select id="findSubItemByPriorIdsForPage" parameterType="java.util.Map" resultType="com.archives.pojo.MapDetail">
+    select * from (
+        select 
+        <include refid="Base_Column_List" />
+        from gt_court_arc_map_detail mapDetail
+        where 1=1 
+        <if test="paraMap.idList != null" >
+            and mapDetail.priorId in 
+            <foreach collection="paraMap.idList" item="item" index="index" open="(" separator="," close=")">
+            #{item}
+              </foreach>
+          </if>
+        <if test="paraMap.subId != null and paraMap.subId != '' ">
+            and mapDetail.subId = #{paraMap.subId,jdbcType=VARCHAR}
+        </if>
+        <if test="paraMap.caseContent != null and paraMap.caseContent != '' ">
+            and mapDetail.caseContent like CONCAT('%',#{paraMap.caseContent},'%')
+        </if>
+        ) row_ limit #{paraMap.start}, #{paraMap.rows}
+  </select>
+  <select id="findCountSubItemByPriorIdsForPage" parameterType="java.util.Map" resultType="java.lang.Integer">
+    select count(1) from (
+        select 
+        <include refid="Base_Column_List" />
+        from gt_court_arc_map_detail mapDetail
+        where 1=1 
+        <if test="paraMap.idList != null" >
+            and mapDetail.priorId in 
+            <foreach collection="paraMap.idList" item="item" index="index" open="(" separator="," close=")">
+            #{item}
+            </foreach>
+          </if>
+        <if test="paraMap.subId != null and paraMap.subId != '' ">
+            and mapDetail.subId = #{paraMap.subId,jdbcType=VARCHAR}
+        </if>
+        <if test="paraMap.caseContent != null and paraMap.caseContent != '' ">
+            and mapDetail.caseContent like CONCAT('%',#{paraMap.caseContent},'%') 
+        </if>
+        ) count_
+  </select>
+  <delete id="deleteSubItemByIds" parameterType="java.lang.String">
+        delete from gt_court_arc_map_detail
+        where subId in
+        <if test="idList != null" >
+            <foreach collection="idList" item="item" index="index" open="(" separator="," close=")">
+            #{item}
+            </foreach>
+          </if>
+  </delete>
+  
+</mapper>

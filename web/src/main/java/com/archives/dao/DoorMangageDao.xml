@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.archives.dao.DoorMangageDao" >
+  <resultMap id="BaseResultMap" type="com.archives.pojo.DoorMangage" >
+    <id column="guid" property="guid" jdbcType="INTEGER" />
+    <result column="doorId" property="doorid" jdbcType="VARCHAR" />
+    <result column="note" property="note" jdbcType="VARCHAR" />
+    <result column="ip" property="ip" jdbcType="VARCHAR" />
+    <result column="doorType" property="doortype" jdbcType="VARCHAR" />
+    <result column="loactionGuid" property="loactionguid" jdbcType="INTEGER" />
+    <result column="cameraGuid" property="cameraGuid" jdbcType="INTEGER" />
+   
+  </resultMap>
+  <sql id="Base_Column_List" >
+    guid, doorId, note, ip, doorType,loactionGuid,cameraGuid
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from gt_court_door_mangage
+    where guid = #{guid,jdbcType=INTEGER}
+  </select>
+  
+   <select id="findDoorMangageForPage" parameterType="java.util.Map" resultType="com.archives.pojo.DoorMangage">
+	select a.*,b.locationName,c.cameraName from gt_court_door_mangage a left join gt_court_location b on a.loactionGuid=b.guid
+	left join gt_court_door_camera c on a.cameraGuid=c.guid
+		where 1=1 
+		
+		<if test="paraMap.doorId != null and paraMap.doorId != '' ">
+			and doorId like CONCAT('%',#{paraMap.doorId},'%') 
+		</if>
+		<if test="paraMap.doortype != null and paraMap.doortype != '' ">
+			and  doortype like CONCAT('%',#{paraMap.doortype},'%') 
+		</if>
+		
+		 limit #{paraMap.start}, #{paraMap.rows}
+	</select>
+	
+	<select id="findCountDoorMangageForPage" parameterType="java.util.Map" resultType="java.lang.Integer">
+	select count(1) from gt_court_door_mangage a left join gt_court_location b on a.loactionGuid=b.guid 
+	left join gt_court_door_camera c on a.cameraGuid=c.guid
+	where 1=1
+		
+			<if test="paraMap.doorId != null and paraMap.doorId != '' ">
+			and doorId like CONCAT('%',#{paraMap.doorId},'%') 
+		</if>
+		<if test="paraMap.doortype != null and paraMap.doortype != '' ">
+			and  doortype like CONCAT('%',#{paraMap.doortype},'%') 
+		</if>
+		
+	</select>
+  
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from gt_court_door_mangage
+    where guid = #{guid,jdbcType=INTEGER}
+  </delete>
+  
+  <delete id="deleteDoorByIds" parameterType="java.lang.Integer">
+    delete from gt_court_door_mangage
+    where guid in
+     <if test="idList != null" >
+		<foreach collection="idList" item="item" index="index" open="(" separator="," close=")">
+        #{item}
+  		</foreach>
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.archives.pojo.DoorMangage" >
+    insert into gt_court_door_mangage (guid, doorId, note, 
+      ip, doorType, loactionGuid,cameraGuid
+      )
+    values (#{guid,jdbcType=INTEGER}, #{doorid,jdbcType=VARCHAR}, #{note,jdbcType=VARCHAR}, 
+      #{ip,jdbcType=VARCHAR}, #{doortype,jdbcType=VARCHAR}, #{loactionguid,jdbcType=INTEGER},
+       #{cameraGuid,jdbcType=INTEGER}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.archives.pojo.DoorMangage" >
+    insert into gt_court_door_mangage
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="guid != null" >
+        guid,
+      </if>
+      <if test="doorid != null" >
+        doorId,
+      </if>
+      <if test="note != null" >
+        note,
+      </if>
+      <if test="ip != null" >
+        ip,
+      </if>
+      <if test="doortype != null" >
+        doorType,
+      </if>
+      <if test="loactionguid != null" >
+        loactionGuid,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="guid != null" >
+        #{guid,jdbcType=INTEGER},
+      </if>
+      <if test="doorid != null" >
+        #{doorid,jdbcType=VARCHAR},
+      </if>
+      <if test="note != null" >
+        #{note,jdbcType=VARCHAR},
+      </if>
+      <if test="ip != null" >
+        #{ip,jdbcType=VARCHAR},
+      </if>
+      <if test="doortype != null" >
+        #{doortype,jdbcType=VARCHAR},
+      </if>
+      <if test="loactionguid != null" >
+        #{loactionguid,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.archives.pojo.DoorMangage" >
+    update gt_court_door_mangage
+    <set >
+      <if test="doorid != null" >
+        doorId = #{doorid,jdbcType=VARCHAR},
+      </if>
+      <if test="note != null" >
+        note = #{note,jdbcType=VARCHAR},
+      </if>
+      <if test="ip != null" >
+        ip = #{ip,jdbcType=VARCHAR},
+      </if>
+      <if test="doortype != null" >
+        doorType = #{doortype,jdbcType=VARCHAR},
+      </if>
+      <if test="loactionguid != null" >
+        loactionGuid = #{loactionguid,jdbcType=INTEGER},
+      </if>
+      <if test="cameraGuid != null" >
+        cameraGuid = #{cameraGuid,jdbcType=INTEGER},
+      </if>
+      
+    </set>
+    where guid = #{guid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.archives.pojo.DoorMangage" >
+    update gt_court_door_mangage
+    set doorId = #{doorid,jdbcType=VARCHAR},
+      note = #{note,jdbcType=VARCHAR},
+      ip = #{ip,jdbcType=VARCHAR},
+      doorType = #{doortype,jdbcType=VARCHAR},
+      loactionGuid = #{loactionguid,jdbcType=INTEGER},
+      cameraGuid = #{cameraGuid,jdbcType=INTEGER}
+    where guid = #{guid,jdbcType=INTEGER}
+  </update>
+</mapper>

@@ -1,0 +1,563 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://.mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.system.dao.database.DataBaseDao">
+	<insert id="insertAdmin" parameterType="String">
+		INSERT INTO
+		`gt_sys_employee` VALUES ('BFA8017A000000002C9E527100000003', '系统管理员', '1', '15898910715', '2016-05-25', '', '0', 'system', '202cb962ac59075b964b07152d234b70', '', null);	
+	</insert>
+	<select id="queryAdmin" parameterType="String" resultType="String">
+		SELECT count(*) FROM `gt_sys_employee`;
+	</select>
+	<select id="queryMenus" parameterType="String" resultType="String">
+		SELECT count(*) FROM `gt_sys_menu`;
+	</select>
+	<!-- 系统相关表开始 -->
+	
+	<!-- 组织机构部分 -->
+	<update id="table1" parameterType="String">
+		CREATE TABLE if not EXISTS `gt_sys_department` (
+ 		 `superiorId` char(32) DEFAULT NULL COMMENT '部门父节点',
+  		`departmentId` char(32) NOT NULL COMMENT '部门节点',
+  		`departmentName` varchar(300) DEFAULT NULL COMMENT '部门名称',
+ 		 `tabIndex` int(11) DEFAULT NULL COMMENT '部门排序字段',
+		  PRIMARY KEY (`departmentId`)
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8 MIN_ROWS=20000 MAX_ROWS=29999 COMMENT='系统部门表';
+	</update>
+	
+	<update id="table2" parameterType="String">
+		CREATE TABLE  if not EXISTS `gt_sys_employee` (
+  		`employeeId` char(32) NOT NULL COMMENT '人员编号',
+  		`employeeName` varchar(300) DEFAULT NULL COMMENT '人员名称',
+ 		 `sex` varchar(15) DEFAULT NULL COMMENT '性别',
+  		`mobile` varchar(90) DEFAULT NULL COMMENT '电话',
+ 		 `birthday` date DEFAULT NULL COMMENT '出生日期',
+ 		 `photo` blob COMMENT '头像',
+ 		 `departmentId` char(32) DEFAULT NULL COMMENT '部门ID',
+  		`employeeLoginName` varchar(150) DEFAULT NULL COMMENT '人员登录账号',
+  		`password` varchar(180) DEFAULT NULL COMMENT '登录密码',
+  		`userEmail` varchar(180) DEFAULT NULL COMMENT '邮箱',
+  		`post` varchar(20) DEFAULT NULL COMMENT '职务',
+ 		 PRIMARY KEY (`employeeId`)
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8 MIN_ROWS=10000 MAX_ROWS=19999 COMMENT='系统用户表';
+	</update>
+	
+	<!-- 系统菜单部分-->
+	<update id="table3" parameterType="String">
+	   CREATE TABLE if not EXISTS `gt_sys_menu` (
+	  `guid` char(32) NOT NULL COMMENT '菜单ID',
+	  `suporId` char(32) DEFAULT NULL COMMENT '父菜单ID',
+	  `menuName` varchar(1800) NOT NULL COMMENT '菜单名称',
+	  `url` varchar(255) DEFAULT NULL COMMENT '菜单链接',
+	  `isGroup` int(4) DEFAULT '0' COMMENT '是否是顶级节点',
+	  `isMenu` int(4) DEFAULT NULL COMMENT '是否为菜单，0：不是：1：是',
+	  `isExtend` int(4) DEFAULT '0' COMMENT '是否为扩展资源，1是，0否',
+	  `icon` varchar(50) DEFAULT NULL COMMENT '菜单图标',
+	  `defaultPage` varchar(255) DEFAULT NULL COMMENT '默认页',
+	  `tabIndex` int(4) DEFAULT NULL COMMENT '排序',
+	  PRIMARY KEY (`guid`)
+	) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='系统菜单表'
+	</update>
+	
+	<!-- 系统角色部分 -->
+	<update id="table4" parameterType="String">
+	  CREATE TABLE if not EXISTS `gt_sys_roledefine` (
+	  `guid` char(32) NOT NULL COMMENT '角色ID',
+	  `groupId` char(32) DEFAULT NULL COMMENT '角色组ID',
+	  `roleName` varchar(150) DEFAULT NULL COMMENT '角色名称',
+	  `tabIndex` int(10) DEFAULT NULL COMMENT '角色顺序',
+	  PRIMARY KEY (`guid`)
+	) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='系统角色定义'
+	</update>
+	
+	<update id="table5" parameterType="String">
+		CREATE TABLE if not EXISTS `gt_sys_rolemembers` (
+ 		 `guid` int(10) NOT NULL AUTO_INCREMENT COMMENT '主键自增',
+  		`roleId` char(32) NOT NULL COMMENT '角色ID',
+  		`userId` char(32) NOT NULL COMMENT '用户ID',
+ 		 PRIMARY KEY (`guid`)
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='系统角色人员关联表';
+	</update>
+	
+	<!--  菜单权限部分-->
+	<update id="table6" parameterType="String">
+		CREATE TABLE if not EXISTS `gt_sys_limit` (
+ 		 `guid` int(11) NOT NULL AUTO_INCREMENT COMMENT '自增主键',
+  		 `roleid` char(32) NOT NULL COMMENT '角色定义',
+ 		 `itemid` char(32) NOT NULL COMMENT '关联到菜单',
+ 		 PRIMARY KEY (`guid`)
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='系统权限表';
+	</update>
+	
+	<!--  资源配置部分-->
+	<update id="table7" parameterType="String">
+	  CREATE TABLE if not EXISTS `gt_sys_source` (
+	  `guid` char(32) NOT NULL,
+	  `suporId` char(32) DEFAULT NULL COMMENT '父节点',
+	  `title` varchar(255) DEFAULT NULL COMMENT '资源标题',
+	  `type` varchar(255) DEFAULT NULL COMMENT '资源类型分类',
+	  `url` varchar(255) DEFAULT NULL COMMENT '资源链接',
+	  `imgs` varchar(255) DEFAULT NULL COMMENT '资源的图片地址',
+	  `initMethod` varchar(255) DEFAULT NULL COMMENT '初始化事件',
+	  `scripts` text COMMENT '运行脚本',
+	  `onclick` varchar(255) DEFAULT NULL COMMENT '点击触发事件、函数',
+	  `sname` varchar(100) DEFAULT NULL COMMENT '元素的名称',
+	  `sid` varchar(50) DEFAULT NULL COMMENT '元素的ID',
+	  `content` text COMMENT '页面元素html代码',
+	  `className` varchar(255) DEFAULT NULL COMMENT '元素的样式',
+	  `isSource` int(4) DEFAULT NULL COMMENT '是否资源 1表示文件夹，0表示资源',
+	  `tabIndex` int(4) DEFAULT '0' COMMENT '排序值',
+	  PRIMARY KEY (`guid`)
+	  ) ENGINE=InnoDB DEFAULT CHARSET=utf8
+	</update>
+	
+	<update id="table8" parameterType="String">
+	   CREATE TABLE if not EXISTS `gt_sys_sourcemember` (
+	  `guid` int(11) NOT NULL AUTO_INCREMENT COMMENT '自增主键',
+	  `roleId` char(32) DEFAULT NULL COMMENT '角色定义',
+	  `sourceId` char(32) DEFAULT NULL COMMENT '资源定义',
+	   PRIMARY KEY (`guid`)
+	  ) ENGINE=InnoDB AUTO_INCREMENT=89 DEFAULT CHARSET=utf8
+   </update>
+	
+	<!-- 系统日志部分-->  
+	<update id="table9" parameterType="String">
+	   CREATE TABLE if not EXISTS `gt_sys_syslog` (
+	  `guid` int(10) NOT NULL AUTO_INCREMENT COMMENT '日志号',
+	  `event` varchar(150) DEFAULT NULL COMMENT '系统操作事件（登录、注销、等对系统的操作日志）',
+	  `updateTime` datetime DEFAULT NULL COMMENT '操作时间',
+	  `person` char(32) DEFAULT NULL COMMENT '操作人',
+	  `ip` varchar(50) DEFAULT NULL COMMENT 'IP地址',
+	  `operationType` varchar(50) DEFAULT NULL COMMENT '操作类型',
+	   PRIMARY KEY (`guid`)
+	  ) ENGINE=InnoDB AUTO_INCREMENT=19458 DEFAULT CHARSET=utf8 COMMENT='系统日志表'
+	</update>
+	
+	<!-- 工作流角色部分-->
+	<update id="table10" parameterType="String">
+		CREATE TABLE if not EXISTS `gt_sys_workflowroledefine` (
+		`guid` char(32) NOT NULL COMMENT '工作流角色定义',
+		`groupId` char(32) DEFAULT NULL COMMENT '工作流分组ID',
+		`roleName` varchar(150) DEFAULT NULL COMMENT '工作流角色名称',
+		PRIMARY KEY (`guid`)
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='工作流角色定义';
+	</update>
+	
+	<update id="table11" parameterType="String">
+		CREATE TABLE if not EXISTS `gt_sys_workflowrolemembers` (
+		`guid` int(6) NOT NULL AUTO_INCREMENT COMMENT '自增主键',
+		`userId` char(32) DEFAULT NULL COMMENT '人员定义',
+		`roleId` char(32) DEFAULT NULL COMMENT '角色定义',
+		PRIMARY KEY (`guid`)
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='工作流人员角色关联表';
+	</update>
+	
+	<!-- activiti工作流对接部分 -->
+	<update id="table12" parameterType="String">
+		 create or replace view
+		 arc.`act_id_group` as select
+		`gt_sys_workflowroledefine`.`guid` AS `ID_`,1 AS
+		`REV_`,`gt_sys_workflowroledefine`.`roleName` AS
+		`NAME_`,'' AS `TYPE_` from
+		arc.`gt_sys_workflowroledefine` 	
+	</update>
+	<update id="table13" parameterType="String">
+		create or replace view 
+		arc.`act_id_membership` AS
+		(select `gt_sys_workflowrolemembers`.`userid` AS
+		`USER_ID_`,`gt_sys_workflowrolemembers`.`roleid` AS `GROUP_ID_` from
+		arc.`gt_sys_workflowrolemembers`)
+	</update>
+	<update id="table14" parameterType="String">
+		create or replace view 
+		arc.`act_id_user` AS (select
+		`gt_sys_employee`.`employeeLoginName` AS `ID_`,1 AS
+		`REV_`,`gt_sys_employee`.`employeeName` AS `FIRST_`,'' AS `LAST_`,'' AS
+		`EMAIL_`,'' AS `PWD_`,'' AS `PICTURE_ID_` from arc.`gt_sys_employee`)
+	</update>
+	<!-- 系统相关表结束 -->
+	
+	
+	<!-- 档案业务开始 -->
+	<update id="table15" parameterType="String">
+	CREATE TABLE if not EXISTS `gt_court_arc_info` (
+	  `guid` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID主键',
+	  `flowId` varchar(36) NOT NULL COMMENT '流水号',
+	  `caseNo` varchar(26) NOT NULL COMMENT '案号',
+	  `archivesNo` varchar(20) NOT NULL COMMENT '档案号',
+	  `year` varchar(4) DEFAULT NULL COMMENT '年度',
+	  `caseProerty` varchar(12) DEFAULT NULL COMMENT '案件性质',
+	  `caseWord` varchar(12) DEFAULT NULL COMMENT '案字',
+	  `courtShortName` varchar(40) DEFAULT NULL COMMENT '法院简称',
+	  `number` varchar(10) DEFAULT NULL COMMENT '编号',
+	  `caseCategory` varchar(30) DEFAULT NULL COMMENT '案件类别',
+	  `judgeProcedure` varchar(30) DEFAULT NULL COMMENT '审判程序',
+	  `caseName` varchar(150) DEFAULT NULL COMMENT '案名',
+	  `shortDetailsCase` varchar(1500) DEFAULT NULL COMMENT '简要案情',
+	  `parties` varchar(300) DEFAULT NULL COMMENT '当事人',
+	  `putOnRecordDate` date DEFAULT NULL COMMENT '立案日期',
+	  `putOnRecordDep` varchar(30) DEFAULT NULL COMMENT '立案部门',
+	  `approvePer` varchar(30) DEFAULT NULL COMMENT '审批人',
+	  `undertakeDep` varchar(30) DEFAULT NULL COMMENT '承办部门',
+	  `undertakePer` varchar(30) DEFAULT NULL COMMENT '承办人',
+	  `courtClerk` varchar(30) DEFAULT NULL COMMENT '书记员',
+	  `chiefJudge` varchar(30) DEFAULT NULL COMMENT '审判长',
+	  `collegiateBench` varchar(150) DEFAULT NULL COMMENT '合议庭',
+	  `formalDocument` int(3) DEFAULT NULL COMMENT '正卷册数',
+	  `counterpart` int(3) DEFAULT NULL COMMENT '副卷册数',
+	  `otherDoucment` int(3) DEFAULT NULL COMMENT '其它卷册',
+	  `formalDocPageNum` int(5) DEFAULT NULL COMMENT '正卷页数',
+	  `counterpartPageNum` int(5) DEFAULT NULL COMMENT '副卷页数',
+	  `mergeCase` varchar(30) DEFAULT NULL COMMENT '并卷情况',
+	  `settleManner` varchar(150) DEFAULT NULL COMMENT '结案方式',
+	  `settleDate` date DEFAULT NULL COMMENT '结案日期',
+	  `settleReason` varchar(1500) DEFAULT NULL COMMENT '结案案由',
+	  `OriginalCourt` varchar(60) DEFAULT NULL COMMENT '原审法院',
+	  `OriginalCaseNo` varchar(26) DEFAULT NULL COMMENT '原审案号',
+	  `firstResult` varchar(1500) DEFAULT NULL COMMENT '一审结果',
+	  `secondResult` varchar(1500) DEFAULT NULL COMMENT '二审结果',
+	  `lastResult` varchar(1500) DEFAULT NULL COMMENT '再审结果',
+	  `fullDocNo` varchar(30) DEFAULT NULL COMMENT '全宗号',
+	  `catalogNo` varchar(30) DEFAULT NULL COMMENT '目录号',
+	  `evidenceBag` varchar(30) DEFAULT NULL COMMENT '证物袋',
+	  `degreeOfSecrets` varchar(30) DEFAULT NULL COMMENT '密级',
+	  `storageLife` varchar(30) DEFAULT NULL COMMENT '保存期限',
+	  `applyPer` varchar(30) DEFAULT NULL COMMENT '申请档案人',
+	  `receivePer` varchar(30) DEFAULT NULL COMMENT '档案接收人',
+	  `placeOnPer` varchar(30) DEFAULT NULL COMMENT '归档人',
+	  `placeOnDate` datetime DEFAULT NULL COMMENT '归档日期',
+	  `registerPer` varchar(30) DEFAULT NULL COMMENT '登记人',
+	  `registerTime` datetime DEFAULT NULL COMMENT '登记时间',
+	  `remark` varchar(1500) DEFAULT NULL COMMENT '备注',
+	  `status` enum('0','1','2','3','4') DEFAULT NULL COMMENT '在架状态,0:未上架、1：在库、2：下架、3：销毁、4：待上架',
+	  `synStatus` varchar(30) DEFAULT NULL COMMENT '档案接收同步状态',
+	  `handleStatus` varchar(10) DEFAULT '0' COMMENT '档案借阅状态 :0代表可借阅，1代表借阅中，申请借阅时改为1，档案归还时改为0',
+	  `markType` varchar(120) DEFAULT NULL COMMENT '案件性质简称，比如民事为MS',
+	  PRIMARY KEY (`guid`)
+	) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='诉讼档案信息表';
+	</update>
+	
+	
+	<!-- 卷宗或分卷的状态 -->
+	<update id="table16" parameterType="String">
+	CREATE TABLE if not EXISTS `gt_court_arc_itemstatus` (
+	  `guid` int(10) NOT NULL AUTO_INCREMENT COMMENT '自增主键',
+	  `itemId` varchar(50) DEFAULT NULL COMMENT '分卷ID',
+	  `itemNo` int(4) DEFAULT NULL COMMENT '卷号',
+	  `infoid` int(10) NOT NULL COMMENT '档案主键',
+	  `status` enum('0','1','2','4','3') DEFAULT NULL COMMENT '在架状态,0:未上架、1：在库、2：下架、3：销毁、4：待上架',
+	  `rfid` varchar(60) DEFAULT NULL COMMENT '标签号',
+	  `location` varchar(200) DEFAULT NULL COMMENT '存放位置',
+	  `uptime` date DEFAULT NULL COMMENT '上架时间',
+	  PRIMARY KEY (`guid`)
+	) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='分卷状态';
+
+	</update>
+	
+	<!-- 档案轨迹表 -->
+	<update id="table17" parameterType="String">
+	CREATE TABLE  if not EXISTS `gt_court_arc_history` (
+	`guid` int(10) NOT NULL AUTO_INCREMENT COMMENT '日志号',
+	`archivesNo` varchar(26) DEFAULT NULL COMMENT '案号',
+	`event` varchar(300) DEFAULT NULL COMMENT '操作事件',
+	`location` varchar(100) DEFAULT NULL COMMENT '位置',
+	`remark` varchar(150) DEFAULT NULL COMMENT '备注',
+	`changeDate` datetime DEFAULT NULL COMMENT '变更时间',
+	`changeMan` varchar(50) DEFAULT NULL COMMENT '变更人',
+	PRIMARY KEY (`guid`)
+	) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+	</update>
+	
+	<!--  档案借阅-->
+	<update id="table18" parameterType="String">
+		CREATE TABLE if not EXISTS `gt_court_arc_borrow` (
+		  `borrowId` int(10) NOT NULL AUTO_INCREMENT COMMENT '借阅号',
+		  `formNo` varchar(50) DEFAULT NULL COMMENT '借阅单号',
+		  `userid` char(32) DEFAULT NULL COMMENT '借阅人ID',
+		  `userName` varchar(50) DEFAULT NULL COMMENT '借阅人姓名',
+		  `borrowTime` varchar(30) DEFAULT NULL COMMENT '借阅时间',
+		  `mobile` varchar(60) DEFAULT NULL COMMENT '联系方式',
+		  `expireDate` varchar(30) DEFAULT NULL COMMENT '预计归还时间',
+		  `returnTime` varchar(30) DEFAULT NULL COMMENT '归还时间',
+		  `returnPerson` varchar(40) DEFAULT NULL COMMENT '归还人',
+		  `status` varchar(50) DEFAULT NULL COMMENT '档案的交付状态：0待交付，1已交付，-1部分交付，2已归还,-2部分归还',
+		  `borrowCase` varchar(20) DEFAULT NULL COMMENT '借阅用途',
+		  `caseDetail` varchar(255) DEFAULT NULL COMMENT '用途说明',
+		  `borrowType` varchar(10) DEFAULT NULL COMMENT '借阅方式',
+		  `channel` varchar(5) DEFAULT NULL COMMENT '借阅渠道，0为转借阅，1为正常借阅',
+		  `depName` varchar(30) DEFAULT NULL COMMENT '借阅部门',
+		  `active` int(4) DEFAULT '1' COMMENT '借阅激活状态，默认1，归还时置0，扫标签时用到',
+		  `workflow` int(4) DEFAULT NULL COMMENT '审批方式，1为同庭审批，2为跨庭审批',
+		  `selectPersons` varchar(255) DEFAULT NULL COMMENT '选择的参加审批的人员',
+		  `workfowStatus` varchar(80) DEFAULT NULL COMMENT '流程状态。待提交：0，整改：1，其他为任务名称',
+		  `parentId` int(10) DEFAULT NULL COMMENT '借阅父ID',
+		  PRIMARY KEY (`borrowId`)
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='档案借阅表';
+	</update>
+	
+	<!--  借阅详细-->
+	<update  id="table19" parameterType="String">
+	  CREATE TABLE  if not EXISTS `gt_court_arc_borrowdetail` (
+	  `guid` int(10) NOT NULL AUTO_INCREMENT COMMENT '自增主键',
+	  `borrowId` varchar(30) DEFAULT NULL COMMENT '借阅号',
+	  `infoid` varchar(60) DEFAULT NULL COMMENT '档案表唯一主键',
+	  `status` varchar(50) DEFAULT NULL COMMENT '档案交付状态：0待交付，1已交付，2已归还',
+	  `returnTime` date DEFAULT NULL COMMENT '归还时间',
+	  `returnPerson` varchar(40) DEFAULT NULL COMMENT '归还人',
+	  PRIMARY KEY (`guid`)
+	) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='借阅详细表';
+
+	</update>
+	
+	<!--  门禁表-->
+	<update id="table20" parameterType="String">
+	CREATE TABLE  if not EXISTS  `gt_court_door_mangage` (
+ 	 `guid` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
+ 	 `doorId` varchar(50) DEFAULT NULL COMMENT '门禁号',
+ 	 `note` varchar(50) DEFAULT NULL COMMENT '名称',
+  	`ip` varchar(50) DEFAULT NULL COMMENT '门禁IP地址(即网络地址)',
+  	`doorType` varchar(3) DEFAULT NULL COMMENT '门类型,1:大门 2：库房门 3：阅览室门',
+ 	 `loactionGuid` int(11) DEFAULT NULL COMMENT '对应的库房编号',
+ 	 `cameraGuid` int(11) DEFAULT NULL COMMENT '摄像头配置',
+ 	 PRIMARY KEY (`guid`)
+	) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='门禁表';
+	</update>
+	
+	<!-- 门禁摄像头配置 -->
+	<update id="table21" parameterType="String">
+	CREATE TABLE if not EXISTS `gt_court_door_camera` (
+ 	 `guid` int(11) NOT NULL AUTO_INCREMENT,
+ 	 `cameraName` varchar(30) DEFAULT NULL COMMENT '摄像头名称',
+ 	 `loginName` varchar(30) DEFAULT NULL COMMENT '登录名',
+ 	 `loginPassword` varchar(30) DEFAULT NULL COMMENT '登录密码',
+ 	 `ipAddress` varchar(100) DEFAULT NULL COMMENT '摄像头IP',
+ 	 `port` varchar(20) DEFAULT NULL COMMENT '摄像头端口',
+ 	 PRIMARY KEY (`guid`)
+	) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+	</update>
+	
+	<!-- 门禁通过表 -->
+	<update id="table22" parameterType="String">
+	CREATE TABLE  if not EXISTS `gt_court_door_pass` (
+	`guid` int(11) NOT NULL COMMENT '主键',
+	`rfid` varchar(50) DEFAULT NULL COMMENT '电子标签号',
+	`locatdoorNo` varchar(50) DEFAULT NULL COMMENT '门禁号',
+	`passDate` datetime DEFAULT NULL COMMENT '时间',
+	PRIMARY KEY (`guid`)
+	) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='门禁通过表';
+	</update>
+	
+	<!--  门禁报警表-->
+	<update id="table23" parameterType="String">
+	CREATE TABLE  if not EXISTS `gt_court_door_warning` (
+	`guid` int(11) NOT NULL COMMENT '主键',
+	`rfid` varchar(50) DEFAULT NULL COMMENT '电子标签号',
+	`doorId` varchar(50) DEFAULT NULL COMMENT '门禁号',
+	`warnDate` datetime DEFAULT NULL COMMENT '报警时间',
+	`warnReason` varchar(100) DEFAULT NULL COMMENT '报警原因',
+	`handler` varchar(50) DEFAULT NULL COMMENT '处理人',
+	`handlerResult` varchar(100) DEFAULT NULL COMMENT '处理结果',
+	`handlerDate` datetime DEFAULT NULL COMMENT '处理时间',
+		`handlerUrl` varchar(50) DEFAULT NULL COMMENT '报警图片路径',
+	PRIMARY KEY (`guid`)
+	) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='门禁报警表';
+	</update>
+	
+	<!-- 盘点计划表 -->
+	<update id="table24" parameterType="String">
+	CREATE TABLE if not EXISTS `gt_court_inventory_plan` (
+	  `guid` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
+	  `inventoryPlanName` varchar(50) DEFAULT NULL COMMENT '盘点计划名称',
+	  `inventoryLocationGuid` varchar(50) DEFAULT NULL COMMENT '盘点位置id拼接',
+	  `inventoryType` varchar(200) DEFAULT NULL COMMENT '1、全库盘点 2、增量盘点 3、下架盘点 4、自定义盘点 5、上架盘点',
+	  `beginTime` datetime DEFAULT NULL COMMENT '盘点开始时间',
+	  `creater` varchar(50) DEFAULT NULL COMMENT '创建人',
+	  `createDate` datetime DEFAULT NULL COMMENT '创建时间',
+	  `isEnd` varchar(3) DEFAULT NULL COMMENT '盘点是否结束,1-开始,2-结束,3-中止，4-确定盘点结果',
+	  `sysCount` int(11) DEFAULT NULL COMMENT '系统库存数量',
+	  `isCircle` int(1) DEFAULT '0' COMMENT '是否周期盘点：0否，1是；默认0',
+	  `circleSize` int(4) DEFAULT NULL COMMENT '周期幅度',
+	  `cicleType` int(1) DEFAULT NULL COMMENT '周期类型：1时，2天，3月，4年',
+	  `inventoryDate` datetime DEFAULT NULL COMMENT '盘点时间',
+	  PRIMARY KEY (`guid`)
+	) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='盘点计划表';
+	</update>
+	
+	<!-- 盘点位置表 -->
+	<update id="table25" parameterType="String">
+	CREATE TABLE  if not EXISTS `gt_court_inventory_plan_cell` (
+	`guid` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
+    `locationGuid` int(11) DEFAULT NULL COMMENT '位置guid',
+    `inventoryPlanId` int(11) DEFAULT NULL COMMENT '盘点计划ID',
+    `isInventory` varchar(3) DEFAULT '0' COMMENT '是否已盘点1-是',
+    PRIMARY KEY (`guid`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='盘点位置表';
+	</update>
+	
+	<!-- 盘点结果表 -->
+	<update id="table26" parameterType="String">
+	CREATE TABLE if not EXISTS `gt_court_inventory_plan_result` (
+	`guid` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
+    `rfid` varchar(50) DEFAULT NULL COMMENT '电子标签号',
+    `inventoryPlanId` int(11) DEFAULT NULL COMMENT '盘点计划ID',
+    `inventoryLoactionGuid` int(11) DEFAULT NULL COMMENT '盘点位置',
+    `sysLocationGuid` int(11) DEFAULT NULL COMMENT '系统位置',
+    `inventoryDate` datetime DEFAULT NULL COMMENT '盘点时间',
+    `status` varchar(10) DEFAULT NULL COMMENT '-1：表示少数据,0-多数据,1-表示正常数据',
+    PRIMARY KEY (`guid`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='盘点结果表';
+	</update>
+	
+	<!-- 设备配置表 -->
+	<update id="table27" parameterType="String">
+	CREATE TABLE if not EXISTS `gt_court_location` (
+	  `guid` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
+	  `companyId` varchar(50) DEFAULT NULL COMMENT '单位编码',
+	  `locationName` varchar(100) DEFAULT NULL COMMENT '位置名称',
+	  `parentId` int(11) DEFAULT NULL COMMENT '父节点guid',
+	  `locationPath` varchar(500) DEFAULT NULL COMMENT '全路径（中文）',
+	  `locationTypeGuid` int(11) DEFAULT NULL COMMENT '位置类型guid',
+	  `serialNo` int(11) DEFAULT NULL COMMENT '序号',
+	  `serialNoPath` varchar(50) DEFAULT NULL COMMENT '序号全路径',
+	  `controlId` int(11) DEFAULT NULL COMMENT '控制器地址',
+	  `antennaNum` int(11) DEFAULT NULL COMMENT '天线编号',
+	  PRIMARY KEY (`guid`)
+	) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='位置表';
+	</update>
+	
+	<!-- 盘点位置配置 -->
+	<update id="table28" parameterType="String">
+		CREATE TABLE  if not EXISTS `gt_court_location_config` (
+  		`guid` int(11) NOT NULL AUTO_INCREMENT,
+ 		 `companyId` varchar(50) DEFAULT NULL COMMENT '单位',
+ 		 `typeGuid` int(3) DEFAULT NULL COMMENT '类型guid',
+ 		 `parentId` int(11) DEFAULT NULL COMMENT '上级guid',
+  		  PRIMARY KEY (`guid`)
+	) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+	</update>
+	
+	<!-- 盘点位置类型 -->
+	<update id="table29" parameterType="String">
+		CREATE TABLE if not EXISTS `gt_court_location_type` (
+  		`guid` int(3) NOT NULL COMMENT '代码',
+  		`name` varchar(10) DEFAULT NULL COMMENT '名称',
+ 		 PRIMARY KEY (`guid`)
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='位置类型';
+	</update>
+	
+	<!-- 盘点控制器配置 -->
+	<update id="table30" parameterType="String">
+		CREATE TABLE if not EXISTS `gt_court_location_control` (
+ 		 `guid` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
+		  `controlAddress` varchar(20) NOT NULL COMMENT '控制器地址',
+		  `branchNum` int(4) NOT NULL COMMENT '通道编号',
+		  `branchAddress` varchar(20) NOT NULL COMMENT '分支器地址',
+		  PRIMARY KEY (`guid`)
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+	</update>
+	
+	<!--  远程部门主键映射表-->
+	<update id="table31"  parameterType="String">
+		CREATE TABLE if not EXISTS `gt_court_deparmentref` (
+  		`guid` int(5) NOT NULL AUTO_INCREMENT COMMENT '自增主键',
+ 		 `remoteId` varchar(50) DEFAULT NULL COMMENT '远程部门ID',
+ 		 `localId` char(32) DEFAULT NULL COMMENT '本地部门ID',
+  		PRIMARY KEY (`guid`)
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+	</update>
+	
+	<!--  远程人员主键映射表-->
+	<update id="table32"  parameterType="String">
+		CREATE TABLE if not EXISTS `gt_court_employeeref` (
+ 		  `guid` int(5) NOT NULL AUTO_INCREMENT COMMENT '自增主键',
+ 		  `remoteId` varchar(50) DEFAULT NULL COMMENT '远程人员ID',
+		  `localId` char(32) DEFAULT NULL COMMENT '本地人员ID',
+		  PRIMARY KEY (`guid`)
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+	</update>
+	
+	<!-- 档案业务结束 -->
+	
+	<!--  催还通知表-->
+	<update id="table33"  parameterType="String">
+		CREATE TABLE if not EXISTS `gt_count_arc_borrowreminder` (
+ 		 `id` int(11) NOT NULL COMMENT '自增主键',
+ 		 `borrowId` varchar(30) DEFAULT NULL COMMENT '借阅单ID',
+		  `empId` char(32) DEFAULT NULL COMMENT '借阅人员ID',
+		  `sendEmpId` varchar(32) DEFAULT NULL COMMENT '发送人ID',
+		  `sendEmpName` varchar(32) DEFAULT NULL COMMENT '发送人姓名',
+		  `sendDate` date DEFAULT NULL COMMENT '发送时间',
+		  PRIMARY KEY (`id`)
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+	</update>
+	
+	<update id="table34"  parameterType="String">
+		CREATE TABLE if not EXISTS `gt_court_insertdetail` (
+		`guid` int(5) NOT NULL AUTO_INCREMENT COMMENT '自增主键',
+		`formid` char(32) DEFAULT NULL COMMENT '插卷单主键',
+		`infoid` varchar(10) DEFAULT NULL COMMENT '档案表主键',
+		PRIMARY KEY (`guid`)
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+	</update>
+	<update id="table35"  parameterType="String">
+		CREATE TABLE if not EXISTS `gt_court_insertform` (
+		`formid` char(32) NOT NULL COMMENT '插卷表主键',
+		`title` varchar(255) NOT NULL COMMENT '插卷单标题',
+		`userid` char(32) DEFAULT NULL COMMENT '操作人编号',
+		`createDate` date DEFAULT NULL COMMENT '创建日期',
+		`mark` varchar(255) DEFAULT NULL COMMENT '备注',
+		PRIMARY KEY (`formid`)
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+	</update>
+	<update id="table36"  parameterType="String">
+		CREATE TABLE if not EXISTS `gt_court_arc_seq` (
+	    `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
+	    `seqName` varchar(20) DEFAULT NULL COMMENT '序列名',
+	    `seqValue` int(10) DEFAULT NULL,
+	    `seqYear` varchar(10) DEFAULT NULL COMMENT '序列年份',
+	    `seqGroup` varchar(20) DEFAULT NULL COMMENT '序列分组',
+	    PRIMARY KEY (`id`)
+	    ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='流水序列表';
+	</update>
+	<update id="table37"  parameterType="String">
+     CREATE TABLE if not EXISTS `gt_court_arc_formseq` (
+ 	 `guid` int(6) NOT NULL AUTO_INCREMENT COMMENT '自增的单号序列',
+  	  PRIMARY KEY (`guid`)
+	 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+	</update>
+	<update id="table38"  parameterType="String">
+		  CREATE TABLE  if not EXISTS `gt_court_arc_borrowstatus` (
+		  `borrowId` int(11) NOT NULL COMMENT '借阅ID',
+		  `status` varchar(20) NOT NULL COMMENT '审批状态 ： 0审批中，1审批通过',
+		  PRIMARY KEY (`borrowId`)
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='借阅流程审批状态表';
+	</update>
+	<update id="table39"  parameterType="String">
+		CREATE TABLE  if not EXISTS  `gt_court_arc_config` (
+		  `guid` int(11) NOT NULL AUTO_INCREMENT,
+		  `maxBorrowTime` int(4) DEFAULT NULL COMMENT '最大借阅天数',
+		  `firstWarning` int(4) DEFAULT NULL COMMENT '第一次预警',
+		  `secondWarning` int(4) DEFAULT NULL COMMENT '第二次预警',
+		  `thirdWarning` int(4) DEFAULT NULL COMMENT '第三次预警',
+		  PRIMARY KEY (`guid`)
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='借阅相关设置表';
+	</update>
+	<update id="table40"  parameterType="String">
+		CREATE TABLE if not EXISTS `gt_court_arc_map_detail` (
+		  `priorId` varchar(32) NOT NULL COMMENT '主键',
+		  `subId` varchar(32) NOT NULL COMMENT '子ID',
+		  `caseContent` varchar(40) DEFAULT NULL COMMENT '内容',
+		  `remark1` varchar(32) DEFAULT NULL COMMENT '备注字段1',
+		  `remark2` varchar(32) DEFAULT NULL COMMENT '备注字段2',
+		  PRIMARY KEY (`subId`)
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='案件码表明细'
+	</update>
+	<update id="table41"  parameterType="String">
+		CREATE TABLE if not EXISTS `gt_court_arc_map_total` (
+		  `guid` varchar(32) NOT NULL COMMENT '主键',
+		  `content` varchar(32) DEFAULT NULL COMMENT '内容',
+		  `remark1` varchar(32) DEFAULT NULL COMMENT '备注字段1',
+		  `remark2` varchar(32) DEFAULT NULL COMMENT '备注字段2',
+		  PRIMARY KEY (`guid`)
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='案件码表'
+	</update>
+</mapper>

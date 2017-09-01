@@ -1,0 +1,283 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://www.mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.system.dao.database.EmployeeDao">
+  <resultMap id="BaseResultMap" type="com.system.base.pojo.Employee" >
+    <id column="employeeId" property="employeeId" jdbcType="CHAR" />
+    <result column="employeeName" property="employeeName" jdbcType="VARCHAR" />
+    <result column="sex" property="sex" jdbcType="VARCHAR" />
+    <result column="mobile" property="mobile" jdbcType="VARCHAR" />
+    <result column="birthday" property="birthday" jdbcType="DATE" />
+    <result column="departmentId" property="departmentId" jdbcType="CHAR" />
+    <result column="employeeLoginName" property="employeeLoginName" jdbcType="VARCHAR" />
+    <result column="password" property="password" jdbcType="VARCHAR" />
+    <result column="userEmail" property="userEmail" jdbcType="VARCHAR" />
+    <result column="post" property="post" jdbcType="VARCHAR" />
+     <result column="photo" property="photo" jdbcType="BLOB" />
+  </resultMap>
+
+<!-- 根据用户名和密码查询用户 -->
+	<select id="findUser" parameterType="String" resultType="com.system.base.pojo.Employee">
+		select emp.employeeId,emp.employeeName,emp.departmentId,emp.employeeLoginName
+			   ,emp.password,emp.userEmail,emp.mobile,emp.birthday,emp.photo, emp.sex,dept.departmentName,emp.post 
+		from   gt_sys_employee emp left 
+		join   gt_sys_department dept 
+		on     emp.departmentId = dept.departmentId 
+		where  emp.employeeLoginName=#{name} 
+	</select>
+    <delete id="deleteEmployeeByIds" parameterType="java.lang.String">
+	    delete from gt_sys_employee
+	    where employeeId in
+	    <if test="idList != null" >
+			<foreach collection="idList" item="item" index="index" open="(" separator="," close=")">
+	        #{item}
+	  		</foreach>
+      	</if>
+    </delete>
+	
+	<select id="findEmpByDeptIds" parameterType="java.util.Map" resultType="com.system.base.pojo.Employee">
+		select emp.employeeId,emp.employeeName,emp.departmentId,emp.employeeLoginName,emp.password,emp.userEmail,emp.mobile,emp.birthday,emp.photo, emp.sex,dept.departmentName,emp.post 
+		from gt_sys_employee emp left join gt_sys_department dept on emp.departmentId = dept.departmentId
+		where 1=1 
+		<if test="paraMap.idList != null" >
+			and emp.departmentId in 
+			<foreach collection="paraMap.idList" item="item" index="index" open="(" separator="," close=")">
+	        #{item}
+	  		</foreach>
+      	</if>
+		<if test="paraMap.employeeName != null and paraMap.employeeName != '' ">
+			and emp.employeeName like CONCAT('%',#{paraMap.employeeName},'%') 
+		</if>
+		<if test="paraMap.employeeLoginName != null and paraMap.employeeLoginName != '' ">
+			and  emp.employeeLoginName like CONCAT('%',#{paraMap.employeeLoginName},'%') 
+		</if>
+	</select>
+	
+	<select id="findEmpByDeptIdsForPage" parameterType="java.util.Map" resultType="com.system.base.pojo.Employee">
+	select * from (
+		select emp.employeeId,emp.employeeName,emp.departmentId,emp.employeeLoginName,emp.password,emp.userEmail,emp.mobile,emp.birthday,emp.photo, emp.sex,dept.departmentName,emp.post  
+		from gt_sys_employee emp left join gt_sys_department dept on emp.departmentId = dept.departmentId
+		where 1=1 
+		<if test="paraMap.idList != null" >
+			and emp.departmentId in 
+			<foreach collection="paraMap.idList" item="item" index="index" open="(" separator="," close=")">
+	        #{item}
+	  		</foreach>
+      	</if>
+		<if test="paraMap.employeeName != null and paraMap.employeeName != '' ">
+			and emp.employeeName like CONCAT('%',#{paraMap.employeeName},'%') 
+		</if>
+		<if test="paraMap.employeeLoginName != null and paraMap.employeeLoginName != '' ">
+			and  emp.employeeLoginName like CONCAT('%',#{paraMap.employeeLoginName},'%') 
+		</if>
+		) row_ limit #{paraMap.start}, #{paraMap.rows}
+	</select>
+	
+	<select id="findCountEmpByDeptIdsForPage" parameterType="java.util.Map" resultType="java.lang.Integer">
+	select count(1) from (
+		select emp.employeeId,emp.employeeName,emp.departmentId,emp.employeeLoginName,emp.password,emp.userEmail,emp.mobile,emp.birthday,emp.photo, emp.sex,dept.departmentName,emp.post  
+		from gt_sys_employee emp left join gt_sys_department dept on emp.departmentId = dept.departmentId
+		where 1=1 
+		<if test="paraMap.idList != null" >
+			and emp.departmentId in 
+			<foreach collection="paraMap.idList" item="item" index="index" open="(" separator="," close=")">
+	        #{item}
+	  		</foreach>
+      	</if>
+		<if test="paraMap.employeeName != null and paraMap.employeeName != '' ">
+			and emp.employeeName like CONCAT('%',#{paraMap.employeeName},'%') 
+		</if>
+		<if test="paraMap.employeeLoginName != null and paraMap.employeeLoginName != '' ">
+			and  emp.employeeLoginName like CONCAT('%',#{paraMap.employeeLoginName},'%') 
+		</if>
+		) count_
+	</select>
+	
+	<select id="findEmployeeId" parameterType="java.util.Map" resultType="com.system.base.pojo.Employee">
+		select emp.employeeId,emp.employeeName,emp.departmentId,emp.employeeLoginName,emp.password,emp.useremail,rol.guid,dpt.departmentName,emp.post  from gt_sys_employee emp
+			left join gt_sys_rolemembers rol on emp.employeeId=rol.userId 
+			left join gt_sys_department dpt on dpt.departmentId=emp.departmentId
+			where rol.roleId=#{paraMap.roleId} 
+			<if test="paraMap.idList != null" >
+			 and  emp.employeeId in 
+			<foreach collection="paraMap.idList" item="item" index="index" open="(" separator="," close=")">
+	        #{item}
+	  		</foreach>
+      		</if>
+	</select>
+	
+	<select id="findEmpByDeptId" parameterType="java.lang.String" resultType="com.system.base.pojo.Employee">
+		select emp.employeeId,emp.employeeName,emp.departmentId,emp.employeeLoginName,emp.password,emp.userEmail,emp.mobile,emp.birthday,emp.photo, emp.sex,dept.departmentName,emp.post  from gt_sys_employee emp, gt_sys_department dept
+		where emp.departmentId = dept.departmentId
+		and dept.departmentId =  #{deptId,jdbcType=INTEGER}
+	</select>
+	
+	<select id="findEmpByCondition" resultType="com.system.base.pojo.Employee">
+		select emp.employeeId,emp.employeeName,emp.departmentId,emp.employeeLoginName,emp.password,emp.userEmail,emp.mobile,emp.birthday,emp.photo, emp.sex,dept.departmentName,emp.post  from gt_sys_employee emp, gt_sys_department dept
+		where emp.departmentId = dept.departmentId
+		<if test="emp != null">
+			<if test="emp.employeeName != null and emp.employeeName != '' ">
+			and emp.employeeName like CONCAT('%',#{emp.employeeName},'%') 
+			</if>
+			<if test="emp.sex != null and emp.sex != '' ">
+			and emp.sex like CONCAT('%',#{emp.sex},'%') 
+			</if>
+			<if test="emp.mobile != null and emp.mobile != '' ">
+			and emp.mobile like CONCAT('%',#{emp.mobile},'%') 
+			</if>
+			<if test="emp.birthday != null and emp.birthday != '' ">
+			and emp.birthday like CONCAT('%',#{emp.birthday},'%') 
+			</if>
+			<if test="emp.photo != null and emp.photo != '' ">
+			and emp.photo like CONCAT('%',#{emp.photo},'%') 
+			</if>
+			<if test="emp.departmentId != null and emp.departmentId != '' ">
+			and emp.departmentId like CONCAT('%',#{emp.departmentId},'%') 
+			</if>
+			<if test="emp.employeeLoginName != null and emp.employeeLoginName != '' ">
+			and emp.employeeLoginName like CONCAT('%',#{emp.employeeLoginName},'%') 
+			</if>
+			<if test="emp.password != null and emp.password != '' ">
+			and emp.password like CONCAT('%',#{emp.password},'%') 
+			</if>
+			<if test="emp.userEmail != null and emp.userEmail != '' ">
+			and emp.userEmail like CONCAT('%',#{emp.userEmail},'%') 
+			</if>
+		</if>
+	</select>
+	
+	<select id="findEmployeeById" parameterType="java.lang.String" resultType="com.system.base.pojo.Employee">
+		select emp.employeeId,emp.employeeName,emp.departmentId,emp.employeeLoginName,emp.password,emp.userEmail,emp.mobile,emp.birthday,emp.photo, emp.sex,dept.departmentName,emp.post 
+		from gt_sys_employee emp left join gt_sys_department dept
+		on emp.departmentId = dept.departmentId
+		where emp.employeeId =  #{empId,jdbcType=INTEGER}
+	</select>
+	
+	<select id="findEmpByLoginName" parameterType="String" resultType="com.system.base.pojo.Employee">
+		select emp.employeeId,emp.employeeName,emp.departmentId,emp.employeeLoginName,emp.password,emp.userEmail,emp.mobile,emp.birthday,emp.photo, emp.sex,dept.departmentName,emp.post  
+		from gt_sys_employee emp left join gt_sys_department dept on emp.departmentId = dept.departmentId
+		where emp.employeeLoginName =  #{employeeLoginName,jdbcType=VARCHAR}
+	</select>
+	<select id="findAll"  resultType="com.system.base.pojo.Employee">
+		select employeeId,employeeName,departmentId,employeeLoginName,password,userEmail,post from gt_sys_employee 
+	</select>
+	
+	<select id="findRoleId" parameterType="String"  resultType="com.system.base.pojo.Employee">
+    select * from gt_sys_employee where employeeId not in(select userId from gt_sys_rolemembers where  roleId=#{roleId})	
+    </select>
+    <select id="findEmpNotRoleid" parameterType="object"  resultType="com.system.base.pojo.Employee">
+    select * from gt_sys_employee where employeeId not in(select userId from gt_sys_rolemembers where  roleId=#{roleId}) and 	departmentId=#{idList}
+    </select>
+   <update id="updateByPrimaryKeySelective" parameterType="com.system.base.pojo.Employee" >
+    update gt_sys_employee
+    <set>
+      <if test="employeeName != null" >
+        employeeName = #{employeeName,jdbcType=VARCHAR},
+      </if>
+      <if test="sex != null" >
+        sex = #{sex,jdbcType=VARCHAR},
+      </if>
+      <if test="mobile != null" >
+        mobile = #{mobile,jdbcType=VARCHAR},
+      </if>
+      <if test="birthday != null" >
+        birthday = #{birthday,jdbcType=DATE},
+      </if>
+      <if test="departmentId != null" >
+        departmentId = #{departmentId,jdbcType=INTEGER},
+      </if>
+      <if test="employeeLoginName != null" >
+        employeeLoginName = #{employeeLoginName,jdbcType=VARCHAR},
+      </if>
+      <if test="password != null" >
+        password = #{password,jdbcType=VARCHAR},
+      </if>
+      <if test="userEmail != null">
+        userEmail = #{userEmail,jdbcType=VARCHAR},
+      </if>
+      <if test="photo != null" >
+        photo = #{photo,jdbcType=BLOB},
+      </if>
+       <if test="post != null" >
+        post = #{photo,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where employeeId = #{employeeId,jdbcType=INTEGER}
+  </update>
+  <insert id="insertSelective" parameterType="com.system.base.pojo.Employee">
+    insert into gt_sys_employee
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="employeeId != null">
+        employeeId,
+      </if>
+      <if test="employeeName != null">
+        employeeName,
+      </if>
+      <if test="sex != null">
+        sex,
+      </if>
+      <if test="mobile != null">
+        mobile,
+      </if>
+      <if test="birthday != null">
+        birthday,
+      </if>
+      <if test="departmentId != null">
+        departmentId,
+      </if>
+      <if test="employeeLoginName != null">
+        employeeLoginName,
+      </if>
+      <if test="password != null">
+        password,
+      </if>
+      <if test="userEmail != null">
+        userEmail,
+      </if>
+      <if test="photo != null">
+        photo,
+      </if>
+      <if test="post != null">
+        post,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="employeeId != null">
+        #{employeeId,jdbcType=INTEGER},
+      </if>
+      <if test="employeeName != null">
+        #{employeeName,jdbcType=VARCHAR},
+      </if>
+      <if test="sex != null">
+        #{sex,jdbcType=VARCHAR},
+      </if>
+      <if test="mobile != null">
+        #{mobile,jdbcType=VARCHAR},
+      </if>
+      <if test="birthday != null">
+        #{birthday,jdbcType=DATE},
+      </if>
+      <if test="departmentId != null">
+        #{departmentId,jdbcType=INTEGER},
+      </if>
+      <if test="employeeLoginName != null">
+        #{employeeLoginName,jdbcType=VARCHAR},
+      </if>
+      <if test="password != null">
+        #{password,jdbcType=VARCHAR},
+      </if>
+      <if test="userEmail != null">
+        #{userEmail,jdbcType=VARCHAR},
+      </if>
+      <if test="photo != null">
+        #{photo,jdbcType=BLOB},
+      </if>
+       <if test="post != null">
+        #{post,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="findEmp" parameterType="String" resultMap="BaseResultMap">
+		 select  * from gt_sys_employee
+		where employeeLoginName =  #{employeeLoginName,jdbcType=VARCHAR}
+	</select>
+</mapper>

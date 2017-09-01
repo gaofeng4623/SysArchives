@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.archives.dao.DocumentSynDao">
+
+	<select id="queryDocument" parameterType="java.lang.Integer" resultType="com.archives.pojo.Document">
+		select guid from gt_court_arc_document where drid = #{drid,jdbcType=INTEGER}
+	</select>
+	
+	<insert id="savaDocument" useGeneratedKeys="true" keyProperty="guid" parameterType="com.archives.pojo.Document">
+		insert into gt_court_arc_document
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="drid != null">
+				drid,
+			</if>
+			<if test="documentYear != null">
+				documentYear,
+			</if>
+			<if test="durationTorage != null">
+				durationTorage,
+			</if>
+			<if test="departmentId != null"> 
+				departmentId,
+			</if>
+			<if test="departmentName != null"> 
+				departmentName,
+			</if>
+			<if test="typeName != null">
+				typeName,
+			</if>
+			<if test="fileType != null">
+				fileType,
+			</if>
+			<if test="docketNo != null">
+				docketNo,
+			</if>
+			<if test="partNo != null">
+				partNo,
+			</if>
+			<if test="responsiblePerson != null">
+				responsiblePerson,
+			</if>
+			<if test="documentNo != null">
+				documentNo,
+			</if>
+			<if test="title != null">
+				title,
+			</if>
+			<if test="documentDate != null">
+				documentDate,
+			</if>
+			<if test="numberPages != null">
+				numberPages,
+			</if>
+			<if test="remarks != null"> 
+				remarks,
+			</if>
+			<if test="concentrated != null">
+				concentrated,
+			</if>
+			<if test="status != null">
+				status,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="drid != null">
+				#{drid,jdbcType=INTEGER},
+			</if>
+			<if test="documentYear != null">
+				#{documentYear,jdbcType=VARCHAR},
+			</if>
+			<if test="durationTorage != null">
+				#{durationTorage,jdbcType=VARCHAR},
+			</if>
+			<if test="departmentId != null">
+				#{departmentId,jdbcType=VARCHAR},
+			</if>
+			<if test="departmentName != null">
+				#{departmentName,jdbcType=VARCHAR},
+			</if>
+			<if test="typeName != null">
+				#{typeName,jdbcType=VARCHAR},
+			</if>
+			<if test="fileType != null">
+				#{fileType,jdbcType=VARCHAR},
+			</if>
+			<if test="docketNo != null">
+				#{docketNo,jdbcType=VARCHAR},
+			</if>
+			<if test="partNo != null">
+				#{partNo,jdbcType=VARCHAR},
+			</if>
+			<if test="responsiblePerson != null">
+				#{responsiblePerson,jdbcType=VARCHAR},
+			</if>
+			<if test="documentNo != null">
+				#{documentNo,jdbcType=VARCHAR},
+			</if>
+			<if test="title != null">
+				#{title,jdbcType=VARCHAR},
+			</if>
+			<if test="documentDate != null">
+				#{documentDate,jdbcType=VARCHAR},
+			</if>
+			<if test="numberPages != null">
+				#{numberPages,jdbcType=VARCHAR},
+			</if>
+			<if test="remarks != null">
+				#{remarks,jdbcType=VARCHAR},
+			</if>
+			<if test="concentrated != null">
+				#{concentrated,jdbcType=VARCHAR},
+			</if>
+			<if test="status != null">
+				#{status,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+	
+	<select id="selectMaxBusinessId" parameterType="java.lang.String" resultType="java.lang.Integer">
+		select max(drid) from gt_court_arc_document
+	</select>
+	
+	<!-- <insert id="saveBox" parameterType="com.archives.pojo.Box"> 
+		<selectKey resultType="INTEGER" order="AFTER" keyProperty="guid">
+			SELECT LAST_INSERT_ID() AS guid
+		</selectKey>
+		insert into gt_court_arc_box (boxNumber) values(#{boxNumber,jdbcType=VARCHAR})
+	</insert>
+	
+	<select id="queryBox" parameterType="java.util.Map" resultType="com.archives.pojo.Box">
+		select guid,boxNumber,fondsNumber, from gt_court_arc_box where boxNumber=#{boxNumber,jdbcType=VARCHAR}
+	</select>
+	
+	<insert id="saveBoxStatus" parameterType="com.archives.pojo.BoxStatus">
+		insert into gt_court_arc_boxstatus
+		 <trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="boxid != null">
+				boxid,
+			</if>
+			<if test="status != null">
+				status,
+			</if>
+			<if test="rfid != null">
+				rfid,
+			</if>
+			<if test="location != null">
+				location,
+			</if>
+			<if test="uptime != null">
+				uptime,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="boxid != null">
+				#{boxid,jdbcType=INTEGER},
+			</if>
+			<if test="status != null">
+				#{status,jdbcType=VARCHAR},
+			</if>
+			<if test="rfid != null">
+				#{rfid,jdbcType=VARCHAR},
+			</if>
+			<if test="location != null">
+				#{location,jdbcType=VARCHAR},
+			</if>
+			<if test="uptime != null">
+				#{uptime,jdbcType=DATE},
+			</if>
+		</trim>
+	</insert> -->
+	
+	
+</mapper>

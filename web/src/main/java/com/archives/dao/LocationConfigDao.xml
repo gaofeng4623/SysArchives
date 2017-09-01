@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.archives.dao.LocationConfigDao">
+  <resultMap id="BaseResultMap" type="com.archives.pojo.LocationConfig">
+    <id column="guid" jdbcType="INTEGER" property="guid" />
+    <result column="locationName" jdbcType="VARCHAR" property="locationName" />
+    <result column="companyId" jdbcType="VARCHAR" property="companyid" />
+    <result column="typeGuid" jdbcType="INTEGER" property="typeguid" />
+    <result column="parentId" jdbcType="INTEGER" property="parentid" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    guid, companyId, typeGuid, parentId
+  </sql>
+  
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select   config.guid ,type.name as locationName, config.companyId, config.typeGuid, config.parentId  
+      from   gt_court_location_config config,gt_court_location_type type 
+     where   config.typeGuid=type.guid
+       and   config.guid = #{guid,jdbcType=INTEGER}
+  </select>
+  
+  <select id="selectAllLocationConfigs" resultMap="BaseResultMap">
+    select config.guid ,type.name as locationName, config.companyId, config.typeGuid, config.parentId  
+    from gt_court_location_config config,gt_court_location_type type where config.typeGuid=type.guid
+  </select>
+  
+  <select id="queryPageConfigList" parameterType="java.util.Map" resultMap="BaseResultMap">
+    select * from (
+    	select config.guid,type.name locationName 
+    	from gt_court_location_config config,gt_court_location_type type 
+    	where config.typeGuid=type.guid 
+		<if test="m.pid != null">
+			and config.parentid = #{m.pid,jdbcType=INTEGER}
+		</if>
+		) row_ limit #{m.start}, #{m.rows}
+  </select>
+  
+  <select id="queryPageConfigCount" parameterType="java.util.Map" resultType="java.lang.Integer">
+    select count(1) from (
+    	select config.guid,type.name locationName 
+    	from gt_court_location_config config,gt_court_location_type type 
+    	where config.typeGuid=type.guid 
+		<if test="m.pid != null">
+			and config.parentid = #{m.pid,jdbcType=INTEGER}
+		</if>
+		) count_
+  </select>
+  
+  <select id="getTypeList" resultType="com.archives.pojo.LocationType">
+    select guid, name from gt_court_location_type order by guid
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from gt_court_location_config
+    where guid = #{guid,jdbcType=INTEGER}
+  </delete>
+  
+  <delete id="deleteConfigInfoByIds" parameterType="java.lang.Integer">
+    delete from gt_court_location_config
+    where guid in
+     <if test="idList != null" >
+		<foreach collection="idList" item="item" index="index" open="(" separator="," close=")">
+        #{item}
+  		</foreach>
+    </if>
+  </delete>
+  
+  <insert id="insert" parameterType="com.archives.pojo.LocationConfig">
+    insert into gt_court_location_config (guid, companyId, typeGuid, 
+      parentId)
+    values (#{guid,jdbcType=INTEGER}, #{companyid,jdbcType=VARCHAR}, #{typeguid,jdbcType=INTEGER}, 
+      #{parentid,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.archives.pojo.LocationConfig">
+    insert into gt_court_location_config
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="guid != null">
+        guid,
+      </if>
+      <if test="companyid != null">
+        companyId,
+      </if>
+      <if test="typeguid != null">
+        typeGuid,
+      </if>
+      <if test="parentid != null">
+        parentId,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="guid != null">
+        #{guid,jdbcType=INTEGER},
+      </if>
+      <if test="companyid != null">
+        #{companyid,jdbcType=VARCHAR},
+      </if>
+      <if test="typeguid != null">
+        #{typeguid,jdbcType=INTEGER},
+      </if>
+      <if test="parentid != null">
+        #{parentid,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.archives.pojo.LocationConfig">
+    update gt_court_location_config
+    <set>
+      <if test="companyid != null">
+        companyId = #{companyid,jdbcType=VARCHAR},
+      </if>
+      <if test="typeguid != null">
+        typeGuid = #{typeguid,jdbcType=INTEGER},
+      </if>
+      <if test="parentid != null">
+        parentId = #{parentid,jdbcType=INTEGER},
+      </if>
+    </set>
+    where guid = #{guid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.archives.pojo.LocationConfig">
+    update gt_court_location_config
+    set companyId = #{companyid,jdbcType=VARCHAR},
+      typeGuid = #{typeguid,jdbcType=INTEGER},
+      parentId = #{parentid,jdbcType=INTEGER}
+    where guid = #{guid,jdbcType=INTEGER}
+  </update>
+</mapper>

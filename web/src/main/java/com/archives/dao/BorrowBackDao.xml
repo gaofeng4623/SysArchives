@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.archives.dao.BorrowBackDao">
+
+<select id="findBorrowDetail" parameterType="java.util.Map" resultType="com.archives.pojo.BorrowDetail">
+		SELECT
+			b.*,info.guid, info.flowId, its.itemNo caseNo, its.guid as itemGuid, info.archivesNo, info.year, info.caseProerty, info.caseWord, info.courtShortName, info.number, 
+    info.caseCategory, info.judgeProcedure, info.caseName, info.shortDetailsCase, info.parties, DATE_FORMAT(info.putOnRecordDate, '%Y-%m-%d')putOnRecordDate, 
+    info.putOnRecordDep, info.approvePer, info.undertakeDep, info.undertakePer, info.courtClerk, info.chiefJudge, info.collegiateBench, 
+    info.formalDocument, info.counterpart, info.otherDoucment, info.formalDocPageNum, info.counterpartPageNum, 
+    info.mergeCase, info.settleManner,DATE_FORMAT(info.settleDate, '%Y-%m-%d')settleDate , info.settleReason, info.OriginalCourt, info.OriginalCaseNo, 
+    info.firstResult, info.secondResult, info.lastResult, info.fullDocNo, info.catalogNo, info.evidenceBag, info.degreeOfSecrets, 
+    info.storageLife, info.applyPer, info.receivePer, info.placeOnPer,   DATE_FORMAT(info.placeOnDate, '%Y-%m-%d')placeOnDate, info.registerPer, DATE_FORMAT(info.registerTime, '%Y-%m-%d')registerTime, 
+    info.remark, info.status, info.handleStatus,its.rfid,info.guid as infoId,bd.guid as borrowdetailId,bd.status as detailStatus
+		FROM gt_court_arc_borrow b,gt_court_arc_borrowdetail bd,
+		gt_court_arc_info info,gt_court_arc_itemstatus its,gt_court_arc_borrowstatus bs
+		WHERE b.borrowId = bd.borrowId AND bd.itemGuid = its.guid AND its.infoid = info.guid 
+		AND bs.borrowId = b.borrowId <!-- AND bd.status = '1' --> and b.active = 1
+	<if test="m.formNo != null and m.formNo != ''" >
+		and b.formNo = #{m.formNo,jdbcType=VARCHAR}
+	</if>
+</select>
+<select id="findBorrowByCondtion" parameterType="java.util.Map" resultType="com.archives.pojo.Borrow">
+		SELECT
+			b.*,b.userName as employeeName
+		FROM gt_court_arc_borrow b,gt_court_arc_borrowdetail bd,
+		gt_court_arc_info info,gt_court_arc_borrowstatus bs,gt_court_arc_itemstatus its
+		WHERE b.borrowId = bd.borrowId AND bd.itemGuid = its.guid 
+		AND bs.borrowId = b.borrowId and its.infoid = info.guid AND bs.status = '1'  and b.active = 1
+		and (b.status = '1' || b.status = '-1' || b.status = '-2')
+	<if test="m.query_formNo != null and m.query_formNo != ''" >
+		and b.formNo = #{m.query_formNo,jdbcType=VARCHAR}
+	</if>
+	<if test="m.query_caseNo != null and m.query_caseNo != ''" >
+		and info.caseNo = #{m.query_caseNo,jdbcType=VARCHAR}
+	</if>
+	<if test="m.rfid != null and m.rfid != ''" >
+		and its.rfid = #{m.rfid,jdbcType=VARCHAR}
+	</if>
+</select>
+<update id="updateBorrowAll" parameterType="com.archives.pojo.Borrow" >
+    update gt_court_arc_borrow
+    <set >
+      <if test="status != null" >
+        status = #{status,jdbcType=VARCHAR},
+      </if>
+    </set>
+  where borrowId = #{borrowId,jdbcType=INTEGER}
+</update>
+
+<select id="queryBorrowDetailById" parameterType="object"
+		resultType="com.archives.pojo.BorrowDetail">
+		select * from gt_court_arc_borrowdetail bd
+		where bd.guid = #{guid,jdbcType=INTEGER}
+</select>
+
+<update id="updateBorrowDetail" parameterType="com.archives.pojo.BorrowDetail" >
+    update gt_court_arc_borrowdetail
+    <set >
+      <if test="returnTime != null" >
+        returnTime = #{returnTime,jdbcType=DATE},
+      </if>
+      <if test="returnPerson != null" >
+        returnPerson = #{returnPerson,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=VARCHAR}
+      </if>
+    </set>
+  where guid = #{guid,jdbcType=INTEGER}
+</update>
+<select id="queryArchivesInfo" parameterType="object"
+		resultType="com.archives.pojo.ArchivesInfo">
+		select * from gt_court_arc_info 
+		where guid = (SELECT infoid from gt_court_arc_itemstatus where guid = #{itemGuid,jdbcType=INTEGER})
+</select>
+<update id="updateArchivesInfo" parameterType="com.archives.pojo.ArchivesInfo" >
+    update gt_court_arc_info
+    <set >
+      <if test="handleStatus != null" >
+        handleStatus = #{handleStatus,jdbcType=VARCHAR},
+      </if>
+    </set>
+  where guid = #{guid,jdbcType=INTEGER}
+</update>
+</mapper>

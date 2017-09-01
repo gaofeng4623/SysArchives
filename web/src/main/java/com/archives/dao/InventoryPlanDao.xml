@@ -1,0 +1,549 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.archives.dao.InventoryPlanDao" >
+  <resultMap id="BaseResultMap" type="com.archives.pojo.InventoryPlan" >
+    <id column="guid" property="guid" jdbcType="INTEGER" />
+    <result column="inventoryPlanName" property="inventoryPlanName" jdbcType="VARCHAR" />
+    <result column="inventoryType" property="inventoryType" jdbcType="VARCHAR" />
+    <result column="inventoryLocationGuid" property="inventoryLocationGuid" jdbcType="VARCHAR" />
+    <result column="inventoryTypeName" property="inventoryTypeName" jdbcType="VARCHAR" />
+    <result column="beginTime" property="beginTime" jdbcType="TIMESTAMP" />
+    <result column="creater" property="creater" jdbcType="VARCHAR" />
+    <result column="createDate" property="createDate" jdbcType="TIMESTAMP" />
+    <result column="isEnd" property="isEnd" jdbcType="VARCHAR" />
+    <result column="sysCount" property="sysCount" jdbcType="INTEGER" />
+    <result column="isCircle" property="isCircle" jdbcType="INTEGER" />
+    <result column="isCircleName" property="isCircleName" jdbcType="VARCHAR" />
+    <result column="circleSize" property="circleSize" jdbcType="INTEGER" />
+    <result column="cicleType" property="cicleType" jdbcType="INTEGER" />
+    <result column="cicleTypeName" property="cicleTypeName" jdbcType="VARCHAR" />
+    <result column="employeeName" property="employeeName" jdbcType="VARCHAR" />
+    <result column="locationGuid" property="locationGuid" jdbcType="VARCHAR" />
+    <result column="sign" property="sign" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    guid, inventoryPlanName, inventoryType,beginTime, creater, createDate, isEnd, sysCount, isCircle, circleSize, cicleType,inventoryLocationGuid
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from gt_court_inventory_plan
+    where guid = #{guid,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from gt_court_inventory_plan
+    where guid = #{guid,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteInventoryPlanByIds" parameterType="java.lang.Integer" >
+  	delete from gt_court_inventory_plan
+    where guid in
+	<if test="idList != null" >
+		<foreach collection="idList" item="item" index="index" open="(" separator="," close=")">
+        #{item}
+  		</foreach>
+     </if>
+  </delete>
+  <insert id="insert" parameterType="com.archives.pojo.InventoryPlan" >
+    insert into gt_court_inventory_plan (guid, inventoryPlanName, inventoryType, beginTime,
+      creater, createDate, isEnd, 
+      sysCount, isCircle, circleSize, cicleType, inventoryLocationGuid)
+    values (#{guid,jdbcType=INTEGER}, #{inventoryPlanName,jdbcType=VARCHAR}, #{inventoryType,jdbcType=VARCHAR},#{beginTime,jdbcType=TIMESTAMP}, 
+      #{creater,jdbcType=VARCHAR}, #{createDate,jdbcType=TIMESTAMP}, #{isEnd,jdbcType=VARCHAR}, 
+      #{sysCount,jdbcType=INTEGER}, #{isCircle,jdbcType=INTEGER}, #{circleSize,jdbcType=INTEGER}, #{cicleType,jdbcType=INTEGER}, #{inventoryLocationGuid,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" useGeneratedKeys="true" keyColumn="guid" keyProperty="guid"
+  	 		parameterType="com.archives.pojo.InventoryPlan" >
+    insert into gt_court_inventory_plan
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="guid != null" >
+        guid,
+      </if>
+      <if test="inventoryPlanName != null" >
+        inventoryPlanName,
+      </if>
+      <if test="inventoryType != null" >
+        inventoryType,
+      </if>
+      <if test="beginTime != null" >
+        beginTime,
+      </if>
+      <if test="creater != null" >
+        creater,
+      </if>
+      <if test="createDate != null" >
+        createDate,
+      </if>
+      <if test="isEnd != null" >
+        isEnd,
+      </if>
+      <if test="sysCount != null" >
+        sysCount,
+      </if>
+      <if test="isCircle != null" >
+       isCircle,
+      </if>
+      <if test="circleSize != null" >
+       circleSize, 
+      </if>
+      <if test="cicleType != null" >
+      cicleType,
+      </if>
+      <if test="inventoryLocationGuid != null" >
+      inventoryLocationGuid,
+      </if>
+       <if test="sign != null" >
+      sign,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="guid != null" >
+        #{guid,jdbcType=INTEGER},
+      </if>
+      <if test="inventoryPlanName != null" >
+        #{inventoryPlanName,jdbcType=VARCHAR},
+      </if>
+      <if test="inventoryType != null" >
+        #{inventoryType,jdbcType=VARCHAR},
+      </if>
+      <if test="beginTime != null" >
+        #{beginTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="creater != null" >
+        #{creater,jdbcType=VARCHAR},
+      </if>
+      <if test="createDate != null" >
+        #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isEnd != null" >
+        #{isEnd,jdbcType=VARCHAR},
+      </if>
+      <if test="sysCount != null" >
+        #{sysCount,jdbcType=INTEGER},
+      </if>
+      <if test="isCircle != null" >
+        #{isCircle,jdbcType=INTEGER},
+      </if>
+      <if test="circleSize != null" >
+        #{circleSize,jdbcType=INTEGER},
+      </if>
+      <if test="cicleType != null" >
+        #{cicleType,jdbcType=INTEGER},
+      </if>
+      <if test="inventoryLocationGuid != null" >
+        #{inventoryLocationGuid,jdbcType=VARCHAR},
+      </if>
+        <if test="sign != null" >
+        #{sign,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.archives.pojo.InventoryPlan" >
+    update gt_court_inventory_plan
+    <set>
+      <if test="inventoryPlanName != null" >
+        inventoryPlanName = #{inventoryPlanName,jdbcType=VARCHAR},
+      </if>
+      <if test="inventoryType != null" >
+        inventoryType = #{inventoryType,jdbcType=VARCHAR},
+      </if>
+      <if test="beginTime != null" >
+        beginTime = #{beginTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="creater != null" >
+        creater = #{creater,jdbcType=VARCHAR},
+      </if>
+      <if test="createDate != null" >
+        createDate = #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isEnd != null" >
+        isEnd = #{isEnd,jdbcType=VARCHAR},
+      </if>
+      <if test="sysCount != null" >
+        sysCount = #{sysCount,jdbcType=INTEGER},
+      </if>
+      <if test="isCircle != null" >
+        isCircle = #{isCircle,jdbcType=INTEGER},
+      </if>
+      <if test="circleSize != null" >
+        circleSize = #{circleSize,jdbcType=INTEGER},
+      </if>
+      <if test="cicleType != null" >
+        cicleType = #{cicleType,jdbcType=INTEGER},
+      </if>
+      <if test="inventoryLocationGuid != null" >
+        inventoryLocationGuid = #{inventoryLocationGuid,jdbcType=VARCHAR},
+      </if>
+      <if test="sign != null" >
+        sign = #{sign,jdbcType=INTEGER},
+      </if>
+    </set>
+    where guid = #{guid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.archives.pojo.InventoryPlan" >
+    update gt_court_inventory_plan
+    set inventoryPlanName = #{inventoryPlanName,jdbcType=VARCHAR},
+      inventoryType = #{inventoryType,jdbcType=VARCHAR},
+      beginTime = #{beginTime,jdbcType=TIMESTAMP},
+      creater = #{creater,jdbcType=VARCHAR},
+      createDate = #{createDate,jdbcType=TIMESTAMP},
+      isEnd = #{isEnd,jdbcType=VARCHAR},
+      sysCount = #{sysCount,jdbcType=INTEGER},
+      isCircle = #{isCircle,jdbcType=INTEGER},
+      circleSize = #{circleSize,jdbcType=INTEGER},
+      cicleType = #{cicleType,jdbcType=INTEGER},
+      inventoryLocationGuid = #{inventoryLocationGuid,jdbcType=VARCHAR},
+      sign = #{sign,jdbcType=INTEGER}
+    where guid = #{guid,jdbcType=INTEGER}  
+  </update>
+  
+  <select id="loadRecordData" resultMap="BaseResultMap" parameterType="java.util.Map" >
+   select * from ( 
+    	select a.guid,
+    		   a.inventoryPlanName,
+    		   a.inventoryType,
+    		   CASE inventoryType WHEN '1' THEN '全库盘点'
+						          WHEN '2' THEN '增量盘点'
+						          WHEN '3' THEN '下架盘点'
+						          WHEN '4' THEN '自定义盘点'
+						          ELSE '其他' END
+						          as inventoryTypeName,
+    		   a.beginTime,
+    		   a.creater, 
+    		   a.createDate,
+    		   a.isEnd,
+    		   a.sysCount,
+    		   a.isCircle,
+    		   a.sign,
+    		   CASE a.isCircle    WHEN '0' THEN '否'
+						          WHEN '1' THEN '是'
+						          ELSE '' END
+						          as isCircleName,
+    		   a.circleSize,
+    		   a.cicleType,
+    		   a.inventoryLocationGuid,
+    		   CASE a.cicleType   WHEN '1' THEN '时'
+						          WHEN '2' THEN '天'
+						          WHEN '3' THEN '月'
+						          WHEN '4' THEN '年'
+						          ELSE '' END
+						          as cicleTypeName,
+    		   b.employeeName 
+          from gt_court_inventory_plan a
+     left join gt_sys_employee b 
+            on a.creater=b.employeeId 
+        <!--  where a.inventoryType &lt;&gt; 5  -->
+     <if test="m.inventoryPlanName != null and m.inventoryPlanName !=''">
+		 and a.inventoryPlanName like CONCAT('%',#{m.inventoryPlanName},'%')
+	 </if>
+     <if test="m.stime != null and m.stime !=''">
+		 and a.createDate >= CONCAT(#{m.stime},' 00:00:00')
+	 </if>
+     <if test="m.etime != null and m.etime !=''">
+		 and a.createDate &lt;= CONCAT(#{m.etime},' 23:59:59')
+	 </if>
+	 
+     <if test="m.username != null and m.username !=''">
+		 and b.employeeName like  CONCAT('%',#{m.createrName},'%')
+	 </if>
+	<if test="m.sign != null and m.sign !=''">
+		 where a.sign=#{m.sign}
+	 </if>	
+	  order by a.createDate desc ) row_ limit #{m.start}, #{m.rows}
+  </select>
+  
+  
+  <select id="findInventoryRecordCount" resultType="java.lang.Integer" parameterType="java.util.Map" >
+   select count(1) from ( 
+    	select a.guid,
+    		   a.inventoryPlanName,
+    		   a.inventoryType,
+    		   a.beginTime,
+    		   a.creater, 
+    		   a.createDate,
+    		   a.isEnd,
+    		   a.sysCount,
+    		   a.isCircle,
+    		   CASE a.isCircle    WHEN '0' THEN '否'
+						          WHEN '1' THEN '是'
+						          ELSE '' END
+						          as isCircleName,
+    		   a.circleSize,
+    		   a.cicleType,
+    		   a.inventoryLocationGuid,
+    		   CASE a.cicleType   WHEN '1' THEN '时'
+						          WHEN '2' THEN '天'
+						          WHEN '3' THEN '月'
+						          WHEN '4' THEN '年'
+						          ELSE '' END
+						          as cicleTypeName,
+    		   b.employeeName 
+          from gt_court_inventory_plan a 
+     left join gt_sys_employee b 
+            on a.creater=b.employeeId 
+        <!--  where a.inventoryType &lt;&gt; 5 -->
+     <if test="m.inventoryPlanName != null and m.inventoryPlanName !=''">
+		 and a.inventoryPlanName like CONCAT('%',#{m.inventoryPlanName},'%')
+	 </if>
+     <if test="m.stime != null and m.stime !=''">
+		 and a.createDate >= CONCAT(#{m.stime},' 00:00:00')
+	 </if>
+     <if test="m.etime != null and m.etime !=''">
+		 and a.createDate &lt;= CONCAT(#{m.etime},' 23:59:59')
+	 </if>
+     <if test="m.username != null and m.username !=''">
+		 and b.employeeName like  CONCAT('%',#{m.createrName},'%')
+	 </if>
+		<if test="m.sign != null and m.sign !=''">
+		 where a.sign=#{m.sign}
+	 </if>
+	  order by a.createDate desc ) row_ 
+  </select>
+  
+  <!-- 档案移架 -->
+  <select id="loadRemoveData" resultMap="BaseResultMap" parameterType="java.util.Map" >
+   select * from ( 
+    	select a.guid,
+    		   a.inventoryPlanName,
+    		   a.inventoryType,
+    		   CASE inventoryType 
+						          WHEN '6' THEN '重新上架'
+						          ELSE '其他' END
+						          as inventoryTypeName,
+    		   a.beginTime,
+    		   a.creater, 
+    		   a.createDate,
+    		   a.sysCount,
+    		   a.inventoryLocationGuid,
+    		   b.employeeName 
+          from gt_court_inventory_plan a
+     left join gt_sys_employee b 
+            on a.creater=b.employeeId 
+        where a.inventoryType = 6
+     <if test="m.inventoryPlanName != null and m.inventoryPlanName !=''">
+		 and a.inventoryPlanName like CONCAT('%',#{m.inventoryPlanName},'%')
+	 </if>
+     <if test="m.stime != null and m.stime !=''">
+		 and a.createDate >= CONCAT(#{m.stime},' 00:00:00')
+	 </if>
+     <if test="m.etime != null and m.etime !=''">
+		 and a.createDate &lt;= CONCAT(#{m.etime},' 23:59:59')
+	 </if>
+	 
+     <if test="m.username != null and m.username !=''">
+		 and b.employeeName like  CONCAT('%',#{m.createrName},'%')
+	 </if>
+	  order by a.createDate desc ) row_ limit #{m.start}, #{m.rows}
+  </select>
+  
+  <select id="findInventoryRemoveCount" resultType="java.lang.Integer" parameterType="java.util.Map" >
+   select count(1) from ( 
+    	select a.guid,
+    		   a.inventoryPlanName,
+    		   a.inventoryType,
+    		   a.beginTime,
+    		   a.creater, 
+    		   a.createDate,
+    		   a.isCircle,
+    		   b.employeeName 
+          from gt_court_inventory_plan a 
+     left join gt_sys_employee b 
+            on a.creater=b.employeeId 
+        where a.inventoryType = 6
+     <if test="m.inventoryPlanName != null and m.inventoryPlanName !=''">
+		 and a.inventoryPlanName like CONCAT('%',#{m.inventoryPlanName},'%')
+	 </if>
+     <if test="m.stime != null and m.stime !=''">
+		 and a.createDate >= CONCAT(#{m.stime},' 00:00:00')
+	 </if>
+     <if test="m.etime != null and m.etime !=''">
+		 and a.createDate &lt;= CONCAT(#{m.etime},' 23:59:59')
+	 </if>
+     <if test="m.username != null and m.username !=''">
+		 and b.employeeName like  CONCAT('%',#{m.createrName},'%')
+	 </if>
+	  order by a.createDate desc ) row_ 
+  </select>
+  
+  
+  <select id="findLocationByLocationGuid" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+	  select   plan.guid,
+	  	       plan.inventoryPlanName,
+	  	       plan.inventoryLocationGuid,
+	  	       cell.locationGuid,
+	  	       plan.isEnd 
+	  	  from gt_court_inventory_plan plan,
+			   gt_court_inventory_plan_cell cell
+	  	 where plan.inventoryType =1
+	  	   and plan.isEnd != 4 
+	       and plan.guid = cell.inventoryPlanId
+	  	   and cell.locationGuid = #{m.guid}
+	  order by guid desc limit 1 
+  </select>
+  <select id="getAllInventoryPlanList" resultMap="BaseResultMap" parameterType="java.util.Map">
+	  select a.guid,
+	  		   a.sign,
+    		   a.inventoryPlanName,
+    		   a.inventoryLocationGuid,
+    		   a.inventoryType,
+    		   CASE inventoryType WHEN '1' THEN '全库盘点'
+						          WHEN '2' THEN '增量盘点'
+						          WHEN '3' THEN '下架盘点'
+						          WHEN '4' THEN '自定义盘点'
+						          WHEN '5' THEN '上架盘点'
+						          ELSE '其他' END
+						          as inventoryTypeName,
+    		   a.beginTime,
+    		   a.creater, 
+    		   a.createDate,
+    		   a.isEnd,
+    		   a.sysCount,
+    		   a.isCircle,
+    		   CASE a.isCircle    WHEN '0' THEN '否'
+						          WHEN '1' THEN '是'
+						          ELSE '' END
+						          as isCircleName,
+    		   a.circleSize,
+    		   a.cicleType,
+    		   CASE a.cicleType   WHEN '1' THEN '时'
+						          WHEN '2' THEN '天'
+						          WHEN '3' THEN '月'
+						          WHEN '4' THEN '年'
+						          ELSE '' END
+						          as cicleTypeName,
+    		   b.employeeName 
+          from gt_court_inventory_plan a
+     left join gt_sys_employee b 
+            on a.creater=b.employeeId 
+            where 1 = 1
+      <if test="m.type != null and m.type !=''">
+		 and a.sign = #{m.type}
+	 </if>
+     <if test="m.inventoryPlanName != null and m.inventoryPlanName !=''">
+		 and a.inventoryPlanName like CONCAT('%',#{m.inventoryPlanName},'%')
+	 </if>
+     <if test="m.stime != null and m.stime !=''">
+		 and a.createDate &gt; CONCAT(#{m.stime},' 00:00:00')
+	 </if>
+     <if test="m.etime != null and m.etime !=''">
+		 and a.createDate &lt;= CONCAT(#{m.etime},' 23:59:59')
+	 </if>
+     <if test="m.createrName != null and m.createrName !=''">
+		 and b.employeeName like  CONCAT('%',#{m.createrName},'%')
+	 </if>
+	  order by a.createDate desc 
+  </select>
+  
+  
+  <select id="getInventoryPlanListForPage" resultMap="BaseResultMap" parameterType="java.util.Map">
+	  select a.guid,
+	  		   a.sign,
+    		   a.inventoryPlanName,
+    		   a.inventoryLocationGuid,
+    		   a.inventoryType,
+    		   CASE inventoryType WHEN '1' THEN '全库盘点'
+						          WHEN '2' THEN '增量盘点'
+						          WHEN '3' THEN '下架盘点'
+						          WHEN '4' THEN '自定义盘点'
+						          WHEN '5' THEN '上架盘点'
+						          ELSE '其他' END
+						          as inventoryTypeName,
+    		   a.beginTime,
+    		   a.creater, 
+    		   a.createDate,
+    		   a.isEnd,
+    		   a.sysCount,
+    		   a.isCircle,
+    		   CASE a.isCircle    WHEN '0' THEN '否'
+						          WHEN '1' THEN '是'
+						          ELSE '' END
+						          as isCircleName,
+    		   a.circleSize,
+    		   a.cicleType,
+    		   CASE a.cicleType   WHEN '1' THEN '时'
+						          WHEN '2' THEN '天'
+						          WHEN '3' THEN '月'
+						          WHEN '4' THEN '年'
+						          ELSE '' END
+						          as cicleTypeName,
+    		   b.employeeName 
+          from gt_court_inventory_plan a
+     left join gt_sys_employee b 
+            on a.creater=b.employeeId 
+            where 1 = 1
+      <if test="m.type != null and m.type !=''">
+		 and a.sign = #{m.type}
+	  </if>
+	  <if test="m.show != null and m.show =='puton'">
+		 and (a.inventoryType = '5' or a.inventoryType = '6')
+	  </if>
+	  <if test="m.show != null and m.show =='inventory'">
+		 and a.inventoryType = '1'
+	  </if>
+	  <if test="m.planId != null and m.planId !=''">
+		 and a.guid = #{m.planId}
+	  </if>
+	  order by a.createDate desc
+	  <if test="m.planId == null or m.planId ==''"> 
+	 	limit #{m.start}, #{m.rows}
+	  </if>
+  </select>
+  
+  
+  <select id="upShelvesPlanList" resultMap="BaseResultMap">
+	  select a.guid,
+    		   a.inventoryPlanName,
+    		   a.inventoryLocationGuid,
+    		   a.inventoryType,
+    		   a.beginTime,
+    		   a.creater, 
+    		   a.createDate,
+    		   a.isEnd,
+    		   a.sysCount,
+    		   a.isCircle,
+    		   a.circleSize,
+    		   a.cicleType,
+          from gt_court_inventory_plan a
+         where a.inventoryType = 5 
+           and a.isEnd = 1
+  </select>
+  
+  <select id="toListHistory" parameterType="java.util.Map" resultMap="BaseResultMap">
+	 select p.guid,p.inventoryPlanName,e.employeeName as creater,p.createDate,p.sign
+	  from gt_court_inventory_plan p, gt_sys_employee e where p.creater = e.employeeId
+	  and p.inventoryType &lt;&gt; 5
+	  <if test="m.inventoryPlanName != null and m.inventoryPlanName !=''">
+		 and p.inventoryPlanName like CONCAT('%',#{m.inventoryPlanName},'%')
+	  </if>
+	   <if test="m.sign !=null and m.sign !=''">
+		 and p.sign=#{m.sign}
+	  </if>
+	  order by p.createDate desc limit #{m.start}, #{m.rows}
+  </select>
+  
+  <select id="toListHistoryCount" parameterType="com.archives.pojo.InventoryPlan" resultType="java.lang.Integer">
+	select count(1) from gt_court_inventory_plan where 1 = 1
+	and inventoryType &lt;&gt; 5
+	<if test="inventoryPlanName != null and inventoryPlanName !=''">
+		 and inventoryPlanName like CONCAT('%',#{inventoryPlanName},'%')
+	  </if>
+	 <if test="sign !=null and sign !=''">
+		 and sign=#{sign}
+	  </if>
+  </select>
+  
+  <select id="getTotalPlanList" resultType="java.lang.Integer" parameterType="java.util.Map" >
+    	select count(1) 
+          from gt_court_inventory_plan
+          where 1 = 1
+     <if test="m.sign !=null and m.sign !=''">
+		 and sign = #{m.sign}
+	  </if>
+	  <if test="m.show != null and m.show =='puton'">
+		 and (inventoryType = '5' or inventoryType = '6')
+	  </if>
+	  <if test="m.show != null and m.show =='inventory'">
+		 and inventoryType = '1'
+	  </if>
+  </select>
+  
+</mapper>

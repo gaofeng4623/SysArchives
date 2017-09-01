@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.archives.dao.BoxDao" >
+  <resultMap id="BaseResultMap" type="com.archives.pojo.Box" >
+    <result column="guid" property="guid" jdbcType="INTEGER" />
+    <result column="boxNumber" property="boxNumber" jdbcType="VARCHAR" />
+    <result column="fondsNumber" property="fondsNumber" jdbcType="VARCHAR" />
+    <result column="year" property="year" jdbcType="VARCHAR" />
+    <result column="safekeeping" property="safekeeping" jdbcType="VARCHAR" />
+    <result column="mechanism" property="mechanism" jdbcType="VARCHAR" />
+    <result column="startStopPiece" property="startStopPiece" jdbcType="VARCHAR" />
+  </resultMap>
+  <insert id="insert" parameterType="com.archives.pojo.Box" >
+    insert into gt_court_arc_box (guid, boxNumber)
+    values (#{guid,jdbcType=INTEGER}, #{boxNumber,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" useGeneratedKeys="true" keyProperty="guid" parameterType="com.archives.pojo.Box" >
+  <!-- <selectKey resultType="INTEGER" order="AFTER"  keyProperty="status">
+			SELECT LAST_INSERT_ID() AS guid
+		</selectKey> -->
+    insert into gt_court_arc_box
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="boxNumber != null" >
+        boxNumber,
+      </if>
+      <if test="fondsNumber != null" >
+        fondsNumber,
+      </if>
+      <if test="year != null" >
+        year,
+      </if>
+      <if test="safekeeping != null" >
+        safekeeping,
+      </if>
+      <if test="mechanism != null" >
+        mechanism,
+      </if>
+      <if test="startStopPiece != null" >
+        startStopPiece,
+      </if>
+       <if test="start != null" >
+        start,
+      </if>
+       <if test="stop != null" >
+        stop,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="boxNumber != null" >
+        #{boxNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="fondsNumber != null" >
+        #{fondsNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="year != null" >
+        #{year,jdbcType=VARCHAR},
+      </if>
+      <if test="safekeeping != null" >
+        #{safekeeping,jdbcType=VARCHAR},
+      </if>
+      <if test="mechanism != null" >
+        #{mechanism,jdbcType=VARCHAR},
+      </if>
+      <if test="startStopPiece != null" >
+        #{startStopPiece,jdbcType=VARCHAR},
+      </if>
+      <if test="start != null" >
+        #{start,jdbcType=VARCHAR},
+      </if>
+      <if test="stop != null" >
+        #{stop,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="findBoxForPage" parameterType="java.util.Map" resultType="com.archives.pojo.Box">
+    select   a.guid, a.boxNumber,c.locationPath,b.status,a.fondsNumber, a.year, safekeeping, a.mechanism, 
+    a.startStopPiece,a.start,a.stop from gt_court_arc_box a 
+	inner join gt_court_arc_boxstatus b on a.guid=b.boxid
+	left join gt_court_location c on c.guid=b.location
+	where 1=1
+    <if test="paraMap.boxNumber1  != null and paraMap.boxNumber1 != '' and paraMap.boxNumber2  != null and paraMap.boxNumber2 != ''">
+		and  a.boxNumber &gt;= #{paraMap.boxNumber1,jdbcType=INTEGER} and a.boxNumber &lt;= #{paraMap.boxNumber2,jdbcType=INTEGER} 
+	</if>
+	<if test="paraMap.boxNumber != null and paraMap.boxNumber != '' ">
+		and a.boxNumber=#{paraMap.boxNumber}
+	</if>
+	<if test="paraMap.status != null and paraMap.status == 'has'">
+		and b.status &lt;&gt;'0' 
+	</if>
+	<if test="paraMap.status != null and paraMap.status == 'not'">
+		and b.status = '0'
+	</if>
+	<if test="paraMap.year != null and paraMap.year != '' ">
+		and a.year like CONCAT('%',#{paraMap.year},'%') 
+	</if>
+	<if test="paraMap.safekeeping != null and paraMap.safekeeping != '' ">
+		and a.safekeeping like CONCAT('%',#{paraMap.safekeeping},'%') 
+	</if>
+	<if test="paraMap.mechanism != null and paraMap.mechanism != '' ">
+		and a.mechanism like CONCAT('%',#{paraMap.mechanism},'%') 
+	</if>
+		
+	 order by CAST(a.boxNumber as SIGNED)  limit #{paraMap.start}, #{paraMap.rows} 
+	</select>
+	
+	<select id="findCountBoxForPage" parameterType="java.util.Map" resultType="java.lang.Integer">
+	select   count(*)    from gt_court_arc_box a 
+	inner join gt_court_arc_boxstatus b on a.guid=b.boxid
+	left join gt_court_location c on c.guid=b.location
+	where 1=1
+	<if test="paraMap.boxNumber1  != null and paraMap.boxNumber1 != '' and paraMap.boxNumber2  != null and paraMap.boxNumber2 != ''">
+		and  a.boxNumber &gt;= #{paraMap.boxNumber1,jdbcType=INTEGER} and a.boxNumber &lt;= #{paraMap.boxNumber2,jdbcType=INTEGER} 
+	</if>
+	<if test="paraMap.boxNumber != null and paraMap.boxNumber != '' ">
+		and a.boxNumber=#{paraMap.boxNumber}
+	</if>
+	<if test="paraMap.status != null and paraMap.status == 'has'  ">
+		and b.status &lt;&gt;'0' 
+	</if>
+	<if test="paraMap.status != null and paraMap.status == 'not'">
+		and b.status = '0'
+	</if>
+	<if test="paraMap.year != null and paraMap.year != '' ">
+		and a.year like CONCAT('%',#{paraMap.year},'%') 
+	</if>
+	<if test="paraMap.safekeeping != null and paraMap.safekeeping != '' ">
+		and a.safekeeping like CONCAT('%',#{paraMap.safekeeping},'%') 
+	</if>
+	<if test="paraMap.mechanism != null and paraMap.mechanism != '' ">
+		and a.mechanism like CONCAT('%',#{paraMap.mechanism},'%') 
+	</if>
+		
+	</select>
+	
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    *
+    from gt_court_arc_box
+    where guid = #{guid,jdbcType=INTEGER}
+  </select>
+  
+  <!-- 根据档案的条件检索与之关联的盒子 高峰2016-09-10 -->
+  <select id="selectByParams" resultMap="BaseResultMap" parameterType="com.archives.pojo.Box" >
+    select 
+    *
+    from gt_court_arc_box
+    where boxNumber = #{boxNumber,jdbcType=VARCHAR} and safekeeping = #{safekeeping,jdbcType=VARCHAR} 
+    and mechanism = #{mechanism,jdbcType=VARCHAR} and year = #{year,jdbcType=VARCHAR}
+  </select>
+  
+   <delete id="delBoxByIds" parameterType="java.lang.Integer" >
+    delete from gt_court_arc_box
+    where guid in
+	<if test="idList != null" >
+		<foreach collection="idList" item="item" index="index" open="(" separator="," close=")">
+	       #{item}
+	  	</foreach>
+    </if>
+  </delete>
+   <update id="updateByPrimaryKeySelective" parameterType="com.archives.pojo.Box" >
+    update gt_court_arc_box
+    <set>
+      <if test="boxNumber != null" >
+        boxNumber = #{boxNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="fondsNumber != null" >
+        fondsNumber = #{fondsNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="year != null" >
+        year = #{year,jdbcType=VARCHAR},
+      </if>
+      <if test="safekeeping != null" >
+        safekeeping = #{safekeeping,jdbcType=VARCHAR},
+      </if>
+      <if test="mechanism != null" >
+        mechanism = #{mechanism,jdbcType=VARCHAR},
+      </if>
+      <if test="startStopPiece != null" >
+        startStopPiece = #{startStopPiece,jdbcType=VARCHAR},
+      </if>
+      <if test="start != null" >
+        start = #{start,jdbcType=VARCHAR},
+      </if>
+      <if test="stop != null" >
+        stop = #{stop,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where guid = #{guid,jdbcType=INTEGER}
+  </update>
+  
+  
+  
+   <select id="findBoxForShelves" parameterType="java.util.Map" resultType="com.archives.pojo.Box">
+	select a.guid,a.boxNumber,a.fondsNumber,a.year,a.safekeeping,a.mechanism,a.startStopPiece,a.start,a.stop,
+  c.locationPath as location, ifnull(b.uptime,"")uptime , b.status as fjStatus 
+from gt_court_arc_box a
+ inner join gt_court_arc_boxstatus b on a.guid=b.boxid 
+left join gt_court_location c on b.location = c.guid 
+ where 1 = 1
+	 <if test="paraMap.boxNumber1  != null and paraMap.boxNumber1 != '' and paraMap.boxNumber2  != null and paraMap.boxNumber2 != ''">
+			and  a.boxNumber &gt;= #{paraMap.boxNumber1,jdbcType=INTEGER} and a.boxNumber &lt;= #{paraMap.boxNumber2,jdbcType=INTEGER} 
+		</if>
+		<if test="paraMap.boxNumber != null and paraMap.boxNumber != '' ">
+			and a.boxNumber=#{paraMap.boxNumber}
+		</if>
+		<if test="paraMap.status != null and paraMap.status != '' ">
+			and b.status like CONCAT('%',#{paraMap.status},'%') 
+		</if>
+		<if test="paraMap.year != null and paraMap.year != '' ">
+			and a.year like CONCAT('%',#{paraMap.year},'%') 
+		</if>
+		<if test="paraMap.safekeeping != null and paraMap.safekeeping != '' ">
+			and a.safekeeping like CONCAT('%',#{paraMap.safekeeping},'%') 
+		</if>
+		<if test="paraMap.mechanism != null and paraMap.mechanism != '' ">
+			and a.mechanism like CONCAT('%',#{paraMap.mechanism},'%') 
+		</if>
+
+	
+		 and  (b.status = '4' or (b.status = '1' and b.uptime &gt;= CONCAT(#{paraMap.nowDate},' 00:00:00') 
+		 and b.uptime &lt;= CONCAT(#{paraMap.nowDate},' 23:59:59')))
+		 order by  a.year,a.boxNumber DESC
+		 limit #{paraMap.start}, #{paraMap.rows}
+	</select>
+	
+	<select id="findCountBoxForShelves" parameterType="java.util.Map" resultType="java.lang.Integer">
+select count(1)
+from gt_court_arc_box a
+ inner join gt_court_arc_boxstatus b on a.guid=b.boxid 
+left join gt_court_location c on b.location = c.guid 
+	where 1=1
+		 <if test="paraMap.boxNumber1  != null and paraMap.boxNumber1 != '' and paraMap.boxNumber2  != null and paraMap.boxNumber2 != ''">
+			and  a.boxNumber &gt;= #{paraMap.boxNumber1,jdbcType=INTEGER} and a.boxNumber &lt;= #{paraMap.boxNumber2,jdbcType=INTEGER} 
+		</if>
+		<if test="paraMap.boxNumber != null and paraMap.boxNumber != '' ">
+			and a.boxNumber=#{paraMap.boxNumber}
+		</if>
+		<if test="paraMap.status != null and paraMap.status != '' ">
+			and b.status like CONCAT('%',#{paraMap.status},'%') 
+		</if>
+		<if test="paraMap.year != null and paraMap.year != '' ">
+			and a.year like CONCAT('%',#{paraMap.year},'%') 
+		</if>
+		<if test="paraMap.safekeeping != null and paraMap.safekeeping != '' ">
+			and a.safekeeping like CONCAT('%',#{paraMap.safekeeping},'%') 
+		</if>
+		<if test="paraMap.mechanism != null and paraMap.mechanism != '' ">
+			and a.mechanism like CONCAT('%',#{paraMap.mechanism},'%') 
+		</if>
+
+			 and  (b.status = '4' or (b.status = '1' and b.uptime &gt;= CONCAT(#{paraMap.nowDate},' 00:00:00') 
+		 	and b.uptime &lt;= CONCAT(#{paraMap.nowDate},' 23:59:59')))
+	</select>
+</mapper>

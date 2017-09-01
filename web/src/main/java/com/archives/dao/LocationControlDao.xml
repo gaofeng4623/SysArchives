@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.archives.dao.LocationControlDao" >
+  <resultMap id="BaseResultMap" type="com.archives.pojo.LocationControl" >
+    <id column="guid" property="guid" jdbcType="INTEGER" />
+    <result column="controlAddress" property="controlAddress" jdbcType="VARCHAR" />
+    <result column="branchNum" property="branchNum" jdbcType="INTEGER" />
+    <result column="branchAddress" property="branchAddress" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    guid, controlAddress, branchNum, branchAddress
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from gt_court_location_control
+    where guid = #{guid,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from gt_court_location_control
+    where guid = #{guid,jdbcType=INTEGER}
+  </delete>
+  
+  <delete id="delLocationControlByIds" parameterType="java.lang.Integer" >
+    delete from gt_court_location_control
+    where guid in
+	<if test="idList != null" >
+		<foreach collection="idList" item="item" index="index" open="(" separator="," close=")">
+	       #{item}
+	  	</foreach>
+    </if>
+  </delete>
+  
+  <insert id="insert" parameterType="com.archives.pojo.LocationControl" >
+    insert into gt_court_location_control (guid, controlAddress, branchNum, 
+      branchAddress)
+    values (#{guid,jdbcType=INTEGER}, #{controlAddress,jdbcType=VARCHAR}, #{branchNum,jdbcType=INTEGER}, 
+      #{branchAddress,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.archives.pojo.LocationControl" >
+    insert into gt_court_location_control
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="guid != null" >
+        guid,
+      </if>
+      <if test="controlAddress != null" >
+        controlAddress,
+      </if>
+      <if test="branchNum != null" >
+        branchNum,
+      </if>
+      <if test="branchAddress != null" >
+        branchAddress,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="guid != null" >
+        #{guid,jdbcType=INTEGER},
+      </if>
+      <if test="controlAddress != null" >
+        #{controlAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="branchNum != null" >
+        #{branchNum,jdbcType=INTEGER},
+      </if>
+      <if test="branchAddress != null" >
+        #{branchAddress,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.archives.pojo.LocationControl" >
+    update gt_court_location_control
+    <set >
+      <if test="controlAddress != null" >
+        controlAddress = #{controlAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="branchNum != null" >
+        branchNum = #{branchNum,jdbcType=INTEGER},
+      </if>
+      <if test="branchAddress != null" >
+        branchAddress = #{branchAddress,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where guid = #{guid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.archives.pojo.LocationControl" >
+    update gt_court_location_control
+    set controlAddress = #{controlAddress,jdbcType=VARCHAR},
+      branchNum = #{branchNum,jdbcType=INTEGER},
+      branchAddress = #{branchAddress,jdbcType=VARCHAR}
+    where guid = #{guid,jdbcType=INTEGER}
+  </update>
+  
+  <select id="queryControlByCondation" resultMap="BaseResultMap" parameterType="com.archives.pojo.LocationControl" >
+   	select guid, controlAddress, branchNum, branchAddress from gt_court_location_control control
+     where 1=1 
+     <if test="controlAddress != null and controlAddress !=''">
+		 and control.controlAddress = #{controlAddress,jdbcType=VARCHAR}
+	 </if>
+     <if test="branchNum != null and branchNum !=''">
+		 and control.branchNum = #{branchNum,jdbcType=INTEGER}
+	 </if>
+     <if test="branchAddress != null and branchAddress !=''">
+		 and control.branchAddress = #{branchAddress,jdbcType=VARCHAR}
+	 </if>
+  </select>
+  
+  <select id="queryLocationControlListForCombobox" resultMap="BaseResultMap" parameterType="java.lang.String" >
+   	select guid, CONCAT(controlAddress, ': ' , branchNum, ': ', branchAddress) as controlAddress  from gt_court_location_control control
+     <if test="condation != null and condation !=''">
+		 where control.controlAddress like CONCAT('%',#{condation},'%')
+		    or control.branchAddress like CONCAT('%',#{condation},'%')
+	 </if>
+  </select>
+  
+  <select id="queryPageControlList" resultMap="BaseResultMap" parameterType="java.util.Map" >
+    select * from ( 
+    	select guid, controlAddress, branchNum, branchAddress from gt_court_location_control control
+     where 1=1 
+     <if test="m.controlAddress != null and m.controlAddress !=''">
+		 and control.controlAddress like CONCAT('%',#{m.controlAddress},'%')
+	 </if>
+     <if test="m.branchAddress != null and m.branchAddress !=''">
+		 and control.branchAddress like CONCAT('%',#{m.branchAddress},'%')
+	 </if>
+		 order by control.controlAddress, control.branchNum, control.branchAddress ) row_ limit #{m.start}, #{m.rows}
+  </select>
+  
+  <select id="queryPageControlListCount" resultType="java.lang.Integer" parameterType="java.util.Map" >
+    select count(1) from (
+		select guid, controlAddress, branchNum, branchAddress from gt_court_location_control control
+     where 1=1 
+     <if test="m.controlAddress != null and m.controlAddress !=''">
+		 and control.controlAddress like CONCAT('%',#{m.controlAddress},'%')
+	 </if>
+     <if test="m.branchAddress != null and m.branchAddress !=''">
+		 and control.branchAddress like CONCAT('%',#{m.branchAddress},'%')
+	 </if>
+		) count_
+  </select>
+</mapper>

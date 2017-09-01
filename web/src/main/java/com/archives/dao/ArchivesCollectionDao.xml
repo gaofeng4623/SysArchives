@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.archives.dao.ArchivesCollectionDao">
+
+<select id="findCollection" parameterType="java.util.Map"   resultType="com.archives.pojo.ArchivesInfo">
+		SELECT
+			a.guid, a.flowId, a.caseNo, a.archivesNo, a.year, a.caseProerty, a.caseWord, a.courtShortName, a.number, 
+    a.caseCategory, a.judgeProcedure, a.caseName, a.shortDetailsCase, a.parties, DATE_FORMAT(a.putOnRecordDate, '%Y-%m-%d')putOnRecordDate, 
+    a.putOnRecordDep, a.approvePer, a.undertakeDep, a.undertakePer, a.courtClerk, a.chiefJudge, a.collegiateBench, 
+    a.formalDocument, a.counterpart, a.otherDoucment, a.formalDocPageNum, a.counterpartPageNum, DATE_FORMAT(a.settleDate, '%Y-%m-%d')settleDate,
+    a.mergeCase, a.settleManner, a.settleDate, a.settleReason, a.OriginalCourt, a.OriginalCaseNo, 
+    a.firstResult, a.secondResult, a.lastResult, a.fullDocNo, a.catalogNo, a.evidenceBag, a.degreeOfSecrets, 
+    a.storageLife, a.applyPer, a.receivePer, a.placeOnPer, a.placeOnDate, a.registerPer, a.registerTime, 
+    a.remark, a.status
+		FROM gt_court_arc_info a 
+		<where>
+			(a.gdbz is  null and a.placeOnDate is null)and a.settleDate>=DATE_SUB(CURDATE(), INTERVAL 3 MONTH)
+			<if test="m.middleTime != null and m.middleTime != ''">
+				and DATEDIFF(CURRENT_DATE,a.settleDate) &gt;= #{m.middleTime}
+			</if>
+			<if test="m.undertakeDep != null and m.undertakeDep != ''">
+				and a.undertakeDep= #{m.undertakeDep}
+			</if>
+			
+		</where>
+		 limit #{m.start}, #{m.rows}
+</select>
+<select id="listInfo" parameterType="object"    resultType="com.archives.pojo.ArchivesInfo">
+		SELECT
+			a.caseNo,a.guid,a.year,a.caseword,a.casename,a.putonrecorddep,a.settledate
+		FROM gt_court_arc_info a
+		<where>
+			(a.gdbz is  null and a.placeOnDate is null)
+			<if test="middleTime != null and middleTime != ''">
+				and DATEDIFF(CURRENT_DATE,a.settleDate) &gt;= #{middleTime}
+			</if>
+			<if test="undertakeDep != null and undertakeDep != '' and undertakeDep != 'null' ">
+				and a.undertakeDep= #{undertakeDep}
+			</if>
+			
+		</where>
+</select>
+<select id="findCollectionCountList" parameterType="java.util.Map" resultType="java.lang.Integer">
+	SELECT
+			count(info.guid)
+		FROM gt_court_arc_info info 
+		<where>
+			(info.gdbz is  null and info.placeOnDate is null)
+			<if test="m.middleTime != null and m.middleTime != ''">
+				and DATEDIFF(CURRENT_DATE,info.settleDate) &gt;= #{m.middleTime}
+			</if>
+			<if test="m.undertakeDep != null and m.undertakeDep != ''">
+				and info.undertakeDep= #{m.undertakeDep}
+			</if>
+			
+		</where>
+</select>
+<select id="findCollectionNopage" parameterType="object"   resultType="com.archives.pojo.ArchivesInfo">
+			SELECT
+			a.guid, a.flowId, a.caseNo, a.archivesNo, a.year, a.caseProerty, a.caseWord, a.courtShortName, a.number, 
+    a.caseCategory, a.judgeProcedure, a.caseName, a.shortDetailsCase, a.parties, DATE_FORMAT(a.putOnRecordDate, '%Y-%m-%d')putOnRecordDate, 
+    a.putOnRecordDep, a.approvePer, a.undertakeDep, a.undertakePer, a.courtClerk, a.chiefJudge, a.collegiateBench, 
+    a.formalDocument, a.counterpart, a.otherDoucment, a.formalDocPageNum, a.counterpartPageNum, DATE_FORMAT(a.settleDate, '%Y-%m-%d')settleDate,
+    a.mergeCase, a.settleManner, a.settleDate, a.settleReason, a.OriginalCourt, a.OriginalCaseNo, 
+    a.firstResult, a.secondResult, a.lastResult, a.fullDocNo, a.catalogNo, a.evidenceBag, a.degreeOfSecrets, 
+    a.storageLife, a.applyPer, a.receivePer, a.placeOnPer, a.placeOnDate, a.registerPer, a.registerTime, 
+    a.remark, a.status
+		FROM gt_court_arc_info a 
+		<where>
+			(a.gdbz is  null and a.placeOnDate is null)
+			<if test="middleTime != null and middleTime != ''">
+				and DATEDIFF(CURRENT_DATE,a.settleDate) &gt;= #{middleTime}
+			</if>
+			<if test="undertakeDep != null and undertakeDep != '' and undertakeDep != 'null' ">
+				and a.undertakeDep= #{undertakeDep}
+			</if>
+			
+		</where>
+</select>
+<select id="filingReate" parameterType="java.util.Map"   resultType="com.archives.pojo.ArchivesInfo">
+		SELECT
+			count(a.putOnRecordDep)putOnRecordDepCount,putOnRecordDep
+		FROM gt_court_arc_info a,gt_sys_department b
+
+		<where>
+			(a.gdbz is not null and a.placeOnDate is not null) and
+			 a.putOnRecordDep=b.departmentName and  a.placeOnDate 
+			 like CONCAT(#{m.year},'%')   GROUP BY putOnRecordDep
+			<!-- <if test="m.middleTime != null and m.middleTime != ''">
+				and DATEDIFF(CURRENT_DATE,a.settleDate) &gt;= #{m.middleTime}
+			</if>
+			<if test="m.undertakeDep != null and m.undertakeDep != ''">
+				and a.undertakeDep= #{m.undertakeDep}
+			</if> -->
+			
+		</where>
+</select>
+<select id="filingReateCount" parameterType="java.util.Map"   resultType="com.archives.pojo.ArchivesInfo">
+		SELECT
+			count(a.putOnRecordDep)putOnRecordDepCount,putOnRecordDep
+		FROM gt_court_arc_info a,gt_sys_department b
+
+		<where>
+			
+			 a.putOnRecordDep=b.departmentName and  a.placeOnDate  like CONCAT(#{m.year},'%')   GROUP BY putOnRecordDep
+			<!-- <if test="m.middleTime != null and m.middleTime != ''">
+				and DATEDIFF(CURRENT_DATE,a.settleDate) &gt;= #{m.middleTime}
+			</if>
+			<if test="m.undertakeDep != null and m.undertakeDep != ''">
+				and a.undertakeDep= #{m.undertakeDep}
+			</if> -->
+			
+		</where>
+</select>
+</mapper>
