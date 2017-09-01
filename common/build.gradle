@@ -1,0 +1,48 @@
+project(':common') {
+
+    task hello {
+        doLast {
+            println "hello"
+        }
+    }
+    task hello2 << {
+        println "hello"
+    }
+
+    task second {
+        doFirst {
+            println "I am second"
+        }
+    }
+
+    task first {
+        doFirst (new Action(){
+                    void execute(task){
+                        println 'Running ${task.name}'
+                    }
+                }
+        )
+    }
+
+    def printTaskName = { task ->
+        println "Running ${task.name}"
+    }
+
+    task 'five' {
+        doFirst printTaskName
+    }
+
+    task 'two' << printTaskName
+
+
+    //分组
+    def taskGroup = 'base'
+    task first2(description: 'Base task', group: taskGroup) << {
+        println 'I am first'
+    }
+    task second2(dependsOn: first2, description: 'Secondary task', group: taskGroup) << {
+        println "I am second"
+    }
+
+
+}

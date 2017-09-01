@@ -1,0 +1,124 @@
+allprojects {
+    group 'com.gtzn'
+    version '1.0-SNAPSHOT'
+    apply plugin: 'idea'
+    apply plugin: 'java'
+    apply plugin: 'maven'
+    sourceCompatibility = 1.7
+    [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+}
+
+
+subprojects {
+    ext {
+        springVersion = "4.1.5.RELEASE"
+        mybatisVersion = "3.2.5"
+        mybatisSpringVersion = "1.2.2"
+        activitiVersion = "5.19.0.2"
+        mysqlVersion = "5.1.8"
+        dom4jVersion = "1.6.1"
+        dbcpVersion = "1.2.2"
+        cxfVersion = "2.3.0"
+        poiOfficeVersion = "3.8"
+        jettyVersion = "9.3.0.M1"
+        logversion = "1.2"
+    }
+
+    //公共仓库配置
+    repositories {
+        // 自定义仓库
+        def cn = "https://jcenter.bintray.com/"
+        def abroad = "http://localhost:8081/nexus/content/groups/public"
+        // 先从url中下载jar若没有找到，则在artifactUrls中寻找
+        maven {
+            url cn
+            artifactUrls abroad
+        }
+        flatDir(dir: '../libs', name: 'libs directory')
+
+    }
+
+    //公共编译配置
+    processResources {
+        from('src/main/java') {
+            include '**/*'
+            exclude '**/*.java'
+        }
+        copy{
+            from('src/main/resources') {
+                include('**/*')
+            }
+            into("$buildDir/classes/main")
+        }
+    }
+
+    //公共编译配置测试
+    processTestResources {
+        from('src/test/java') {
+            include '**/*'
+            exclude '**/*.java'
+        }
+        copy{
+            from('src/test/resources') {
+                include('**/*')
+            }
+            into("$buildDir/classes/test")
+        }
+    }
+
+    //公共打包任务
+    task jarWithoutResources(type: Jar) {
+        baseName project.name
+        from("$buildDir/classes/main")
+    }
+
+    //依赖管理
+    dependencies {
+        testCompile group: 'junit', name: 'junit', version: '4.11'
+        //容器相关
+        compile("javax.servlet:javax.servlet-api:3.1.0",
+                "javax.servlet.jsp:jsp-api:2.2.1-b03")
+        // Spring
+        compile("org.springframework:spring-beans:$springVersion",
+                "org.springframework:spring-core:$springVersion",
+                "org.springframework:spring-aop:$springVersion",
+                "org.springframework:spring-orm:$springVersion",
+                "org.springframework:spring-jdbc:$springVersion",
+                "org.springframework:spring-expression:$springVersion",
+                "org.springframework:spring-context-support:$springVersion",
+                "org.springframework:spring-context:$springVersion",
+                "org.springframework:spring-aspects:$springVersion",
+                "org.springframework:spring-web:$springVersion",
+                "org.springframework:spring-webmvc:$springVersion",
+                "org.springframework:spring-tx:$springVersion",
+                "org.springframework:spring-test:$springVersion",
+                "org.springframework:spring-jms:$springVersion",
+                "org.springframework:spring-oxm:$springVersion")
+        // mybatis
+        compile("org.mybatis:mybatis:$mybatisVersion",
+                "org.mybatis:mybatis-spring:$mybatisSpringVersion")
+        //mysql
+        compile("mysql:mysql-connector-java:$mysqlVersion")
+        //dom4j
+        compile("org.apache.directory.studio:org.dom4j.dom4j:$dom4jVersion")
+        //commons-dbcp
+        compile("commons-dbcp:commons-dbcp:$dbcpVersion")
+        //commons-collections
+        compile("commons-collections:commons-collections:3.1") {
+            exclude group: 'org.springframework', module: 'spring-beans'
+            exclude group: 'org.springframework', module: 'spring-core'
+        }
+        //commons
+        compile("jstl:jstl:1.2",
+                "aspectj:aspectjrt:1.5.4",
+                "org.aspectj:aspectjweaver:1.6.9",
+                "org.apache.xmlgraphics:batik-anim:1.7",
+                "javax.activation:activation:1.1.1",
+                "javax.el:javax.el-api:3.0.0",
+                "commons-logging:commons-logging:$logversion",
+                "com.fasterxml.jackson.core:jackson-core:2.8.5",
+                "com.fasterxml.jackson.core:jackson-databind:2.8.5",
+                "commons-fileupload:commons-fileupload:1.3.2")
+
+    }
+}
